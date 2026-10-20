@@ -10,13 +10,13 @@ export const SNAG = { x: 30, top: HORIZON - 40 }; // dead pine the eagle perches
 export const FALLS = { x: 6, top: HORIZON - 30, w: 8 }; // waterfall off the cliff
 const lerp = (a, b, t) => a + (b - a) * t;
 
-// The pier runs in from the bottom-right corner on a slight diagonal and
-// narrows as it recedes over the water toward the upper left. It is laid
-// out along its near (front) edge, parameter t from 0 at the shore end to 1
-// at the far end. Planks run across it: each one starts on the front edge
-// and rises up and to the left to the back (lake-side) edge, as boards do
-// when a pier is seen from one side. All values are art pixels.
-export const DOCK = { x0: AW + 34, x1: AW - 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 38, w1: 8, slant: -0.8 };
+// The pier runs in from the bottom-left corner on a slight diagonal and
+// narrows as it recedes over the water. It is laid out along its near
+// (front) edge, parameter t from 0 at the shore end to 1 at the far end.
+// Planks run across it: each one starts on the front edge and rises up and
+// to the left to the back (lake-side) edge, so the board lines run right
+// side down. All values are art pixels.
+export const DOCK = { x0: -34, x1: 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 38, w1: 8, slant: -0.8 };
 const front = (t) => ({ x: lerp(DOCK.x0, DOCK.x1, t), y: lerp(DOCK.y0, DOCK.y1, t) });
 const width = (t) => lerp(DOCK.w0, DOCK.w1, t);
 // where the plank that meets the front edge at t meets the back edge
@@ -30,9 +30,9 @@ export function dockAt(x) {
   return { t, front: front(t).y, back: backOf(tb).y };
 }
 // The angler sits at the lake-side edge near the far end, facing the water.
-export const PLAYER = { x: 72, y: Math.round(dockAt(72).back) + 3 };
-export const MUG = { x: 84, y: Math.round(dockAt(84).back) + 8 };
-export const DOG = { x: 120, y: Math.round((dockAt(120).back + dockAt(120).front) / 2) + 3 };
+export const PLAYER = { x: 108, y: Math.round(dockAt(108).back) + 3 };
+export const MUG = { x: 116, y: Math.round(dockAt(116).back) + 8 };
+export const DOG = { x: 60, y: Math.round((dockAt(60).back + dockAt(60).front) / 2) + 3 };
 export const REED_BED = { x: 0, w: 44, y: HORIZON + 46 }; // waterline of the reed bed
 
 // One clean band of a colour ramp. Light is quantised to thirds so surfaces
@@ -550,9 +550,24 @@ function paintDock(scene) {
   // to a plank number.
   const plankAt = (t) => N * (1 - Math.pow(1 - t, 1 / 1.7));
   const tOfPlank = (i) => 1 - Math.pow(1 - i / N, 1.7);
-  const span = Math.abs(DOCK.x1 - DOCK.x0);
+  const span = DOCK.x1 - DOCK.x0;
 
-  // deck: walk along the pier and across each plank, painting as we go
+  // Weathered boards. Sun and rain have silvered most of them grey; a few
+  // are darker where they stay damp. Each has wavering grain, some have a
+  // knot or a split, one has snapped off partway across, and the gaps show
+  // the shadowed water beneath. The sun is high on the right, so each
+  // board's right-hand edge catches the light and its left edge sits in
+  // the shadow of the gap.
+  const weathered = '#8f8a7e';
+  const below = '#10284a'; // shadowed water seen between the boards
+  const broken = 7;
+  const boardTone = (idx) => {
+    let c = mix(idx % 3 === 1 ? P.woodAlt : P.wood, weathered, 0.25 + noise(idx, 1, 811) * 0.4);
+    if (noise(idx, 0, 810) < 0.15) c = mix(c, '#4a3a2c', 0.4);
+    return c;
+  };
+  const shadows = []; // cast onto the water, painted under the pier later
+
   for (let i = 0; i <= span * 4; i++) {
     const t = i / (span * 4);
     const f0 = front(t);
@@ -560,42 +575,69 @@ function paintDock(scene) {
     const q = plankAt(t);
     const idx = Math.floor(q);
     const f = q - idx;
+    const base = boardTone(idx);
+    const knot = noise(idx, 4, 814) < 0.45 ? { v: 0.2 + noise(idx, 2, 812) * 0.6, f: 0.35 + noise(idx, 3, 813) * 0.35 } : null;
+    const split = noise(idx, 5, 815) < 0.35 ? noise(idx, 6, 816) * 0.5 : -1;
+    const snapAt = 0.55 + noise(i, 0, 817) * 0.1;
     const steps = Math.ceil(width(t) * 3);
     for (let j = 0; j <= steps; j++) {
       const v = j / steps; // 0 at the front edge, 1 at the back edge
       const x = Math.round(lerp(f0.x, b0.x, v));
       const y = Math.round(lerp(f0.y, b0.y, v));
       let c;
-      if (f < 0.1) c = P.woodGap;
+      if (f < 0.1 || (idx === broken && v > snapAt)) c = below;
+      else if (split >= 0 && v > split && v < split + 0.45 && Math.abs(f - 0.56) < 0.05) c = below;
       else {
-        let k = f < 0.22 ? 0.66 : f > 0.88 ? -0.33 : 0;
-        if (v > 0.93) k += 0.33; // the lake-side edge catches the light
-        if (noise(idx, Math.floor(v * 6), 804) < 0.15) k -= 0.33; // weathered grain
-        c = tone(idx % 3 === 1 ? P.woodAlt : P.wood, k);
+        let k = f > 0.82 ? 0.5 : f < 0.2 ? -0.33 : 0.1;
+        if (v > 0.93) k += 0.33; // lake-side edge
+        for (const g of [0.42, 0.68]) if (Math.abs(f - (g + 0.07 * Math.sin(v * 10 + idx * 2))) < 0.045) k -= 0.33; // grain
+        if (knot) {
+          const dk = Math.hypot((v - knot.v) * width(t), (f - knot.f) * 4);
+          if (dk < 0.8) k = -0.85;
+          else if (dk < 1.7) k -= 0.33;
+        }
+        c = tone(base, k);
+        if (t < 0.45 && f > 0.5 && f < 0.62 && (j === 1 || j === steps - 1)) c = P.nail;
+        else if (t < 0.45 && f > 0.5 && f < 0.62 && (j === 2 || j === steps - 2)) c = '#9a5030'; // rust bleeding from the nail
       }
       d.px(x, y, c);
     }
-    // plank ends, then the side beam in shadow beneath the front edge
+    // sunlit plank ends, then the side beam in deep shadow, slick with algae
+    // at the bottom where the spray reaches it
     const beam = Math.max(2, Math.round(lerp(4, 2, t)));
     const fx = Math.round(f0.x);
     const fy = Math.round(f0.y);
-    d.px(fx, fy + 1, f < 0.1 ? P.woodGap : tone(P.wood, 0.33));
-    for (let k = 2; k <= beam; k++) d.px(fx, fy + k, tone(P.woodDark, -0.2 - k * 0.12));
+    d.px(fx, fy + 1, f < 0.1 ? below : tone(base, 0.5));
+    for (let k = 2; k <= beam; k++) {
+      const c = tone(mix(P.woodDark, weathered, 0.2), -0.5 - k * 0.1);
+      d.px(fx, fy + k, k === beam && noise(i, 1, 818) < 0.4 ? '#2f5a34' : c);
+    }
+    // the pier's shadow falls away from the sun, down and to the left
+    const reach = Math.round(lerp(12, 4, t));
+    for (let k = 0; k < reach; k++) shadows.push([Math.round(fx - k * 0.6), fy + beam + 1 + k, 0.6 * (1 - (k / reach) * 0.45)]);
   }
 
-  // Pilings hold the pier up along both edges, every few planks. Their tops
-  // stand a little proud of the deck. Along the front edge they run down
-  // past the beam into the water; along the back edge only the tops show.
-  const piling = (x, top, len, pw, submergeAt) => {
+  // Pilings hold the pier up along both edges, every few planks, their tops
+  // standing a little proud of the deck. Sunlit on the right, shadowed on
+  // the left; along the front edge they run down into the water, green with
+  // algae at the waterline and dark where they stay wet.
+  const piling = (x, top, len, pw, wl) => {
+    const wood = mix(P.woodDark, weathered, 0.3);
     for (let y = 0; y < len; y++) {
       for (let k = 0; k < pw; k++) {
-        let c = tone(P.woodDark, k === pw - 1 ? 0.33 : k === 0 ? -0.5 : 0);
-        if (y === 0) c = tone(P.wood, 0.66); // sawn top catching the light
-        if (submergeAt && y > submergeAt) c = mix(c, P.water4, 0.35 + (y - submergeAt) / len);
+        let c = tone(wood, k === pw - 1 ? 0.5 : k === 0 ? -0.66 : -0.1);
+        if (y === 0) c = tone(weathered, 0.5); // sawn top catching the light
+        if (wl) {
+          if (y >= wl - 2 && y < wl) c = mix(c, '#3a6a34', 0.6);
+          if (y > wl) c = mix(tone(wood, -0.66), P.water4, 0.35 + (y - wl) / len);
+        }
         d.px(x + k, top + y, c);
       }
     }
-    if (submergeAt) d.hline(x - 1, x + pw, top + submergeAt, P.waterLine);
+    if (wl) {
+      d.hline(x - 1, x + pw, top + wl, P.waterLine);
+      for (let k = 0; k < Math.round(len * 0.5); k++) shadows.push([x - 1 - Math.round(k * 0.6), top + wl + 1 + k, 0.45]);
+    }
   };
   for (let i = 0; i <= N; i += 3) {
     const t = Math.min(1, tOfPlank(i) + 0.01);
@@ -609,30 +651,29 @@ function paintDock(scene) {
   }
 
   // tackle box, bait bucket and camp mug beside the angler
-  const tb = dockAt(100);
+  const tb = dockAt(82);
   const tby = Math.round((tb.back + tb.front) / 2) - 2;
-  for (let y = 0; y < 5; y++) for (let x = 0; x < 9; x++) d.px(96 + x, tby + y, tone(y < 2 ? P.tackleDark : P.tackle, (y === 2 ? 0.5 : 0) + (x > 6 ? 0.33 : x < 2 ? -0.33 : 0)));
-  d.hline(99, 102, tby - 1, P.metal);
-  d.px(100, tby + 3, '#ffe060');
-  const bk = dockAt(57);
+  for (let y = 0; y < 5; y++) for (let x = 0; x < 9; x++) d.px(78 + x, tby + y, tone(y < 2 ? P.tackleDark : P.tackle, (y === 2 ? 0.5 : 0) + (x > 6 ? 0.33 : x < 2 ? -0.33 : 0)));
+  d.hline(81, 84, tby - 1, P.metal);
+  d.px(82, tby + 3, '#ffe060');
+  const bk = dockAt(124);
   const bky = Math.round(bk.back) - 1;
-  for (let y = 0; y < 6; y++) for (let x = y >> 2; x <= 5 - (y >> 2); x++) d.px(54 + x, bky + y, y === 0 ? P.enamel : tone(P.metal, (x - 2.5) * 0.25 + (y % 2 ? -0.33 : 0)));
-  d.hline(54, 59, bky - 2, P.metalDark);
+  for (let y = 0; y < 6; y++) for (let x = y >> 2; x <= 5 - (y >> 2); x++) d.px(121 + x, bky + y, y === 0 ? P.enamel : tone(P.metal, (x - 2.5) * 0.25 + (y % 2 ? -0.33 : 0)));
+  d.hline(121, 126, bky - 2, P.metalDark);
   for (let y = 0; y < 4; y++) for (let x = 0; x < 3; x++) d.px(MUG.x + x, MUG.y - 4 + y, tone(P.mug, (x - 1) * 0.5));
   d.hline(MUG.x, MUG.x + 2, MUG.y - 4, P.enamel);
   d.px(MUG.x + 3, MUG.y - 3, P.mug);
   d.outerOutline(P.outline);
 
-  // the pier's shadow on the water, then the pier over it
+  // cool, deep shadows on the water first, then the pier over them
   const p = new Painter(AW, AH);
-  for (let i = 0; i <= span; i++) {
-    const t = i / span;
-    const f0 = front(t);
-    for (let k = 0; k < Math.round(lerp(8, 3, t)); k++) p.px(Math.round(f0.x) - k, Math.round(f0.y) + 4 + k, P.water5, 0.25);
-  }
+  const sh = new Painter(AW, AH);
+  for (const [x, y, a] of shadows) if (!sh.alphaAt(x, y)) sh.px(x, y, '#0a2456', a);
+  for (let y = 0; y < AH; y++) for (let x = 0; x < AW; x++) if (sh.alphaAt(x, y)) p.px(x, y, sh.get(x, y), sh.alphaAt(x, y) / 255);
   for (let y = 0; y < AH; y++) for (let x = 0; x < AW; x++) if (d.alphaAt(x, y)) p.px(x, y, d.get(x, y));
-  p.ellipse(PLAYER.x, PLAYER.y, 4, 1, P.ink, 0.3);
-  p.ellipse(DOG.x, DOG.y, 7, 1, P.ink, 0.25);
+  // the angler and the dog cast short shadows down and to the left
+  p.ellipse(PLAYER.x - 3, PLAYER.y, 5, 1, '#1a1a3a', 0.4);
+  p.ellipse(DOG.x - 3, DOG.y, 8, 1, '#1a1a3a', 0.35);
   p.texture(scene, 'dock');
 }
 
