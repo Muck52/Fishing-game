@@ -16,7 +16,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 // and widens toward the upper right, where it ends. Planks run across it at
 // a slant. The upper edge faces the lake; the lower edge is where the side
 // beam and the pilings hang down into the water. All values are art pixels.
-export const DOCK = { x0: -34, x1: 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 38, w1: 8, slant: -0.8 };
+export const DOCK = { x0: -34, x1: 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 32, w1: 18, slant: -0.6 };
 // After turning, the pier is raised so its beam and pilings sit fully on screen.
 const LIFT = 30;
 const CENTER = { x: (DOCK.x0 + DOCK.x1) / 2, y: (DOCK.y0 + DOCK.y1) / 2 };
@@ -556,8 +556,8 @@ function paintDock(scene) {
   const N = 18; // planks along the pier
   // Planks get narrower with distance; this maps distance along the pier
   // to a plank number.
-  const plankAt = (t) => N * (1 - Math.pow(1 - t, 1 / 1.7));
-  const tOfPlank = (i) => 1 - Math.pow(1 - i / N, 1.7);
+  const plankAt = (t) => N * (1 - Math.pow(1 - t, 1 / 1.25));
+  const tOfPlank = (i) => 1 - Math.pow(1 - i / N, 1.25);
   const span = DOCK.x1 - DOCK.x0;
 
   // Weathered boards. Sun and rain have silvered most of them grey; a few
@@ -612,7 +612,7 @@ function paintDock(scene) {
     }
     // sunlit plank ends, then the side beam in deep shadow, slick with algae
     // at the bottom where the spray reaches it
-    const beam = Math.max(2, Math.round(lerp(4, 2, t)));
+    const beam = Math.max(2, Math.round(lerp(4, 3, t)));
     const fx = Math.round(b0.x);
     const fy = Math.round(b0.y);
     d.px(fx, fy + 1, f < 0.1 ? below : tone(base, 0.5));
@@ -621,7 +621,7 @@ function paintDock(scene) {
       d.px(fx, fy + k, k === beam && noise(i, 1, 818) < 0.4 ? '#2f5a34' : c);
     }
     // the pier's shadow falls away from the sun, down and to the left
-    const reach = Math.round(lerp(12, 4, t));
+    const reach = Math.round(lerp(11, 7, t));
     for (let k = 0; k < reach; k++) shadows.push([Math.round(fx - k * 0.6), fy + beam + 1 + k, 0.6 * (1 - (k / reach) * 0.45)]);
   }
 
@@ -649,12 +649,12 @@ function paintDock(scene) {
   };
   for (let i = 0; i <= N; i += 3) {
     const t = Math.min(1, tOfPlank(i) + 0.01);
-    const pw = Math.max(2, Math.round(lerp(4, 2, t)));
-    const rise = Math.max(2, Math.round(lerp(3, 2, t)));
+    const pw = Math.max(2, Math.round(lerp(4, 3, t)));
+    const rise = 2;
     const u0 = upper(t);
     piling(Math.round(u0.x) - 1, Math.round(u0.y) - rise, rise + 1, pw, 0);
     const l0 = lower(t);
-    const len = Math.round(lerp(26, 10, t));
+    const len = Math.round(lerp(24, 16, t));
     piling(Math.round(l0.x) - 1, Math.round(l0.y) - rise, len, pw, rise + Math.round(len * 0.45));
   }
 
