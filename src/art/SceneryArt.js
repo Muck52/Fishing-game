@@ -138,7 +138,7 @@ function paintWaves(scene, rng) {
   for (let y = 0; y < 16; y++) {
     for (let x = 0; x < 60; x++) {
       const e = ((x - 30) / 30) ** 2 + ((y - 8) / 8) ** 2;
-      if (e < 1 && dither(x, y, (1 - e) * 0.7)) g.px(x, y, (x + y) % 3 ? P.water5 : P.water3);
+      if (e < 1) g.px(x, y, P.water5, (1 - e) * 0.6);
     }
   }
   g.texture(scene, 'gust');
@@ -272,15 +272,28 @@ function paintForest(scene, rng) {
 function paintWater(scene, rng, mountains, forest) {
   const h = AH - HORIZON;
   const p = new Painter(AW, h);
-  vgradient(p, 0, h, [[0, P.water0], [0.03, P.water1], [0.12, P.water2], [0.3, P.water3], [0.6, P.water4], [1, P.water5]]);
+  // Water is painted smoothly, row by row, with no dither: from the peach
+  // of the sky reflected at the far shore down to deep teal at your feet.
+  const stops = [[0, P.water0], [0.03, P.water1], [0.12, P.water2], [0.3, P.water3], [0.6, P.water4], [1, P.water5]];
+  for (let r = 0; r < h; r++) {
+    const t = r / (h - 1);
+    let k = 0;
+    while (k < stops.length - 2 && t > stops[k + 1][0]) k++;
+    const f = Math.min(1, Math.max(0, (t - stops[k][0]) / (stops[k + 1][0] - stops[k][0])));
+    const c = mix(stops[k][1], stops[k + 1][1], f * f * (3 - 2 * f));
+    for (let x = 0; x < AW; x++) p.px(x, r, c);
+  }
 
-  // Wind texture: ripple bands that stretch out as they come closer.
+  // Soft swell: long, gently lighter and darker streaks that blend into the
+  // water around them and stretch out as they come closer.
   for (let r = 1; r < h; r++) {
-    const stretch = 1 + r / 25;
+    const near = r / h;
+    const freq = 0.16 / (1 + r / 20);
+    const phase = noise(r, 0, 11) * 20;
     for (let x = 0; x < AW; x++) {
-      const n = noise(Math.floor((x + r * 3) / stretch), r, 11);
-      if (n < 0.1) p.recolor(x, r, shade(p.get(x, r), 0.3));
-      else if (n > 0.86) p.recolor(x, r, shade(p.get(x, r), -0.25));
+      const v = Math.sin(x * freq + phase) * 0.6 + Math.sin(x * freq * 2.3 + phase * 1.7) * 0.4;
+      const amount = Math.abs(v) * (0.05 + near * 0.07);
+      p.recolor(x, r, mix(p.get(x, r), v > 0 ? P.waterLine : P.water5, amount));
     }
   }
 
@@ -294,9 +307,16 @@ function paintWater(scene, rng, mountains, forest) {
     const gap = r > 3 && r % 3 === 2;
     for (let x = 0; x < AW; x++) {
       const sx = Math.min(AW - 1, Math.max(0, x + wob));
-      const src = forest.alphaAt(sx, sy) ? forest.get(sx, sy) : mountains.alphaAt(sx, sy) ? mountains.get(sx, sy) : null;
-      if (!src || (gap && rng() < 0.6)) continue;
-      p.px(x, r, mix(src, p.get(x, r), 0.4), a);
+      // average three neighbours so the mirror image is soft, not speckled
+      const look = (ix) => (forest.alphaAt(ix, sy) ? forest.get(ix, sy) : mountains.alphaAt(ix, sy) ? mountains.get(ix, sy) : null);
+      const src = look(sx);
+      if (!src) continue;
+      const l = look(Math.max(0, sx - 1)) || src;
+      const rt = look(Math.min(AW - 1, sx + 1)) || src;
+      let c = mix(mix(l, rt, 0.5), src, 0.5);
+      c = mix(c, p.get(x, r), 0.4);
+      if (gap) c = mix(c, P.waterLine, 0.2); // faint ripple line
+      p.px(x, r, c, a);
     }
   }
   for (let x = 0; x < AW; x++) if (rng() < 0.4) p.px(x, 0, P.waterLine, 0.6);
@@ -592,7 +612,7 @@ function paintMist(scene, key, w, h, density, rng) {
   };
   for (let y = 0; y < h; y++) {
     const v = Math.sin((Math.PI * (y + 0.5)) / h);
-    for (let x = 0; x < w; x++) if (dither(x, y, v * wave(x) * density)) p.px(x, y, P.mist);
+    for (let x = 0; x < w; x++) p.px(x, y, P.mist, v * wave(x) * density * 0.8);
   }
   p.texture(scene, key);
 }
