@@ -1,0 +1,29 @@
+<title>Reel It In</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800&display=swap">
+<style>
+  /* One full-screen canvas; the lake scene is the whole page. */
+  :root {
+    --lake-deep: #0b2a3f;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--lake-deep);
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    padding-left: max(0px, env(safe-area-inset-left, 0px));
+    padding-right: max(0px, env(safe-area-inset-right, 0px));
+  }
+  #game { width: 100%; height: 100%; }
+  #game canvas { display: block; }
+</style>
+<div id="game"></div>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script type="module" src="src/main.js"></script>

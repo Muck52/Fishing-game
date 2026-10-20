@@ -1,4 +1,23 @@
-# Fishing Game (Mobile)
+# Reel It In – Fishing Game (Mobile)
+
+A phone fishing game built with [Phaser 3](https://phaser.io).
+
+## How to play
+1. **Swipe up** to cast. A longer swipe casts farther, where rarer fish bite.
+2. Wait for the bobber. Small nibbles are fake-outs; tapping during one scares the fish.
+3. When the bobber goes under and **!** appears, **tap** to hook the fish.
+4. **Hold** to reel. Watch the tension meter and **let go** before it hits red, or the line snaps.
+
+Progress (coins and species found) is saved in the browser.
+
+## Run it locally
+The game uses JavaScript modules, so it has to be served by a web server rather than opened as a file:
+
+```
+python3 -m http.server 8000
+```
+
+Then open http://localhost:8000 in a browser (use the phone-sized view in your browser's dev tools).
 
 ## Folder structure
 
