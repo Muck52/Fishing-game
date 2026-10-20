@@ -238,20 +238,20 @@ export function paintFish(scene, fish) {
   }
   for (const [x, y] of ring) p.px(x, y, OUTLINE);
 
-  const iris = a.eyeColor || '#efe3a8';
-  const re = Math.max(2, Math.round(d * 0.18));
-  for (let y = -re; y <= re; y++) {
-    for (let x = -re; x <= re; x++) {
-      const r = Math.hypot(x, y);
-      if (r > re + 0.5) continue;
+  // A small eye set into the head: every colour borrows from the skin
+  // around it, so it sits in the face instead of sitting on top of it.
+  const iris = a.eyeColor || '#d8c27a';
+  for (let y = -1; y <= 1; y++) {
+    for (let x = -1; x <= 1; x++) {
+      const skin = p.get(ox + ex + x, ey + y);
       let c;
-      if (r > re - 0.5) c = OUTLINE;
-      else if (r > re - 1.5) c = shade(iris, y < 0 ? 0.34 : 0);
-      else c = '#06080a';
-      p.px(ox + ex + x, ey + y, c);
+      if (x && y) c = mix(skin, shade(skin, -1), 0.55); // soft socket shadow
+      else if (x || y) c = shade(mix(iris, skin, 0.3), y < 0 ? 0.17 : -0.17);
+      else c = mix('#0d0f10', skin, 0.1);
+      p.recolor(ox + ex + x, ey + y, c);
     }
   }
-  p.px(ox + ex + 1, ey - 1, '#ffffff'); // catchlight
+  p.recolor(ox + ex, ey - 1, shade(p.get(ox + ex, ey - 1), 0.5)); // soft catchlight
 
   p.texture(scene, `fish-${fish.id}`);
   p.silhouette('#123640').texture(scene, `fishsil-${fish.id}`);
