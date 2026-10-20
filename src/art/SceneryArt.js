@@ -11,12 +11,23 @@ export const FALLS = { x: 6, top: HORIZON - 30, w: 8 }; // waterfall off the cli
 const lerp = (a, b, t) => a + (b - a) * t;
 
 // The pier runs in from the bottom-left corner on a slight diagonal and
-// narrows as it recedes over the water. Edges are in art pixels: `back` is
-// the lake-side edge, `front` the edge nearest the viewer.
-export const DOCK = { x0: -6, x1: 136, back0: AH - 36, back1: DOCK_AY - 10, front0: AH - 4, front1: DOCK_AY - 2 };
+// narrows as it recedes over the water. It is laid out along its near
+// (front) edge, parameter t from 0 at the shore end to 1 at the far end.
+// Planks run across it: each one starts on the front edge and rises up and
+// to the right to the back (lake-side) edge, as boards do when a pier is
+// seen from one side. All values are art pixels.
+export const DOCK = { x0: -34, x1: 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 38, w1: 8, slant: 0.8 };
+const front = (t) => ({ x: lerp(DOCK.x0, DOCK.x1, t), y: lerp(DOCK.y0, DOCK.y1, t) });
+const width = (t) => lerp(DOCK.w0, DOCK.w1, t);
+// where the plank that meets the front edge at t meets the back edge
+const backOf = (t) => ({ x: front(t).x + width(t) * DOCK.slant, y: front(t).y - width(t) });
+
+// The pier's edges at a given screen column.
 export function dockAt(x) {
-  const t = Math.max(0, Math.min(1, (x - DOCK.x0) / (DOCK.x1 - DOCK.x0)));
-  return { t, back: lerp(DOCK.back0, DOCK.back1, t), front: lerp(DOCK.front0, DOCK.front1, t) };
+  const span = DOCK.x1 - DOCK.x0;
+  const t = Math.max(0, Math.min(1, (x - DOCK.x0) / span));
+  const tb = Math.max(0, Math.min(1, (x - DOCK.x0 - DOCK.w0 * DOCK.slant) / (span + (DOCK.w1 - DOCK.w0) * DOCK.slant)));
+  return { t, front: front(t).y, back: backOf(tb).y };
 }
 // The angler sits at the lake-side edge near the far end, facing the water.
 export const PLAYER = { x: 108, y: Math.round(dockAt(108).back) + 3 };
@@ -539,66 +550,74 @@ function paintDock(scene) {
   // to a plank number.
   const plankAt = (t) => N * (1 - Math.pow(1 - t, 1 / 1.7));
   const tOfPlank = (i) => 1 - Math.pow(1 - i / N, 1.7);
+  const span = DOCK.x1 - DOCK.x0;
 
-  // posts under the near side, standing down into the water
-  for (let i = 1; i < N; i += 3) {
-    const t = tOfPlank(i);
-    const x = Math.round(lerp(DOCK.x0, DOCK.x1, t));
-    const { front } = dockAt(x);
-    const top = Math.round(front) + 2;
-    const pw = Math.max(2, Math.round(lerp(5, 2, t)));
-    const len = Math.round(lerp(20, 7, t));
-    const water = Math.round(len * 0.4);
-    for (let y = 0; y < len; y++) {
-      for (let k = 0; k < pw; k++) {
-        const c = tone(P.woodDark, k === pw - 1 ? 0.33 : k === 0 ? -0.66 : -0.2);
-        d.px(x + k, top + y, y > water ? mix(c, P.water4, 0.35 + (y - water) / len) : c);
-      }
-    }
-    d.hline(x - 1, x + pw, top + water, P.waterLine);
-  }
-
-  // deck and the beam along its near side
-  for (let x = DOCK.x0; x <= DOCK.x1; x++) {
-    const { t, back, front } = dockAt(x);
-    const y0 = Math.ceil(back);
-    const y1 = Math.floor(front);
-    for (let y = y0; y <= y1; y++) {
-      const v = (y - back) / Math.max(1, front - back);
-      const q = plankAt(Math.min(1, Math.max(0, t + (v - 0.5) * 0.03))); // planks lie at a slight slant
-      const idx = Math.floor(q);
-      const f = q - idx;
+  // deck: walk along the pier and across each plank, painting as we go
+  for (let i = 0; i <= span * 4; i++) {
+    const t = i / (span * 4);
+    const f0 = front(t);
+    const b0 = backOf(t);
+    const q = plankAt(t);
+    const idx = Math.floor(q);
+    const f = q - idx;
+    const steps = Math.ceil(width(t) * 3);
+    for (let j = 0; j <= steps; j++) {
+      const v = j / steps; // 0 at the front edge, 1 at the back edge
+      const x = Math.round(lerp(f0.x, b0.x, v));
+      const y = Math.round(lerp(f0.y, b0.y, v));
       let c;
       if (f < 0.1) c = P.woodGap;
       else {
         let k = f < 0.22 ? 0.66 : f > 0.88 ? -0.33 : 0;
-        if (y === y0) k += 0.33;
+        if (v > 0.93) k += 0.33; // the lake-side edge catches the light
         if (noise(idx, Math.floor(v * 6), 804) < 0.15) k -= 0.33; // weathered grain
         c = tone(idx % 3 === 1 ? P.woodAlt : P.wood, k);
-        if (f > 0.5 && f < 0.6 && (y === y0 + 1 || y === y1 - 1) && t < 0.35) c = P.nail;
       }
       d.px(x, y, c);
     }
-    // plank ends, then the side beam in shadow
+    // plank ends, then the side beam in shadow beneath the front edge
     const beam = Math.max(2, Math.round(lerp(4, 2, t)));
-    const endF = plankAt(t) % 1;
-    d.px(x, y1 + 1, endF < 0.1 ? P.woodGap : tone(P.wood, 0.33));
-    for (let i = 2; i <= beam; i++) d.px(x, y1 + i, tone(P.woodDark, -0.2 - i * 0.12));
+    const fx = Math.round(f0.x);
+    const fy = Math.round(f0.y);
+    d.px(fx, fy + 1, f < 0.1 ? P.woodGap : tone(P.wood, 0.33));
+    for (let k = 2; k <= beam; k++) d.px(fx, fy + k, tone(P.woodDark, -0.2 - k * 0.12));
   }
-  // the far end's cut face
-  const end = dockAt(DOCK.x1);
-  for (let y = Math.ceil(end.back); y <= Math.floor(end.front) + 2; y++) d.px(DOCK.x1 + 1, y, tone(P.woodDark, -0.5));
+
+  // Pilings hold the pier up along both edges, every few planks. Their tops
+  // stand a little proud of the deck. Along the front edge they run down
+  // past the beam into the water; along the back edge only the tops show.
+  const piling = (x, top, len, pw, submergeAt) => {
+    for (let y = 0; y < len; y++) {
+      for (let k = 0; k < pw; k++) {
+        let c = tone(P.woodDark, k === pw - 1 ? 0.33 : k === 0 ? -0.5 : 0);
+        if (y === 0) c = tone(P.wood, 0.66); // sawn top catching the light
+        if (submergeAt && y > submergeAt) c = mix(c, P.water4, 0.35 + (y - submergeAt) / len);
+        d.px(x + k, top + y, c);
+      }
+    }
+    if (submergeAt) d.hline(x - 1, x + pw, top + submergeAt, P.waterLine);
+  };
+  for (let i = 0; i <= N; i += 3) {
+    const t = Math.min(1, tOfPlank(i) + 0.01);
+    const pw = Math.max(2, Math.round(lerp(4, 2, t)));
+    const rise = Math.max(2, Math.round(lerp(3, 2, t)));
+    const b0 = backOf(t);
+    piling(Math.round(b0.x) - 1, Math.round(b0.y) - rise, rise + 1, pw, 0);
+    const f0 = front(t);
+    const len = Math.round(lerp(26, 10, t));
+    piling(Math.round(f0.x) - 1, Math.round(f0.y) - rise, len, pw, rise + Math.round(len * 0.45));
+  }
 
   // tackle box, bait bucket and camp mug beside the angler
   const tb = dockAt(82);
-  const tby = Math.round((tb.back + tb.front) / 2) - 1;
+  const tby = Math.round((tb.back + tb.front) / 2) - 2;
   for (let y = 0; y < 5; y++) for (let x = 0; x < 9; x++) d.px(78 + x, tby + y, tone(y < 2 ? P.tackleDark : P.tackle, (y === 2 ? 0.5 : 0) + (x > 6 ? 0.33 : x < 2 ? -0.33 : 0)));
   d.hline(81, 84, tby - 1, P.metal);
   d.px(82, tby + 3, '#ffe060');
-  const bk = dockAt(122);
-  const bky = Math.round(bk.back) - 2;
-  for (let y = 0; y < 6; y++) for (let x = y >> 2; x <= 5 - (y >> 2); x++) d.px(120 + x, bky + y, y === 0 ? P.enamel : tone(P.metal, (x - 2.5) * 0.25 + (y % 2 ? -0.33 : 0)));
-  d.hline(120, 125, bky - 2, P.metalDark);
+  const bk = dockAt(124);
+  const bky = Math.round(bk.back) - 1;
+  for (let y = 0; y < 6; y++) for (let x = y >> 2; x <= 5 - (y >> 2); x++) d.px(121 + x, bky + y, y === 0 ? P.enamel : tone(P.metal, (x - 2.5) * 0.25 + (y % 2 ? -0.33 : 0)));
+  d.hline(121, 126, bky - 2, P.metalDark);
   for (let y = 0; y < 4; y++) for (let x = 0; x < 3; x++) d.px(MUG.x + x, MUG.y - 4 + y, tone(P.mug, (x - 1) * 0.5));
   d.hline(MUG.x, MUG.x + 2, MUG.y - 4, P.enamel);
   d.px(MUG.x + 3, MUG.y - 3, P.mug);
@@ -606,9 +625,10 @@ function paintDock(scene) {
 
   // the pier's shadow on the water, then the pier over it
   const p = new Painter(AW, AH);
-  for (let x = Math.max(0, DOCK.x0); x <= DOCK.x1; x++) {
-    const { t, front } = dockAt(x);
-    for (let i = 0; i < Math.round(lerp(7, 3, t)); i++) p.px(x, Math.round(front) + 3 + i, P.water5, 0.3);
+  for (let i = 0; i <= span; i++) {
+    const t = i / span;
+    const f0 = front(t);
+    for (let k = 0; k < Math.round(lerp(8, 3, t)); k++) p.px(Math.round(f0.x) + k, Math.round(f0.y) + 4 + k, P.water5, 0.25);
   }
   for (let y = 0; y < AH; y++) for (let x = 0; x < AW; x++) if (d.alphaAt(x, y)) p.px(x, y, d.get(x, y));
   p.ellipse(PLAYER.x, PLAYER.y, 4, 1, P.ink, 0.3);
