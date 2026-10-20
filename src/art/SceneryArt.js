@@ -17,8 +17,10 @@ const lerp = (a, b, t) => a + (b - a) * t;
 // a slant. The upper edge faces the lake; the lower edge is where the side
 // beam and the pilings hang down into the water. All values are art pixels.
 export const DOCK = { x0: -34, x1: 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 38, w1: 8, slant: -0.8 };
+// After turning, the pier is raised so its beam and pilings sit fully on screen.
+const LIFT = 30;
 const CENTER = { x: (DOCK.x0 + DOCK.x1) / 2, y: (DOCK.y0 + DOCK.y1) / 2 };
-const turn = (p) => ({ x: 2 * CENTER.x - p.x, y: 2 * CENTER.y - p.y });
+const turn = (p) => ({ x: 2 * CENTER.x - p.x, y: 2 * CENTER.y - p.y - LIFT });
 const edgeA = (t) => ({ x: lerp(DOCK.x0, DOCK.x1, t), y: lerp(DOCK.y0, DOCK.y1, t) });
 const width = (t) => lerp(DOCK.w0, DOCK.w1, t);
 const edgeB = (t) => ({ x: edgeA(t).x + width(t) * DOCK.slant, y: edgeA(t).y - width(t) });
@@ -33,7 +35,7 @@ export function dockAt(x) {
   const span = DOCK.x1 - DOCK.x0;
   const t = Math.max(0, Math.min(1, (ox - DOCK.x0) / span));
   const tb = Math.max(0, Math.min(1, (ox - DOCK.x0 - DOCK.w0 * DOCK.slant) / (span + (DOCK.w1 - DOCK.w0) * DOCK.slant)));
-  return { t, back: 2 * CENTER.y - edgeA(t).y, front: 2 * CENTER.y - edgeB(tb).y };
+  return { t, back: 2 * CENTER.y - LIFT - edgeA(t).y, front: 2 * CENTER.y - LIFT - edgeB(tb).y };
 }
 // The angler sits on the lake-side edge near the wide end, facing the water.
 export const PLAYER = { x: 110, y: Math.round(dockAt(110).back) + 3 };
