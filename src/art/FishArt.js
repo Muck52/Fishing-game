@@ -159,15 +159,25 @@ export function paintFish(scene, fish) {
       const nz = Math.sqrt(Math.max(0, 1 - ny * ny));
       // pale bellies only dip one band into shadow, so they stay clean
       let k = Math.max(-0.34, band(-ny * 0.5 + nz * 0.75 - 0.5));
-      if (y === yt + Math.max(1, Math.round((yb - yt) * 0.2)) && u > 0.1 && u < 0.86) k = 0.67; // highlight stripe
+      if (k > 0) k += 0.17; // lit flank sits one step brighter than shade
+      else if (v > 0.55 && v < 0.8) k -= 0.17; // lower flank turns away from the light
+      // Sunlight glancing off the wet shoulder: a bright stripe with a
+      // softer glow beneath it where the body curves fullest.
+      const stripe = yt + Math.max(1, Math.round((yb - yt) * 0.2));
+      const glint = (y === stripe && u > 0.1 && u < 0.86) || (y === stripe + 1 && u > 0.22 && u < 0.62 && (x + y) % 2);
+      if (y === stripe && glint) k = u > 0.2 && u < 0.7 ? 1 : 0.83;
+      else if (glint) k = 0.5;
       if (u < 0.05 || u > 0.94) k -= 0.33;
 
       if (x > gx + 1 && v > 0.04 && v < 0.96) {
         // diamond net of scale edges
-        if (net && ((x + y) % (net + 1) === 0 || (x - y + 999) % (net + 1) === 0)) k -= 0.34 * (a.scaleStrength ?? 1);
+        if (net && !glint && ((x + y) % (net + 1) === 0 || (x - y + 999) % (net + 1) === 0)) k -= 0.34 * (a.scaleStrength ?? 1);
         if (a.lateral !== false && y === lateralY && x < L - 2) k = x % 2 ? 0.34 : -0.34;
       }
-      p.px(ox + x, y, shade(c, k));
+      // the glint reflects the pale morning sky, so it reads as light, not skin
+      const lit = shade(c, k);
+      const mid = y === stripe && u > 0.2 && u < 0.7;
+      p.px(ox + x, y, glint ? mix(lit, '#eef4f2', mid ? 0.55 : 0.3) : lit);
       isBody[y * p.w + ox + x] = 1;
     }
   }
