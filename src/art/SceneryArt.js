@@ -1,4 +1,4 @@
-import { Painter, dither, mix, mulberry32, shade, noise } from './Painter.js';
+import { Painter, mix, mulberry32, shade, noise } from './Painter.js';
 import { P } from './palette.js';
 import { AW, AH, HORIZON, DOCK_AY } from '../core/constants.js';
 
@@ -27,7 +27,8 @@ export function paintScenery(scene) {
   paintMist(scene, 'mist-water', AW, 5, 0.5, rng);
 }
 
-// Banded gradient with ordered dithering between each pair of colours.
+// Smooth vertical gradient, blended row by row with no dither, so large
+// areas of sky and water read as clean colour rather than a dot pattern.
 function vgradient(p, y0, y1, stops) {
   for (let y = y0; y < y1; y++) {
     const t = (y - y0) / Math.max(1, y1 - y0 - 1);
@@ -36,25 +37,32 @@ function vgradient(p, y0, y1, stops) {
     const [ta, ca] = stops[k];
     const [tb, cb] = stops[k + 1];
     const f = Math.min(1, Math.max(0, (t - ta) / (tb - ta)));
-    for (let x = 0; x < p.w; x++) p.px(x, y, dither(x, y, f) ? cb : ca);
+    const c = mix(ca, cb, f * f * (3 - 2 * f));
+    for (let x = 0; x < p.w; x++) p.px(x, y, c);
   }
 }
 
 function paintSky(scene) {
   const p = new Painter(AW, HORIZON);
   vgradient(p, 0, HORIZON, [[0, P.sky0], [0.3, P.sky1], [0.58, P.sky2], [0.8, P.sky3], [1, P.sky4]]);
-  // thin mare's-tail cirrus high up
-  for (let y = 6; y < 50; y++) {
-    for (let x = 0; x < AW; x++) {
-      const n = noise(Math.floor(x / 5), y, 41);
-      if (n > 0.93 && noise(x, y, 42) > 0.3) p.px(x, y, P.cloudLight, 0.25 + (n - 0.93) * 6);
+  // thin mare's-tail cirrus high up: long soft wisps that fade at the ends
+  for (let i = 0; i < 7; i++) {
+    const y0 = 8 + Math.floor(noise(i, 0, 41) * 40);
+    const x0 = Math.floor(noise(i, 1, 42) * AW);
+    const len = 25 + Math.floor(noise(i, 2, 43) * 40);
+    for (let k = 0; k < len; k++) {
+      const t = k / len;
+      const y = y0 + Math.round(Math.sin(t * 2.5 + i) * 1.5 - t * 3);
+      const a = Math.sin(Math.PI * t) * 0.3;
+      p.px((x0 + k) % AW, y, P.cloudLight, a);
+      p.px((x0 + k) % AW, y + 1, P.cloudLight, a * 0.4);
     }
   }
   p.texture(scene, 'sky');
 }
 
 // The sun is its own set of pieces so it can glow and throw light:
-// a disc, a corona in two dither phases, and four frames of light rays.
+// a disc, a corona in two slightly different sizes, and four frames of light rays.
 export const RAY_R = 70;
 function paintSun(scene) {
   const disc = new Painter(17, 17);
@@ -74,8 +82,9 @@ function paintSun(scene) {
     for (let y = 0; y < G; y++) {
       for (let x = 0; x < G; x++) {
         const d = Math.hypot(x - 20, y - 20);
-        const t = d < 12 ? 0.5 : d < 20 ? (0.45 * (20 - d)) / 8 : 0;
-        if (d >= 7 && dither(x + f, y + f * 2, t)) glow.px(f * G + x, y, d < 12 ? P.sunGlow : P.sunGlow2);
+        const reach = 19 + f; // the second frame glows a little wider
+        const t = d < 7 ? 0 : Math.max(0, 1 - (d - 7) / (reach - 7)) ** 1.6 * 0.6;
+        if (t > 0.01) glow.px(f * G + x, y, mix(P.sunGlow2, P.sunGlow, Math.min(1, t * 1.6)), t);
       }
     }
   }
@@ -98,7 +107,7 @@ function paintSun(scene) {
           const da = Math.abs(((ang - b.a - f * 0.045 + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
           if (da < b.w) I = Math.max(I, (1 - da / b.w) * Math.max(0, 1 - d / (RAY_R * b.len)));
         }
-        if (I > 0 && dither(x, y, I * 0.9)) rays.px(f * S + x, y, P.sunGlow);
+        if (I > 0.01) rays.px(f * S + x, y, P.sunGlow, I * 0.7);
       }
     }
   }
@@ -180,7 +189,7 @@ function paintMountains(scene, rng) {
       }
       if (depth === 0) k += 0.2;
       const haze = (y - (HORIZON - 24)) / 24;
-      p.px(x, y, haze > 0 && dither(x, y, haze) ? P.mist : shade(base, k));
+      p.px(x, y, haze > 0 ? mix(shade(base, k), P.mist, haze * 0.85) : shade(base, k));
     }
   }
   const near = ridge(rng, HORIZON, 10, 6, 20, 10, 30);
@@ -274,15 +283,7 @@ function paintWater(scene, rng, mountains, forest) {
   const p = new Painter(AW, h);
   // Water is painted smoothly, row by row, with no dither: from the peach
   // of the sky reflected at the far shore down to deep teal at your feet.
-  const stops = [[0, P.water0], [0.03, P.water1], [0.12, P.water2], [0.3, P.water3], [0.6, P.water4], [1, P.water5]];
-  for (let r = 0; r < h; r++) {
-    const t = r / (h - 1);
-    let k = 0;
-    while (k < stops.length - 2 && t > stops[k + 1][0]) k++;
-    const f = Math.min(1, Math.max(0, (t - stops[k][0]) / (stops[k + 1][0] - stops[k][0])));
-    const c = mix(stops[k][1], stops[k + 1][1], f * f * (3 - 2 * f));
-    for (let x = 0; x < AW; x++) p.px(x, r, c);
-  }
+  vgradient(p, 0, h, [[0, P.water0], [0.03, P.water1], [0.12, P.water2], [0.3, P.water3], [0.6, P.water4], [1, P.water5]]);
 
   // Soft swell: long, gently lighter and darker streaks that blend into the
   // water around them and stretch out as they come closer.
@@ -598,7 +599,7 @@ function paintCloud(scene, key, w, h, rng) {
   shaded.texture(scene, key);
 }
 
-// Soft dithered mist that tiles seamlessly left to right.
+// Soft mist that tiles seamlessly left to right.
 function paintMist(scene, key, w, h, density, rng) {
   const p = new Painter(w, h);
   const step = 12;
