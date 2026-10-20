@@ -1,6 +1,10 @@
 # Reel It In – Fishing Game (Mobile)
 
-A phone fishing game built with [Phaser 3](https://phaser.io).
+A cozy pixel-art fishing game for phones, built with [Phaser 3](https://phaser.io).
+
+It's late September on Loon Lake, a remote lake in the northern forest. Fog lifts off the water, the tamaracks have turned gold, and the wildlife goes about its morning: an eagle on a dead snag, a loon diving, a heron in the reeds, deer and moose at the far shore, geese heading south. Every catch goes into your field journal.
+
+All the art is drawn in code (no image files), so it stays sharp and tiny.
 
 ## How to play
 1. **Swipe up** to cast. A longer swipe casts farther, where rarer fish bite.
@@ -35,7 +39,9 @@ Then open http://localhost:8000 in a browser (use the phone-sized view in your b
 - `animations/` – casting, reeling, fish fighting, and so on
 
 ### `src/` – game code
-- `core/` – game loop, startup, global game state
+- `core/` – shared constants: screen layout, draw order, text styles
+- `art/` – the pixel painter plus all scenery, sprite, fish and interface art
+- `wildlife/` – the animals and their behavior
 - `scenes/` – main menu, fishing spot, shop, map, aquarium/collection screens
 - `player/` – player stats and controls
 - `fishing/` – casting, bobber, bite detection, hooking, reeling and line tension

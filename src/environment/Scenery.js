@@ -1,92 +1,120 @@
-import { W, H, WATER_Y, DOCK_Y } from '../core/constants.js';
+import { W, PX, AW, HORIZON, WATER_Y, DOCK_AY, DEPTH } from '../core/constants.js';
+import { SUN, MUG, DOG } from '../art/SceneryArt.js';
 
-// Lake at golden hour: sky, far shore, water and the wooden dock.
-export function drawScenery(scene) {
-  const g = scene.add.graphics();
+const layer = (scene, key, y, depth) => scene.add.image(0, y, key).setOrigin(0).setScale(PX).setDepth(depth);
 
-  // sky
-  g.fillGradientStyle(0x7fc4e8, 0x7fc4e8, 0xf6d6a0, 0xf6d6a0, 1);
-  g.fillRect(0, 0, W, WATER_Y);
-  g.fillStyle(0xfff1c1, 1);
-  g.fillCircle(540, 300, 70);
-  g.fillStyle(0xfff1c1, 0.25);
-  g.fillCircle(540, 300, 100);
+// Lays out the painted lake and keeps its weather and light moving.
+export class Scenery {
+  constructor(scene) {
+    this.scene = scene;
+    layer(scene, 'sky', 0, DEPTH.SKY);
+    layer(scene, 'mountains', 0, DEPTH.MOUNTAINS);
+    layer(scene, 'forest', 0, DEPTH.FOREST);
+    layer(scene, 'water', WATER_Y, DEPTH.WATER);
+    layer(scene, 'banks', 0, DEPTH.BANKS);
+    layer(scene, 'dock', 0, DEPTH.DOCK);
 
-  // far hills
-  g.fillStyle(0x6f9b78, 1);
-  g.fillPoints(hill(WATER_Y, 90, 0.008, 1.3), true);
-  g.fillStyle(0x4b7a5a, 1);
-  g.fillPoints(hill(WATER_Y, 55, 0.013, 4.1), true);
+    this.clouds = [
+      { key: 'cloud-0', y: 20, speed: 2.2 },
+      { key: 'cloud-1', y: 46, speed: 3.4 },
+      { key: 'cloud-2', y: 70, speed: 1.4 },
+    ].map((c) => {
+      const img = scene.add.image(Math.random() * W, c.y * PX, c.key).setOrigin(0).setScale(PX).setDepth(DEPTH.CLOUDS);
+      img.speed = c.speed * PX;
+      return img;
+    });
 
-  // pine trees along the shore
-  g.fillStyle(0x2f5a43, 1);
-  for (let i = 0; i < 16; i++) {
-    const x = 20 + i * 46 + ((i * 37) % 17);
-    const h = 40 + ((i * 53) % 35);
-    g.fillTriangle(x - h * 0.3, WATER_Y + 2, x + h * 0.3, WATER_Y + 2, x, WATER_Y - h);
+    // Steam fog lying along the far shore and drifting over the water.
+    this.mist = [
+      { key: 'mist-far', y: HORIZON - 9, depth: DEPTH.MIST_FAR, speed: -1.5, alpha: 0.7 },
+      { key: 'mist-water', y: HORIZON + 2, depth: DEPTH.MIST_NEAR, speed: 2.2, alpha: 0.55 },
+      { key: 'mist-water', y: HORIZON + 22, depth: DEPTH.MIST_NEAR, speed: -1.2, alpha: 0.35 },
+      { key: 'mist-water', y: HORIZON + 55, depth: DEPTH.MIST_NEAR, speed: 1.6, alpha: 0.2 },
+    ].map((m) => {
+      const t = scene.add.tileSprite(0, m.y * PX, AW, scene.textures.get(m.key).getSourceImage().height, m.key);
+      t.setOrigin(0).setScale(PX).setDepth(m.depth).setAlpha(m.alpha);
+      t.tilePositionX = Math.random() * AW;
+      t.speed = m.speed;
+      return t;
+    });
+
+    this.sparkles = [];
+    for (let i = 0; i < 12; i++) {
+      const s = scene.add.sprite(0, 0, 'sparkle', 0).setScale(PX).setDepth(DEPTH.WATER_LIFE);
+      this.placeSparkle(s);
+      s.on('animationcomplete', () => scene.time.delayedCall(Phaser.Math.Between(200, 2500), () => this.placeSparkle(s)));
+    }
+
+    // Cat's-paw ripples where the breeze touches the water.
+    for (let i = 0; i < 22; i++) {
+      const dash = scene.add.rectangle(0, 0, PX, PX, 0xdce8e2).setOrigin(0).setDepth(DEPTH.WATER_LIFE).setAlpha(0);
+      this.placeRipple(dash, Math.random() * 3000);
+    }
+
+    this.leaves = [];
+    for (let i = 0; i < 5; i++) {
+      const y = Phaser.Math.Between(HORIZON + 30, DOCK_AY - 30) * PX;
+      const leaf = scene.add.sprite(Math.random() * W, y, 'leaf', i % 3).setScale(PX).setDepth(DEPTH.WATER_LIFE);
+      leaf.baseY = y;
+      leaf.speed = (2 + Math.random() * 3) * PX;
+      leaf.phase = Math.random() * 6;
+      this.leaves.push(leaf);
+    }
+
+    this.dog = scene.add.sprite(DOG.x * PX, DOG.y * PX, 'dog', 0).setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.DOCK_LIFE);
+    this.nextWag = scene.time.now + 4000;
+    scene.add.sprite((MUG.x + 2) * PX, MUG.y * PX, 'steam').setOrigin(0.5, 1).setScale(PX).setAlpha(0.55).setDepth(DEPTH.DOCK_LIFE).play('steam-rise');
   }
 
-  // water
-  g.fillGradientStyle(0x4aa3c9, 0x4aa3c9, 0x0f4766, 0x0f4766, 1);
-  g.fillRect(0, WATER_Y, W, H - WATER_Y);
-  // sun glare on the water
-  g.fillStyle(0xfff1c1, 0.18);
-  for (let i = 0; i < 6; i++) {
-    g.fillRect(540 - 70 + i * 10, WATER_Y + 12 + i * 26, 140 - i * 20, 6);
+  // Glints appear where the low sun lights the water.
+  placeSparkle(s) {
+    const r = Phaser.Math.Between(2, 100);
+    const spread = 3 + r * 0.25;
+    s.setPosition(Math.round(SUN.x + (Math.random() - 0.5) * spread * 2) * PX, (HORIZON + r) * PX);
+    s.play('sparkle');
   }
 
-  addRipples(scene);
-  drawDock(scene);
-}
-
-function hill(baseY, height, freq, phase) {
-  const pts = [{ x: 0, y: baseY }];
-  for (let x = 0; x <= W; x += 24) {
-    const y = baseY - height * (0.55 + 0.45 * Math.sin(x * freq + phase));
-    pts.push({ x, y });
-  }
-  pts.push({ x: W, y: baseY });
-  return pts;
-}
-
-function addRipples(scene) {
-  for (let i = 0; i < 16; i++) {
-    const y = WATER_Y + 40 + Math.random() * (DOCK_Y - WATER_Y - 60);
-    const depth = (y - WATER_Y) / (DOCK_Y - WATER_Y);
-    const r = scene.add.rectangle(Math.random() * W, y, 30 + depth * 60, 3 + depth * 2, 0xffffff, 0.22);
-    scene.tweens.add({
-      targets: r,
-      x: r.x + 30 + Math.random() * 30,
-      alpha: 0.04,
-      duration: 2200 + Math.random() * 1800,
+  placeRipple(dash, delay) {
+    const row = Phaser.Math.Between(HORIZON + 8, DOCK_AY - 6);
+    const near = (row - HORIZON) / (DOCK_AY - HORIZON);
+    dash.setPosition(Phaser.Math.Between(0, AW - 8) * PX, row * PX);
+    dash.width = Math.round(2 + near * 8 + Math.random() * 3) * PX;
+    this.scene.tweens.add({
+      targets: dash,
+      alpha: 0.18 + near * 0.2,
+      x: dash.x + PX * 3,
+      delay,
+      duration: Phaser.Math.Between(1400, 2600),
       yoyo: true,
-      repeat: -1,
       ease: 'Sine.easeInOut',
+      onComplete: () => this.placeRipple(dash, Math.random() * 1500),
     });
   }
+
+  dogAlert(on) {
+    this.dog.stop();
+    this.dog.setFrame(on ? 2 : 0);
+  }
+
+  dogWag() {
+    this.dog.play('dog-wag');
+  }
+
+  update(time, dt) {
+    for (const c of this.clouds) {
+      c.x += c.speed * dt;
+      if (c.x > W) c.x = -c.width * PX;
+    }
+    for (const m of this.mist) m.tilePositionX += m.speed * dt;
+    for (const leaf of this.leaves) {
+      leaf.x += leaf.speed * dt;
+      leaf.y = leaf.baseY + Math.round(Math.sin(time / 900 + leaf.phase)) * PX;
+      if (leaf.x > W + 10) leaf.x = -10;
+    }
+    if (time > this.nextWag && this.dog.frame.name !== 2) {
+      this.dogWag();
+      this.nextWag = time + Phaser.Math.Between(7000, 15000);
+    }
+  }
 }
 
-function drawDock(scene) {
-  const g = scene.add.graphics();
-  // posts going into the water
-  g.fillStyle(0x4a2f17, 1);
-  g.fillRect(170, DOCK_Y - 10, 22, 70);
-  g.fillRect(528, DOCK_Y - 10, 22, 70);
-  // deck
-  g.fillStyle(0x9c6a3a, 1);
-  g.fillPoints([
-    { x: 160, y: DOCK_Y },
-    { x: 560, y: DOCK_Y },
-    { x: 640, y: H },
-    { x: 80, y: H },
-  ], true);
-  // planks
-  g.lineStyle(3, 0x6e4622, 1);
-  for (let i = 1; i < 6; i++) {
-    const t = i / 6;
-    const y = DOCK_Y + (H - DOCK_Y) * t;
-    g.lineBetween(160 - 80 * t, y, 560 + 80 * t, y);
-  }
-  g.fillStyle(0xb98450, 1);
-  g.fillRect(156, DOCK_Y - 8, 408, 12);
-}

@@ -1,10 +1,12 @@
-import { W, WATER_Y, DOCK_Y, STATE, clamp, lerp, depthScale, textStyle } from '../core/constants.js';
-import { drawScenery } from '../environment/Scenery.js';
-import { splash } from '../environment/Effects.js';
+import { W, PX, WATER_Y, DOCK_Y, DEPTH, STATE, clamp, lerp, pxScale, textStyle } from '../core/constants.js';
+import { Scenery } from '../environment/Scenery.js';
+import { splash, ripple } from '../environment/Effects.js';
+import { Wildlife } from '../wildlife/Wildlife.js';
 import { Player } from '../player/Player.js';
 import { Bobber } from '../fishing/Bobber.js';
 import { ReelFight } from '../fishing/ReelFight.js';
 import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
+import { strokePixels } from '../art/Painter.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
 import { Hud } from '../ui/Hud.js';
 import { CatchPopup } from '../ui/CatchPopup.js';
@@ -21,16 +23,18 @@ export class FishingScene extends Phaser.Scene {
   create() {
     this.save = new SaveManager();
 
-    drawScenery(this);
-    this.fishShadow = this.add.ellipse(0, 0, 110, 34, 0x061a28, 0.45).setVisible(false);
-    this.lineGfx = this.add.graphics();
+    this.scenery = new Scenery(this);
+    this.wildlife = new Wildlife(this, (text) => this.fieldNote(text));
+    this.fishShadow = this.add.image(0, 0, 'fishsil-bluegill').setAlpha(0.45).setDepth(DEPTH.WATER_LIFE).setVisible(false);
     this.player = new Player(this);
+    this.lineGfx = this.add.graphics().setDepth(DEPTH.LINE);
     this.bobber = new Bobber(this);
     this.hud = new Hud(this);
     this.hud.update(this.save.data);
-    this.meter = new TensionMeter(this, W - 62, 700);
+    this.meter = new TensionMeter(this, W - 60, 760);
     this.popup = new CatchPopup(this);
-    this.hint = this.add.text(W / 2, 400, '', textStyle(44)).setOrigin(0.5).setDepth(50);
+    this.hint = this.add.text(W / 2, 400, '', textStyle(42)).setOrigin(0.5).setDepth(DEPTH.UI);
+    this.note = this.add.text(W / 2, 128, '', textStyle(24, '#fbf3dc', { wordWrap: { width: W - 80 } })).setOrigin(0.5).setDepth(DEPTH.UI).setAlpha(0);
 
     this.input.on('pointerdown', this.onDown, this);
     this.input.on('pointerup', this.onUp, this);
@@ -38,7 +42,7 @@ export class FishingScene extends Phaser.Scene {
     this.resetToIdle();
   }
 
-  // ---- state changes -------------------------------------------------------
+  // ---- messages ------------------------------------------------------------
 
   setHint(text, fadeAfter = 0) {
     this.tweens.killTweensOf(this.hint);
@@ -46,16 +50,33 @@ export class FishingScene extends Phaser.Scene {
     if (fadeAfter) this.tweens.add({ targets: this.hint, alpha: 0, delay: fadeAfter, duration: 400 });
   }
 
+  // Quiet captions about the wildlife, held back while a fish is on.
+  fieldNote(text) {
+    if (this.state === STATE.REELING || this.state === STATE.BITE || this.state === STATE.RESULT) return;
+    this.tweens.killTweensOf(this.note);
+    this.note.setText(text).setAlpha(0);
+    this.tweens.chain({
+      targets: this.note,
+      tweens: [
+        { alpha: 1, duration: 700 },
+        { alpha: 1, duration: 4200 },
+        { alpha: 0, duration: 900 },
+      ],
+    });
+  }
+
+  // ---- state changes -------------------------------------------------------
+
   resetToIdle() {
     this.state = STATE.IDLE;
     this.fight = null;
     this.fish = null;
     this.bobber.show(false);
-    this.bobber.inWater = false;
-    this.bobber.dip = 0;
+    this.bobber.mode = 'flight';
     this.fishShadow.setVisible(false);
     this.meter.show(false);
     this.player.setBend(0);
+    this.scenery.dogAlert(false);
     this.setHint('Swipe up to cast');
   }
 
@@ -72,8 +93,8 @@ export class FishingScene extends Phaser.Scene {
 
     this.player.swing(() => {
       const from = this.player.tip;
+      this.bobber.mode = 'flight';
       this.bobber.show(true);
-      this.bobber.inWater = false;
       const arc = 160 + power * 260;
       this.tweens.addCounter({
         from: 0,
@@ -85,7 +106,7 @@ export class FishingScene extends Phaser.Scene {
         },
         onComplete: () => {
           this.bobber.place(land.x, land.y);
-          this.bobber.inWater = true;
+          this.bobber.mode = 'float';
           splash(this, land.x, land.y);
           this.startWaiting();
         },
@@ -111,9 +132,10 @@ export class FishingScene extends Phaser.Scene {
   bite() {
     this.state = STATE.BITE;
     this.biteUntil = this.time.now + 1050 - this.fish.strength * 350;
-    this.bobber.dip = 26;
+    this.bobber.mode = 'under';
     this.bobber.alert.setVisible(true);
     splash(this, this.bobber.x, this.bobber.y, 0.6);
+    this.scenery.dogAlert(true);
     this.setHint('TAP!');
     try {
       navigator.vibrate?.(80);
@@ -128,8 +150,8 @@ export class FishingScene extends Phaser.Scene {
     this.weight = rollWeight(this.fish);
     this.fight = new ReelFight(this.fish, 40 + this.castPower * 60);
     this.meter.show(true);
-    this.fishShadow.setVisible(true);
-    this.setHint('Hold to reel!\nLet go if the line gets too tight', 2200);
+    this.fishShadow.setTexture(`fishsil-${this.fish.id}`).setVisible(true);
+    this.setHint('Hold to reel!\nLet go when the line pulls tight', 2200);
   }
 
   lose(message) {
@@ -138,8 +160,9 @@ export class FishingScene extends Phaser.Scene {
     this.meter.show(false);
     this.fishShadow.setVisible(false);
     this.player.setBend(0);
+    this.scenery.dogAlert(false);
     this.setHint(message);
-    this.time.delayedCall(1500, () => this.resetToIdle());
+    this.time.delayedCall(1600, () => this.resetToIdle());
   }
 
   land() {
@@ -150,11 +173,13 @@ export class FishingScene extends Phaser.Scene {
     splash(this, this.bobber.x, this.bobber.y, 1.4);
     this.bobber.show(false);
     this.setHint('');
+    this.scenery.dogAlert(false);
+    this.scenery.dogWag();
 
     const value = catchValue(this.fish, this.weight);
     const { isNew, isRecord } = this.save.recordCatch(this.fish, this.weight, value);
     this.hud.update(this.save.data);
-    this.popup.show({ fish: this.fish, weight: this.weight, value, isNew, isRecord });
+    this.popup.show({ fish: this.fish, weight: this.weight, value, isNew, isRecord, entry: this.save.data.totalCatches });
   }
 
   // ---- input ---------------------------------------------------------------
@@ -166,7 +191,8 @@ export class FishingScene extends Phaser.Scene {
       this.hook();
     } else if (this.state === STATE.WAITING) {
       if (this.time.now < this.nibbleUntil) {
-        this.lose('Too early! You scared it off.');
+        this.bobber.show(false);
+        this.lose('Too early! You spooked it.');
       } else {
         this.setHint('Wait for the bobber to go under', 1500);
       }
@@ -183,7 +209,7 @@ export class FishingScene extends Phaser.Scene {
     if (dy > MIN_SWIPE) {
       this.cast(clamp(dy / 650, 0.15, 1), dx);
     } else {
-      this.setHint('Swipe UP to cast\nLonger swipe = farther cast');
+      this.setHint('Swipe UP to cast\nLonger swipe, farther cast');
     }
     this.downAt = null;
   }
@@ -192,18 +218,22 @@ export class FishingScene extends Phaser.Scene {
 
   update(time, delta) {
     const dt = Math.min(delta, 50) / 1000;
+    this.scenery.update(time, dt);
+    this.wildlife.update(time, dt);
 
     if (this.state === STATE.WAITING) {
       if (this.nibbleTimes.length && time >= this.nibbleTimes[0]) {
         this.nibbleTimes.shift();
         this.nibbleUntil = time + 320;
-        this.bobber.inWater && splash(this, this.bobber.x, this.bobber.y, 0.3);
+        ripple(this, this.bobber.x, this.bobber.y);
       }
-      this.bobber.dip = time < this.nibbleUntil ? 9 : 0;
+      this.bobber.mode = time < this.nibbleUntil ? 'nibble' : 'float';
       if (time >= this.biteAt) this.bite();
     } else if (this.state === STATE.BITE) {
-      this.bobber.dip = 26 + Math.sin(time / 40) * 4;
-      if (time > this.biteUntil) this.lose('It got away...');
+      if (time > this.biteUntil) {
+        this.bobber.show(false);
+        this.lose('It got away...');
+      }
     } else if (this.state === STATE.REELING) {
       this.updateFight(time, dt);
     }
@@ -224,12 +254,13 @@ export class FishingScene extends Phaser.Scene {
     const wobble = Math.sin(time / 260) * 40 * f.strength + (f.surging ? (Math.random() - 0.5) * 14 : 0);
     const x = clamp(lerp(NEAR_POINT.x, this.landing.x, t) + wobble, 60, W - 140);
     const y = clamp(lerp(NEAR_POINT.y, this.landing.y, t), WATER_Y + 25, DOCK_Y - 40);
+    const prevX = this.bobber.x;
     this.bobber.place(x, y);
-    this.bobber.dip = 12 + f.pull * 10;
+    this.bobber.mode = f.pull > 0.6 ? 'nibble' : 'float';
 
-    const s = depthScale(y);
-    this.fishShadow.setPosition(x + Math.sin(time / 180) * 10, y + 30 * s).setScale(s);
-    this.fishShadow.rotation = Math.sin(time / 300) * 0.3;
+    const s = pxScale(y);
+    this.fishShadow.setPosition(x + Math.sin(time / 180) * 6, y + 8 * s).setScale(s - 1 || 1);
+    this.fishShadow.setFlipX(x > prevX);
 
     this.player.setBend(f.tension / 100);
     this.meter.update(f.tension, f.distance);
@@ -241,16 +272,16 @@ export class FishingScene extends Phaser.Scene {
       this.lose('SNAP! The line broke.');
     } else if (result === 'escaped') {
       this.bobber.show(false);
-      this.lose('It swam away with your line out.');
+      this.lose('It ran off with all your line.');
     }
   }
 
   drawLine() {
     this.lineGfx.clear();
-    if (!this.bobber.container.visible) return;
+    if (!this.bobber.visible) return;
 
     const tip = this.player.tip;
-    const end = { x: this.bobber.x, y: this.bobber.y + this.bobber.dip - 16 * depthScale(this.bobber.y) };
+    const end = this.bobber.top;
     const tension = this.fight ? this.fight.tension / 100 : 0;
     const sag = this.state === STATE.CASTING ? 10 : (1 - tension) * 70;
     const curve = new Phaser.Curves.QuadraticBezier(
@@ -259,12 +290,11 @@ export class FishingScene extends Phaser.Scene {
       new Phaser.Math.Vector2(end.x, end.y),
     );
     const color = Phaser.Display.Color.Interpolate.ColorWithColor(
-      Phaser.Display.Color.ValueToColor(0xf2f2f2),
-      Phaser.Display.Color.ValueToColor(0xff5a4f),
+      Phaser.Display.Color.ValueToColor(0xeef3f0),
+      Phaser.Display.Color.ValueToColor(0xff6a55),
       100,
       Math.round(tension * 100),
     );
-    this.lineGfx.lineStyle(3, Phaser.Display.Color.GetColor(color.r, color.g, color.b), 0.9);
-    this.lineGfx.strokePoints(curve.getPoints(20));
+    strokePixels(this.lineGfx, curve.getPoints(30), Phaser.Display.Color.GetColor(color.r, color.g, color.b), 0.85, PX);
   }
 }

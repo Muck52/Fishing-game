@@ -1,27 +1,25 @@
-import { W, FONT_BODY } from '../core/constants.js';
+import { W, PX, DEPTH, inkStyle } from '../core/constants.js';
 import { FISH } from '../../data/fish/fish.js';
 
-const STYLE = { fontFamily: FONT_BODY, fontStyle: '800', fontSize: '30px', color: '#ffffff' };
+const TOP = 18;
+const STYLE = inkStyle(32, '#fbf3dc', { shadow: { offsetX: 0, offsetY: 3, color: '#36210f', blur: 0, fill: true } });
 
+// Two wooden signboards: coins on the left, species found on the right.
 export class Hud {
   constructor(scene) {
-    const bar = scene.add.graphics();
-    bar.fillStyle(0x0b2a3f, 0.55);
-    bar.fillRoundedRect(20, 24, 230, 64, 32);
-    bar.fillRoundedRect(W - 270, 24, 250, 64, 32);
-    // coin icon
-    bar.fillStyle(0xf2c230, 1);
-    bar.fillCircle(56, 56, 18);
-    bar.lineStyle(3, 0xb8860b, 1);
-    bar.strokeCircle(56, 56, 12);
+    const add = (o) => o.setDepth(DEPTH.UI);
+    add(scene.add.image(18, TOP, 'panel-hud-l').setOrigin(0).setScale(PX));
+    add(scene.add.image(18 + 6 * PX, TOP + 5 * PX, 'coin').setOrigin(0).setScale(PX));
+    this.coins = add(scene.add.text(18 + 21 * PX, TOP + 10 * PX, '', STYLE).setOrigin(0, 0.5));
 
-    this.coins = scene.add.text(86, 56, '', STYLE).setOrigin(0, 0.5);
-    this.species = scene.add.text(W - 145, 56, '', STYLE).setOrigin(0.5);
+    const rx = W - 18 - 86 * PX;
+    add(scene.add.image(rx, TOP, 'panel-hud-r').setOrigin(0).setScale(PX));
+    add(scene.add.image(rx + 6 * PX, TOP + 6 * PX, 'fish-icon').setOrigin(0).setScale(PX));
+    this.species = add(scene.add.text(rx + 22 * PX, TOP + 10 * PX, '', STYLE).setOrigin(0, 0.5));
   }
 
   update(save) {
     this.coins.setText(String(save.coins));
-    const found = Object.keys(save.species).length;
-    this.species.setText(`Species ${found}/${FISH.length}`);
+    this.species.setText(`${Object.keys(save.species).length} / ${FISH.length}`);
   }
 }
