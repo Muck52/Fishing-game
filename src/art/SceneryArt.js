@@ -13,6 +13,8 @@ const grain = (x, y, seed, amount) => (noise(x, y, seed) - 0.5) * 2 * amount;
 export function paintScenery(scene) {
   const rng = mulberry32(20260920);
   paintSky(scene);
+  paintSun(scene);
+  paintWaves(scene, mulberry32(77));
   const mountains = paintMountains(scene, rng);
   const forest = paintForest(scene, rng);
   paintWater(scene, rng, mountains, forest);
@@ -48,16 +50,98 @@ function paintSky(scene) {
       if (n > 0.93 && noise(x, y, 42) > 0.3) p.px(x, y, P.cloudLight, 0.25 + (n - 0.93) * 6);
     }
   }
-  for (let y = SUN.y - 20; y <= SUN.y + 20; y++) {
-    for (let x = SUN.x - 20; x <= SUN.x + 20; x++) {
-      const d = Math.hypot(x - SUN.x, y - SUN.y);
-      if (d < 6) p.px(x, y, d < 4 ? '#fffaea' : P.sun);
-      else if (d < 8) p.px(x, y, P.sunGlow);
-      else if (d < 12) dither(x, y, 0.5) && p.px(x, y, P.sunGlow);
-      else if (d < 19) dither(x, y, (0.45 * (19 - d)) / 7) && p.px(x, y, P.sunGlow2);
+  p.texture(scene, 'sky');
+}
+
+// The sun is its own set of pieces so it can glow and throw light:
+// a disc, a corona in two dither phases, and four frames of light rays.
+export const RAY_R = 70;
+function paintSun(scene) {
+  const disc = new Painter(17, 17);
+  for (let y = 0; y < 17; y++) {
+    for (let x = 0; x < 17; x++) {
+      const d = Math.hypot(x - 8, y - 8);
+      if (d < 4) disc.px(x, y, '#fffaea');
+      else if (d < 6) disc.px(x, y, P.sun);
+      else if (d < 8) disc.px(x, y, P.sunGlow);
     }
   }
-  p.texture(scene, 'sky');
+  disc.texture(scene, 'sun');
+
+  const G = 41;
+  const glow = new Painter(G * 2, G);
+  for (let f = 0; f < 2; f++) {
+    for (let y = 0; y < G; y++) {
+      for (let x = 0; x < G; x++) {
+        const d = Math.hypot(x - 20, y - 20);
+        const t = d < 12 ? 0.5 : d < 20 ? (0.45 * (20 - d)) / 8 : 0;
+        if (d >= 7 && dither(x + f, y + f * 2, t)) glow.px(f * G + x, y, d < 12 ? P.sunGlow : P.sunGlow2);
+      }
+    }
+  }
+  const glowTex = glow.texture(scene, 'sun-glow');
+  for (let f = 0; f < 2; f++) glowTex.add(f, 0, f * G, 0, G, G);
+
+  const S = RAY_R * 2 + 1;
+  const rays = new Painter(S * 4, S);
+  const beams = Array.from({ length: 11 }, (_, i) => ({ a: (i / 11) * Math.PI * 2 + (noise(i, 0, 900) - 0.5) * 0.4, w: 0.04 + noise(i, 1, 901) * 0.05, len: 0.6 + noise(i, 2, 902) * 0.4 }));
+  for (let f = 0; f < 4; f++) {
+    for (let y = 0; y < S; y++) {
+      for (let x = 0; x < S; x++) {
+        const dx = x - RAY_R;
+        const dy = y - RAY_R;
+        const d = Math.hypot(dx, dy);
+        if (d < 9 || d > RAY_R) continue;
+        const ang = Math.atan2(dy, dx);
+        let I = 0;
+        for (const b of beams) {
+          const da = Math.abs(((ang - b.a - f * 0.045 + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+          if (da < b.w) I = Math.max(I, (1 - da / b.w) * Math.max(0, 1 - d / (RAY_R * b.len)));
+        }
+        if (I > 0 && dither(x, y, I * 0.9)) rays.px(f * S + x, y, P.sunGlow);
+      }
+    }
+  }
+  const rayTex = rays.texture(scene, 'sun-rays');
+  for (let f = 0; f < 4; f++) rayTex.add(f, 0, f * S, 0, S, S);
+}
+
+// Wave crests in four bands, more widely spaced and longer as they come
+// closer. Each band tiles left to right so it can scroll with the wind.
+export const WAVE_BANDS = [
+  { y0: HORIZON + 3, y1: HORIZON + 22, gap: 3, len: [1, 3], alpha: 0.6 },
+  { y0: HORIZON + 22, y1: HORIZON + 50, gap: 4, len: [2, 5], alpha: 0.75 },
+  { y0: HORIZON + 50, y1: HORIZON + 95, gap: 5, len: [3, 7], alpha: 0.9 },
+  { y0: HORIZON + 95, y1: DOCK_AY + 12, gap: 6, len: [4, 10], alpha: 1 },
+];
+function paintWaves(scene, rng) {
+  WAVE_BANDS.forEach((b, i) => {
+    const h = b.y1 - b.y0;
+    const p = new Painter(AW, h);
+    for (let y = 1; y < h - 1; y += b.gap) {
+      const row = y + Math.floor(rng() * 2);
+      for (let n = 0; n < AW / (b.len[1] * 3); n++) {
+        const x0 = Math.floor(rng() * AW);
+        const len = b.len[0] + Math.floor(rng() * (b.len[1] - b.len[0] + 1));
+        for (let k = 0; k < len; k++) {
+          const x = (x0 + k) % AW;
+          p.px(x, row, P.waterLine, k === 0 || k === len - 1 ? 0.5 : 0.85);
+          if (k > 0 && k < len - 1) p.px(x, row + 1, P.water5, 0.45);
+        }
+      }
+    }
+    p.texture(scene, `waves-${i}`);
+  });
+
+  // A dark patch of ruffled water that runs ahead of a gust.
+  const g = new Painter(60, 16);
+  for (let y = 0; y < 16; y++) {
+    for (let x = 0; x < 60; x++) {
+      const e = ((x - 30) / 30) ** 2 + ((y - 8) / 8) ** 2;
+      if (e < 1 && dither(x, y, (1 - e) * 0.7)) g.px(x, y, (x + y) % 3 ? P.water5 : P.water3);
+    }
+  }
+  g.texture(scene, 'gust');
 }
 
 function ridge(rng, base, count, minH, maxH, minW, maxW) {
@@ -299,6 +383,7 @@ function lilyPads(p, rng, cx, cy, n, flower) {
 }
 
 function paintBanks(scene, rng) {
+  REEDS.length = 0;
   const p = new Painter(AW, AH);
   const yTop = AH - 112;
   const edgeAt = (y) => Math.round(4 + (y - yTop) * 0.34 + Math.sin(y * 0.33) * 1.5);
@@ -321,7 +406,7 @@ function paintBanks(scene, rng) {
   for (let i = 0; i < 16; i++) {
     const by = yTop + 5 + Math.floor(rng() * 105);
     if (by >= AH) continue;
-    reed(p, edgeAt(by) - Math.floor(rng() * 4), by, 14 + Math.floor(rng() * 19), (rng() - 0.3) * 5, rng() < 0.5, i);
+    REEDS.push(reed(edgeAt(by) - Math.floor(rng() * 4), by, 14 + Math.floor(rng() * 19), (rng() - 0.3) * 5, rng() < 0.5, i));
   }
   grassTufts(p, rng, 0, yTop, 30, AH - yTop, 26);
 
@@ -330,27 +415,26 @@ function paintBanks(scene, rng) {
     boulder(p, cx, cy, rx, ry);
   }
   for (let i = 0; i < 6; i++) {
-    reed(p, 160 + Math.floor(rng() * 16), AH - 75 + Math.floor(rng() * 30), 11 + Math.floor(rng() * 10), (rng() - 0.6) * 4, rng() < 0.3, i + 40);
+    REEDS.push(reed(160 + Math.floor(rng() * 16), AH - 75 + Math.floor(rng() * 30), 11 + Math.floor(rng() * 10), (rng() - 0.6) * 4, rng() < 0.3, i + 40));
   }
   grassTufts(p, rng, 154, AH - 72, 26, 68, 12);
   p.texture(scene, 'banks');
 }
 
-function reed(p, bx, by, h, lean, cattail, seed) {
+// Reeds and cattails are drawn live (see environment/Reeds.js) so they can
+// bend in the wind. Each one keeps its shape and its colours here.
+export const REEDS = [];
+const hex = ([r, g, b]) => (r << 16) | (g << 8) | b;
+function reed(bx, by, h, lean, cattail, seed) {
+  const stalk = [];
   for (let k = 0; k < h; k++) {
-    const t = k / h;
     const base = noise(k, seed, 600) < 0.25 ? P.grassGold : P.reed;
-    p.px(bx + Math.round(lean * t * t), by - k, shade(base, (t - 0.5) * 0.4 + grain(k, seed, 601, 0.2)));
+    stalk.push(hex(shade(base, (k / h - 0.5) * 0.4 + grain(k, seed, 601, 0.2))));
   }
-  if (cattail) {
-    const x = bx + Math.round(lean * 0.64);
-    const top = by - Math.round(h * 0.8);
-    for (let y = top - 4; y <= top; y++) {
-      p.px(x, y, shade(P.cattail, -0.2 + grain(x, y, 602, 0.15)));
-      p.px(x + 1, y, shade(P.cattail, 0.3 + grain(x + 1, y, 602, 0.15)));
-    }
-    p.px(x, top - 5, shade(P.reed, 0.2));
-  }
+  const head = cattail
+    ? Array.from({ length: 5 }, (_, i) => [hex(shade(P.cattail, -0.2 + grain(i, seed, 602, 0.15))), hex(shade(P.cattail, 0.3 + grain(i, seed, 603, 0.15)))])
+    : null;
+  return { bx, by, h, lean, stalk, head, tip: hex(shade(P.reed, 0.2)), phase: noise(seed, 0, 604) * 6, give: 0.7 + noise(seed, 1, 605) * 0.6 };
 }
 
 function fern(p, x, y) {

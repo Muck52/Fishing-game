@@ -284,9 +284,10 @@ export class FishingScene extends Phaser.Scene {
     const end = this.bobber.top;
     const tension = this.fight ? this.fight.tension / 100 : 0;
     const sag = this.state === STATE.CASTING ? 10 : (1 - tension) * 70;
+    const bow = this.scenery.wind.sway(0) * 40 * (1 - tension); // slack line bellies downwind
     const curve = new Phaser.Curves.QuadraticBezier(
       new Phaser.Math.Vector2(tip.x, tip.y),
-      new Phaser.Math.Vector2((tip.x + end.x) / 2, (tip.y + end.y) / 2 + sag),
+      new Phaser.Math.Vector2((tip.x + end.x) / 2 + bow, (tip.y + end.y) / 2 + sag),
       new Phaser.Math.Vector2(end.x, end.y),
     );
     const color = Phaser.Display.Color.Interpolate.ColorWithColor(

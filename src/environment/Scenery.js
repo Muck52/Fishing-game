@@ -1,5 +1,9 @@
 import { W, PX, AW, HORIZON, WATER_Y, DOCK_AY, DEPTH } from '../core/constants.js';
 import { SUN, MUG, DOG } from '../art/SceneryArt.js';
+import { Wind } from './Wind.js';
+import { Waves } from './Waves.js';
+import { Sun } from './Sun.js';
+import { Reeds } from './Reeds.js';
 
 const layer = (scene, key, y, depth) => scene.add.image(0, y, key).setOrigin(0).setScale(PX).setDepth(depth);
 
@@ -14,10 +18,19 @@ export class Scenery {
     layer(scene, 'banks', 0, DEPTH.BANKS);
     layer(scene, 'dock', 0, DEPTH.DOCK);
 
+    this.wind = new Wind();
+    this.sun = new Sun(scene);
+    this.waves = new Waves(scene, this.wind);
+    this.reeds = new Reeds(scene, this.wind);
+    this.wind.onGust = (g) => {
+      this.waves.gustPatch(g);
+      this.blowLeaves(g);
+    };
+
     this.clouds = [
       { key: 'cloud-0', y: 15, speed: 1.6 },
       { key: 'cloud-1', y: 35, speed: 2.5 },
-      { key: 'cloud-2', y: 52, speed: 1.0 },
+      { key: 'cloud-2', y: 78, speed: 1.0 }, // low enough to drift across the sun
     ].map((c) => {
       const img = scene.add.image(Math.random() * W, c.y * PX, c.key).setOrigin(0).setScale(PX).setDepth(DEPTH.CLOUDS);
       img.speed = c.speed * PX;
@@ -45,12 +58,6 @@ export class Scenery {
       s.on('animationcomplete', () => scene.time.delayedCall(Phaser.Math.Between(200, 2500), () => this.placeSparkle(s)));
     }
 
-    // Cat's-paw ripples where the breeze touches the water.
-    for (let i = 0; i < 22; i++) {
-      const dash = scene.add.rectangle(0, 0, PX, PX, 0xdce8e2).setOrigin(0).setDepth(DEPTH.WATER_LIFE).setAlpha(0);
-      this.placeRipple(dash, Math.random() * 3000);
-    }
-
     this.leaves = [];
     for (let i = 0; i < 5; i++) {
       const y = Phaser.Math.Between(HORIZON + 22, DOCK_AY - 22) * PX;
@@ -74,21 +81,32 @@ export class Scenery {
     s.play('sparkle');
   }
 
-  placeRipple(dash, delay) {
-    const row = Phaser.Math.Between(HORIZON + 8, DOCK_AY - 6);
-    const near = (row - HORIZON) / (DOCK_AY - HORIZON);
-    dash.setPosition(Phaser.Math.Between(0, AW - 8) * PX, row * PX);
-    dash.width = Math.round(2 + near * 6 + Math.random() * 2) * PX;
-    this.scene.tweens.add({
-      targets: dash,
-      alpha: 0.18 + near * 0.2,
-      x: dash.x + PX * 2,
-      delay,
-      duration: Phaser.Math.Between(1400, 2600),
-      yoyo: true,
-      ease: 'Sine.easeInOut',
-      onComplete: () => this.placeRipple(dash, Math.random() * 1500),
-    });
+  // A gust strips leaves from the aspens and tamaracks and carries them out
+  // over the lake, tumbling, until they settle on the water.
+  blowLeaves(g) {
+    const s = this.scene;
+    const n = Math.round(3 + g.power * 8);
+    for (let i = 0; i < n; i++) {
+      const leaf = s.add.sprite(Phaser.Math.Between(-20, W * 0.6), Phaser.Math.Between(HORIZON - 30, HORIZON - 4) * PX, 'leaf', i % 3).setScale(PX).setDepth(DEPTH.MIST_NEAR + 0.5);
+      const landY = Phaser.Math.Between(HORIZON + 10, DOCK_AY - 10) * PX;
+      const startY = leaf.y;
+      const phase = Math.random() * 6;
+      s.tweens.addCounter({
+        from: 0,
+        to: 1,
+        delay: i * 180,
+        duration: Phaser.Math.Between(3000, 5000),
+        onUpdate: (tw) => {
+          const t = tw.getValue();
+          leaf.x += (60 + this.wind.strength * 140) * (1 / 60);
+          leaf.y = startY + (landY - startY) * t + Math.sin(t * 12 + phase) * 4 * PX;
+          leaf.setFlipX(Math.sin(t * 20 + phase) > 0).setFlipY(Math.sin(t * 13 + phase) > 0.6);
+        },
+        onComplete: () => {
+          s.tweens.add({ targets: leaf, alpha: 0, duration: 2500, onComplete: () => leaf.destroy() });
+        },
+      });
+    }
   }
 
   dogAlert(on) {
@@ -101,13 +119,18 @@ export class Scenery {
   }
 
   update(time, dt) {
+    this.wind.update(dt);
+    const w = this.wind.strength;
+    this.sun.update(time, dt, this.clouds);
+    this.waves.update(time, dt);
+    this.reeds.update();
     for (const c of this.clouds) {
-      c.x += c.speed * dt;
+      c.x += c.speed * (0.4 + w * 1.4) * dt;
       if (c.x > W) c.x = -c.width * PX;
     }
-    for (const m of this.mist) m.tilePositionX += m.speed * dt;
+    for (const m of this.mist) m.tilePositionX += m.speed * (0.5 + w * 1.2) * dt;
     for (const leaf of this.leaves) {
-      leaf.x += leaf.speed * dt;
+      leaf.x += leaf.speed * (0.4 + w * 1.5) * dt;
       leaf.y = leaf.baseY + Math.round(Math.sin(time / 900 + leaf.phase)) * PX;
       if (leaf.x > W + 10) leaf.x = -10;
     }
