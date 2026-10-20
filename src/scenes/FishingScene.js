@@ -31,7 +31,7 @@ export class FishingScene extends Phaser.Scene {
     this.bobber = new Bobber(this);
     this.hud = new Hud(this);
     this.hud.update(this.save.data);
-    this.meter = new TensionMeter(this, W - 60, 760);
+    this.meter = new TensionMeter(this, W - 52, 760);
     this.popup = new CatchPopup(this);
     this.hint = this.add.text(W / 2, 400, '', textStyle(42)).setOrigin(0.5).setDepth(DEPTH.UI);
     this.note = this.add.text(W / 2, 128, '', textStyle(24, '#fbf3dc', { wordWrap: { width: W - 80 } })).setOrigin(0.5).setDepth(DEPTH.UI).setAlpha(0);
@@ -259,7 +259,7 @@ export class FishingScene extends Phaser.Scene {
     this.bobber.mode = f.pull > 0.6 ? 'nibble' : 'float';
 
     const s = pxScale(y);
-    this.fishShadow.setPosition(x + Math.sin(time / 180) * 6, y + 8 * s).setScale(s - 1 || 1);
+    this.fishShadow.setPosition(x + Math.sin(time / 180) * 6, y + 8 * s).setScale(Math.max(1, s - 2));
     this.fishShadow.setFlipX(x > prevX);
 
     this.player.setBend(f.tension / 100);

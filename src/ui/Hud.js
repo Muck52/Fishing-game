@@ -9,13 +9,13 @@ export class Hud {
   constructor(scene) {
     const add = (o) => o.setDepth(DEPTH.UI);
     add(scene.add.image(18, TOP, 'panel-hud-l').setOrigin(0).setScale(PX));
-    add(scene.add.image(18 + 6 * PX, TOP + 5 * PX, 'coin').setOrigin(0).setScale(PX));
-    this.coins = add(scene.add.text(18 + 21 * PX, TOP + 10 * PX, '', STYLE).setOrigin(0, 0.5));
+    add(scene.add.image(18 + 4 * PX, TOP + 3 * PX, 'coin').setOrigin(0).setScale(PX));
+    this.coins = add(scene.add.text(18 + 16 * PX, TOP + 7.5 * PX, '', STYLE).setOrigin(0, 0.5));
 
-    const rx = W - 18 - 86 * PX;
+    const rx = W - 18 - 64 * PX;
     add(scene.add.image(rx, TOP, 'panel-hud-r').setOrigin(0).setScale(PX));
-    add(scene.add.image(rx + 6 * PX, TOP + 6 * PX, 'fish-icon').setOrigin(0).setScale(PX));
-    this.species = add(scene.add.text(rx + 22 * PX, TOP + 10 * PX, '', STYLE).setOrigin(0, 0.5));
+    add(scene.add.image(rx + 4 * PX, TOP + 4 * PX, 'fish-icon').setOrigin(0).setScale(PX));
+    this.species = add(scene.add.text(rx + 19 * PX, TOP + 7.5 * PX, '', STYLE).setOrigin(0, 0.5));
   }
 
   update(save) {

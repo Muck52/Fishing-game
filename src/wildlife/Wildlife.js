@@ -13,7 +13,7 @@ export class Wildlife {
     this.eagle = new Eagle(this);
     this.loon = new Loon(this);
     this.heron = new Heron(this);
-    this.dragonflies = [new Dragonfly(this, 46, AH - 150), new Dragonfly(this, 210, AH - 112)];
+    this.dragonflies = [new Dragonfly(this, 34, AH - 112), new Dragonfly(this, 158, AH - 84)];
     this.nextVisitor = scene.time.now + 5000;
     this.nextJump = scene.time.now + 3000;
     this.lastVisitor = null;
@@ -35,8 +35,8 @@ export class Wildlife {
 
   visit() {
     const visitors = {
-      deer: () => shoreWalker(this, 'deer', 'deer-walk', 2, 5, 'A white-tailed doe steps down to the water to drink.'),
-      moose: () => shoreWalker(this, 'moose', 'moose-walk', 1, 3, 'A bull moose wades out of the spruce.'),
+      deer: () => shoreWalker(this, 'deer', 'deer-walk', 2, 4, 'A white-tailed doe steps down to the water to drink.'),
+      moose: () => shoreWalker(this, 'moose', 'moose-walk', 1, 2.5, 'A bull moose wades out of the spruce.'),
       geese: () => geese(this),
       beaver: () => beaver(this),
     };
@@ -79,12 +79,12 @@ function shoreWalker(w, key, walkAnim, stillFrame, speed, note) {
 function geese(w) {
   const s = w.scene;
   const n = between(5, 8);
-  const y0 = between(40, 95) * PX;
+  const y0 = between(30, 70) * PX;
   w.note('Geese overhead, heading south.');
   for (let i = 0; i < n; i++) {
     const k = Math.ceil(i / 2);
     const side = i % 2 ? 1 : -1;
-    const bird = s.add.sprite(W + 30 + k * 10 * PX, y0 + side * k * 4 * PX, 'bird').setScale(PX).setDepth(DEPTH.CLOUDS);
+    const bird = s.add.sprite(W + 30 + k * 8 * PX, y0 + side * k * 3 * PX, 'bird').setScale(PX).setDepth(DEPTH.CLOUDS);
     bird.play({ key: 'bird-flap', startFrame: i % 2, frameRate: 5 + (i % 3) });
     s.tweens.add({ targets: bird, x: bird.x - W - 400, duration: 24000, onComplete: () => bird.destroy() });
   }
@@ -92,7 +92,7 @@ function geese(w) {
 
 function beaver(w) {
   const s = w.scene;
-  const y = between(HORIZON + 30, HORIZON + 80) * PX;
+  const y = between(HORIZON + 22, HORIZON + 60) * PX;
   const fromRight = Math.random() < 0.6;
   const startX = fromRight ? W + 40 : -40;
   const endX = fromRight ? -120 : W + 120;
@@ -115,8 +115,8 @@ function beaver(w) {
 }
 
 function fishJump(s) {
-  const x = between(30, 200) * PX;
-  const y = between(HORIZON + 12, DOCK_AY - 50) * PX;
+  const x = between(22, 150) * PX;
+  const y = between(HORIZON + 9, DOCK_AY - 38) * PX;
   const scale = pxScale(y);
   const dir = Math.random() < 0.5 ? 1 : -1;
   const fish = s.add.sprite(x, y, 'jumpfish').setScale(scale).setDepth(DEPTH.WATER_LIFE).setFlipX(dir < 0);
@@ -127,8 +127,8 @@ function fishJump(s) {
     duration: 650,
     onUpdate: (tw) => {
       const t = tw.getValue();
-      fish.x = x + dir * t * 12 * scale;
-      fish.y = y - Math.sin(Math.PI * t) * 12 * scale;
+      fish.x = x + dir * t * 9 * scale;
+      fish.y = y - Math.sin(Math.PI * t) * 9 * scale;
       fish.angle = dir * (-50 + 100 * t);
     },
     onComplete: () => {
@@ -209,7 +209,7 @@ class Loon {
   constructor(w) {
     this.w = w;
     this.s = w.scene;
-    this.spr = this.s.add.sprite(150 * PX, (HORIZON + 40) * PX, 'loon').setDepth(DEPTH.WATER_LIFE);
+    this.spr = this.s.add.sprite(112 * PX, (HORIZON + 30) * PX, 'loon').setDepth(DEPTH.WATER_LIFE);
     this.baseY = this.spr.y;
     this.dir = -1;
     this.under = false;
@@ -223,7 +223,7 @@ class Loon {
 
   update(time, dt) {
     if (this.under) return;
-    this.spr.x += this.dir * 2.5 * dt * PX;
+    this.spr.x += this.dir * 1.8 * dt * PX;
     if (this.spr.x < 60 || this.spr.x > W - 80) this.dir *= -1;
     this.spr.setFlipX(this.dir > 0);
     this.spr.y = this.baseY + Math.round(Math.sin(time / 700)) * PX;
@@ -241,7 +241,7 @@ class Loon {
       duration: 350,
       onComplete: () => {
         s.time.delayedCall(between(4000, 8000), () => {
-          this.baseY = between(HORIZON + 22, HORIZON + 95) * PX;
+          this.baseY = between(HORIZON + 16, HORIZON + 71) * PX;
           this.spr.setPosition(Phaser.Math.Clamp(this.spr.x + between(-180, 180), 80, W - 100), this.baseY).setAlpha(1);
           this.setScale();
           ripple(s, this.spr.x, this.baseY + 6);
@@ -258,7 +258,7 @@ class Loon {
 class Heron {
   constructor(w) {
     this.s = w.scene;
-    this.spr = this.s.add.sprite(34 * PX, (AH - 134) * PX, 'heron', 0).setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.BANKS - 0.5);
+    this.spr = this.s.add.sprite(25 * PX, (AH - 100) * PX, 'heron', 0).setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.BANKS - 0.5);
     this.nextStrike = this.s.time.now + between(9000, 18000);
   }
 
@@ -281,8 +281,8 @@ class Dragonfly {
   }
 
   dart() {
-    const tx = this.home.x + between(-25, 25) * PX;
-    const ty = this.home.y + between(-15, 15) * PX;
+    const tx = this.home.x + between(-18, 18) * PX;
+    const ty = this.home.y + between(-11, 11) * PX;
     this.spr.setFlipX(tx < this.spr.x);
     this.s.tweens.add({
       targets: this.spr,

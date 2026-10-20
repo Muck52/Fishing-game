@@ -208,18 +208,18 @@ const BOBBER_FRAMES = [
 
 export function paintSprites(scene) {
   sheet(scene, 'bird', [BIRD_UP, BIRD_DOWN], BIRD);
-  sheet(scene, 'eagle-fly', [EAGLE_GLIDE, EAGLE_FLAP], EAGLE);
-  sheet(scene, 'eagle-perch', [EAGLE_PERCH], EAGLE);
-  sheet(scene, 'deer', [DEER_WALK_A, DEER_WALK_B, DEER_DRINK], DEER);
-  sheet(scene, 'moose', [MOOSE_A, MOOSE_B], MOOSE);
-  sheet(scene, 'heron', [HERON_IDLE, HERON_STRIKE], HERON);
-  sheet(scene, 'loon', [LOON_SWIM], LOON);
-  sheet(scene, 'beaver', [BEAVER_SWIM], BEAVER);
+  sheet(scene, 'eagle-fly', [EAGLE_GLIDE, EAGLE_FLAP], EAGLE, { strength: 0.5, flat: 'Y', seed: 2 });
+  sheet(scene, 'eagle-perch', [EAGLE_PERCH], EAGLE, { strength: 0.6, flat: 'Y', seed: 3 });
+  sheet(scene, 'deer', [DEER_WALK_A, DEER_WALK_B, DEER_DRINK], DEER, { flat: 'K', seed: 4 });
+  sheet(scene, 'moose', [MOOSE_A, MOOSE_B], MOOSE, { flat: 'K', seed: 5 });
+  sheet(scene, 'heron', [HERON_IDLE, HERON_STRIKE], HERON, { flat: 'KY', seed: 6 });
+  sheet(scene, 'loon', [LOON_SWIM], LOON, { strength: 0.5, flat: 'R', seed: 7 });
+  sheet(scene, 'beaver', [BEAVER_SWIM], BEAVER, { flat: 'K', seed: 8 });
   sheet(scene, 'dragonfly', [DRAGONFLY_A, DRAGONFLY_B], DRAGONFLY);
-  sheet(scene, 'jumpfish', [JUMP_FISH], JUMPER);
-  sheet(scene, 'dog', [DOG_REST_A, DOG_REST_B, DOG_ALERT], DOG);
+  sheet(scene, 'jumpfish', [JUMP_FISH], JUMPER, { strength: 0.7, seed: 9 });
+  sheet(scene, 'dog', [DOG_REST_A, DOG_REST_B, DOG_ALERT], DOG, { flat: 'KN', seed: 10 });
   sheet(scene, 'steam', STEAM_FRAMES, STEAM);
-  sheet(scene, 'bobber', BOBBER_FRAMES, BOB);
+  sheet(scene, 'bobber', BOBBER_FRAMES, BOB, { strength: 0.5, grain: 0.05, flat: 'kL', seed: 11 });
   paintPlayer(scene);
   paintRipples(scene);
   paintSparkles(scene);
@@ -287,6 +287,7 @@ function paintPlayer(scene) {
   p.rect(9, -1, 4, 2, C.pom);
   p.hline(10, 11, 0, C.pom);
   p.outline(C.dark);
+  p.light({ strength: 0.55, grain: 0.12, flat: [C.skin], seed: 12 });
   p.texture(scene, 'player');
 }
 

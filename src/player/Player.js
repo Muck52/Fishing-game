@@ -12,7 +12,7 @@ export class Player {
     this.angle = REST_ANGLE;
     this.bend = 0;
 
-    const sprite = scene.add.image(PLAYER_AX * PX, DOCK_Y + 17 * PX, 'player').setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.PLAYER);
+    const sprite = scene.add.image(PLAYER_AX * PX, DOCK_Y + 13 * PX, 'player').setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.PLAYER);
     this.hand = {
       x: sprite.x - (sprite.width * PX) / 2 + PLAYER_HAND.x * PX + PX / 2,
       y: sprite.y - sprite.height * PX + PLAYER_HAND.y * PX + PX / 2,

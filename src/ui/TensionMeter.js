@@ -1,15 +1,15 @@
 import { PX, DEPTH, textStyle } from '../core/constants.js';
 
 // Inner well of the 'meter' texture, in art pixels.
-const WELL = { x: 4, y: 6, w: 8, h: 132 };
+const WELL = { x: 3, y: 5, w: 6, h: 98 };
 
 export class TensionMeter {
   constructor(scene, x, y) {
     this.baseX = x;
     const frame = scene.add.image(0, 0, 'meter').setScale(PX);
     this.fill = scene.add.graphics();
-    this.ox = -(16 * PX) / 2;
-    this.oy = -(144 * PX) / 2;
+    this.ox = -(12 * PX) / 2;
+    this.oy = -(108 * PX) / 2;
     const label = scene.add.text(0, this.oy - 24, 'TENSION', textStyle(22)).setOrigin(0.5);
     this.distanceText = scene.add.text(0, -this.oy + 30, '', textStyle(26)).setOrigin(0.5);
     this.container = scene.add.container(x, y, [frame, this.fill, label, this.distanceText]).setDepth(DEPTH.UI).setVisible(false);

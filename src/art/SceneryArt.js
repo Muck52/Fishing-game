@@ -1,12 +1,14 @@
-import { Painter, dither, mix, mulberry32 } from './Painter.js';
+import { Painter, dither, mix, mulberry32, shade, noise } from './Painter.js';
 import { P } from './palette.js';
 import { AW, AH, HORIZON, DOCK_AY } from '../core/constants.js';
 
-export const SUN = { x: 176, y: 116 };
-export const SNAG = { x: 34, top: HORIZON - 52 }; // dead spruce the eagle perches on
-export const PLAYER_AX = 93; // where the angler stands on the dock
-export const MUG = { x: 166, y: DOCK_AY + 11 };
-export const DOG = { x: 68, y: DOCK_AY + 15 };
+export const SUN = { x: 132, y: HORIZON - 33 };
+export const SNAG = { x: 26, top: HORIZON - 40 }; // dead spruce the eagle perches on
+export const PLAYER_AX = 70; // where the angler stands on the dock
+export const MUG = { x: 125, y: DOCK_AY + 8 };
+export const DOG = { x: 51, y: DOCK_AY + 11 };
+
+const grain = (x, y, seed, amount) => (noise(x, y, seed) - 0.5) * 2 * amount;
 
 export function paintScenery(scene) {
   const rng = mulberry32(20260920);
@@ -16,11 +18,11 @@ export function paintScenery(scene) {
   paintWater(scene, rng, mountains, forest);
   paintBanks(scene, rng);
   paintDock(scene, rng);
-  paintCloud(scene, 'cloud-0', 34, 9, rng);
-  paintCloud(scene, 'cloud-1', 22, 7, rng);
-  paintCloud(scene, 'cloud-2', 46, 11, rng);
-  paintMist(scene, 'mist-far', AW, 12, 0.75, rng);
-  paintMist(scene, 'mist-water', AW, 7, 0.5, rng);
+  paintCloud(scene, 'cloud-0', 26, 10, rng);
+  paintCloud(scene, 'cloud-1', 17, 7, rng);
+  paintCloud(scene, 'cloud-2', 34, 12, rng);
+  paintMist(scene, 'mist-far', AW, 9, 0.75, rng);
+  paintMist(scene, 'mist-water', AW, 5, 0.5, rng);
 }
 
 // Banded gradient with ordered dithering between each pair of colours.
@@ -39,13 +41,20 @@ function vgradient(p, y0, y1, stops) {
 function paintSky(scene) {
   const p = new Painter(AW, HORIZON);
   vgradient(p, 0, HORIZON, [[0, P.sky0], [0.3, P.sky1], [0.58, P.sky2], [0.8, P.sky3], [1, P.sky4]]);
-  for (let y = SUN.y - 26; y <= SUN.y + 26; y++) {
-    for (let x = SUN.x - 26; x <= SUN.x + 26; x++) {
+  // thin mare's-tail cirrus high up
+  for (let y = 6; y < 50; y++) {
+    for (let x = 0; x < AW; x++) {
+      const n = noise(Math.floor(x / 5), y, 41);
+      if (n > 0.93 && noise(x, y, 42) > 0.3) p.px(x, y, P.cloudLight, 0.25 + (n - 0.93) * 6);
+    }
+  }
+  for (let y = SUN.y - 20; y <= SUN.y + 20; y++) {
+    for (let x = SUN.x - 20; x <= SUN.x + 20; x++) {
       const d = Math.hypot(x - SUN.x, y - SUN.y);
-      if (d < 9) p.px(x, y, P.sun);
-      else if (d < 11) p.px(x, y, P.sunGlow);
-      else if (d < 16) dither(x, y, 0.5) && p.px(x, y, P.sunGlow);
-      else if (d < 25) dither(x, y, (0.45 * (25 - d)) / 9) && p.px(x, y, P.sunGlow2);
+      if (d < 6) p.px(x, y, d < 4 ? '#fffaea' : P.sun);
+      else if (d < 8) p.px(x, y, P.sunGlow);
+      else if (d < 12) dither(x, y, 0.5) && p.px(x, y, P.sunGlow);
+      else if (d < 19) dither(x, y, (0.45 * (19 - d)) / 7) && p.px(x, y, P.sunGlow2);
     }
   }
   p.texture(scene, 'sky');
@@ -54,7 +63,7 @@ function paintSky(scene) {
 function ridge(rng, base, count, minH, maxH, minW, maxW) {
   const top = new Array(AW).fill(base);
   for (let i = 0; i < count; i++) {
-    const cx = -20 + rng() * (AW + 40);
+    const cx = -15 + rng() * (AW + 30);
     const h = minH + rng() * (maxH - minH);
     const w = minW + rng() * (maxW - minW);
     for (let x = 0; x < AW; x++) {
@@ -64,113 +73,112 @@ function ridge(rng, base, count, minH, maxH, minW, maxW) {
   }
   let j = 0;
   return top.map((t) => {
-    j = j * 0.7 + (rng() - 0.5) * 1.6;
+    j = j * 0.7 + (rng() - 0.5) * 1.4;
     return Math.round(t + j);
   });
 }
 
 function paintMountains(scene, rng) {
   const p = new Painter(AW, HORIZON);
-  const far = ridge(rng, 150, 8, 18, 46, 20, 55);
+  const far = ridge(rng, HORIZON - 8, 8, 14, 35, 15, 41);
+  const snowLine = HORIZON - 27;
   for (let x = 0; x < AW; x++) {
     // Slopes facing the low eastern sun (to the right) catch the light.
     const lit = (far[x + 1] ?? far[x]) > (far[x - 1] ?? far[x]);
     for (let y = far[x]; y < HORIZON; y++) {
-      let c = lit ? P.mtnFarLit : P.mtnFar;
-      if (far[x] < 124 && y - far[x] < 2 + (124 - far[x]) * 0.25) c = lit ? P.snow : P.snowShade;
-      const haze = (y - (HORIZON - 32)) / 32;
-      if (haze > 0 && dither(x, y, haze)) c = P.mist;
-      p.px(x, y, c);
+      const depth = y - far[x];
+      let base = P.mtnFar;
+      let k = (lit ? 0.35 : -0.25) + grain(x, Math.floor(y / 2), 3, 0.2);
+      if (depth > 2 && depth < 16 && noise(x, 0, 9) < 0.14) k -= 0.3; // gullies
+      if (far[x] < snowLine && depth < 2 + (snowLine - far[x]) * 0.3 && noise(x, y, 5) > 0.12) {
+        base = P.snow;
+        k = (lit ? 0.3 : -0.45) + grain(x, y, 6, 0.12);
+      }
+      if (depth === 0) k += 0.2;
+      const haze = (y - (HORIZON - 24)) / 24;
+      p.px(x, y, haze > 0 && dither(x, y, haze) ? P.mist : shade(base, k));
     }
   }
-  const near = ridge(rng, 160, 10, 8, 26, 14, 40);
+  const near = ridge(rng, HORIZON, 10, 6, 20, 10, 30);
   for (let x = 0; x < AW; x++) {
     const lit = (near[x + 1] ?? near[x]) > (near[x - 1] ?? near[x]);
     for (let y = near[x]; y < HORIZON; y++) {
-      let c = lit ? P.mtnNearLit : P.mtnNear;
-      if (rng() < 0.14) c = P.mtnNearDark;
-      p.px(x, y, c);
+      let k = (lit ? 0.25 : -0.2) + grain(x, y, 7, 0.3);
+      if (noise(x, y, 8) < 0.15) k -= 0.35; // dark crowns of distant trees
+      p.px(x, y, shade(P.mtnNear, k));
     }
   }
   p.texture(scene, 'mountains');
   return p;
 }
 
-// A spruce or tamarack: tiered branches, sunlit on the right.
-function conifer(p, cx, baseY, h, c, lit, dark, rng) {
-  const maxHalf = Math.max(1, h * 0.19);
+// A spruce or tamarack: tiered branches, sunlit on the right, shadow tucked
+// under each tier, and needle-clump texture throughout.
+function conifer(p, cx, baseY, h, base, seed) {
+  const maxHalf = Math.max(1, h * 0.2);
   for (let r = 0; r < h; r++) {
     const t = (r + 1) / h;
-    const tier = (r % 4) / 3;
-    const half = Math.round(maxHalf * t * (0.75 + 0.35 * tier));
+    const tier = r % 3;
+    const half = Math.round(maxHalf * t * (0.7 + 0.2 * tier));
     const y = baseY - h + r;
     for (let x = -half; x <= half; x++) {
-      let col = c;
-      if (half > 0 && x === half) col = lit;
-      else if (half > 0 && x === -half) col = dark;
-      else if (x > 0 && rng() < 0.12) col = lit;
-      else if (x < 0 && rng() < 0.12) col = dark;
-      p.px(cx + x, y, col);
+      const side = half ? x / half : 0;
+      let k = side * 0.45 - 0.05 + (tier === 0 ? 0.15 : tier === 2 ? -0.25 : 0);
+      k += grain(cx * 7 + x, y, seed, 0.28);
+      if (r === 0) k += 0.25;
+      p.px(cx + x, y, shade(base, k));
     }
   }
   p.px(cx, baseY, P.trunk);
 }
 
-function aspen(p, cx, cy, r, rng) {
-  p.vline(cx, cy + Math.round(r * 0.5), cy + r + 3, P.birch);
+function aspen(p, cx, cy, r, seed) {
+  for (let y = cy + Math.round(r * 0.5); y <= cy + r + 2; y++) p.px(cx, y, shade(P.birch, grain(cx, y, seed, 0.2)));
   for (let y = -r; y <= r; y++) {
     for (let x = -r; x <= r; x++) {
       const d = (x * x) / (r * r) + (y * y) / (r * r * 0.7);
-      if (d > 1 || (d > 0.7 && rng() < 0.45)) continue;
-      let c = P.aspen;
-      if (x > r * 0.2 && y < 0) c = P.aspenLit;
-      else if (y > r * 0.35 || x < -r * 0.5) c = P.aspenDark;
-      if (rng() < 0.1) c = P.aspenLit;
-      p.px(cx + x, cy + y, c);
+      if (d > 1 || (d > 0.65 && noise(cx + x, cy + y, seed) < 0.45)) continue;
+      const lit = (x / r) * 0.6 - (y / r) * 0.8;
+      const clump = grain(Math.floor((cx + x) / 2), Math.floor((cy + y) / 2), seed + 1, 0.25);
+      p.px(cx + x, cy + y, shade(P.aspen, lit * 0.45 + clump + grain(cx + x, cy + y, seed, 0.15)));
     }
   }
 }
 
-function birch(p, x, baseY, h, rng) {
-  for (let y = baseY - h; y <= baseY; y++) p.px(x, y, rng() < 0.2 ? P.birchMark : P.birch);
-  aspen(p, x, baseY - h - 1, 3, rng);
+function birch(p, x, baseY, h, seed) {
+  for (let y = baseY - h; y <= baseY; y++) p.px(x, y, noise(x, y, seed) < 0.22 ? P.birchMark : shade(P.birch, grain(x, y, seed, 0.15)));
+  aspen(p, x, baseY - h - 1, 2, seed);
 }
 
 function snag(p) {
   const { x, top } = SNAG;
-  for (let y = top; y < HORIZON - 3; y++) {
-    p.px(x, y, P.snag);
-    p.px(x + 1, y, P.snagDark);
+  for (let y = top; y < HORIZON - 2; y++) {
+    p.px(x, y, shade(P.snag, 0.2 + grain(x, y, 21, 0.15)));
+    p.px(x + 1, y, shade(P.snag, -0.4 + grain(x + 1, y, 21, 0.15)));
   }
-  for (const [y, dir] of [[top + 8, -1], [top + 14, 1], [top + 21, -1], [top + 28, 1], [top + 34, -1]]) {
-    for (let i = 1; i <= 3; i++) p.px(dir > 0 ? x + 1 + i : x - i, y - (i >> 1), P.snag);
+  for (const [y, dir] of [[top + 6, -1], [top + 11, 1], [top + 16, -1], [top + 21, 1], [top + 26, -1]]) {
+    for (let i = 1; i <= 3; i++) p.px(dir > 0 ? x + 1 + i : x - i, y - (i >> 1), shade(P.snag, dir > 0 ? 0.15 : -0.2));
   }
 }
 
 function paintForest(scene, rng) {
   const p = new Painter(AW, HORIZON);
-  const base = HORIZON - 3;
-  for (let x = -4; x < AW + 4; x += 3 + Math.floor(rng() * 3)) {
-    conifer(p, x, base - 1, 12 + Math.floor(rng() * 14), P.spruceFar, P.spruceFarLit, P.spruceFarDark, rng);
-  }
-  for (let i = 0; i < 9; i++) {
-    aspen(p, Math.floor(rng() * AW), base - 6 - Math.floor(rng() * 5), 4 + Math.floor(rng() * 4), rng);
-  }
+  const base = HORIZON - 2;
+  for (let x = -3; x < AW + 3; x += 2 + Math.floor(rng() * 3)) conifer(p, x, base - 1, 9 + Math.floor(rng() * 11), P.spruceFar, x);
+  for (let i = 0; i < 8; i++) aspen(p, Math.floor(rng() * AW), base - 5 - Math.floor(rng() * 4), 3 + Math.floor(rng() * 3), i + 50);
   snag(p);
-  for (let x = -3; x < AW + 3; x += 4 + Math.floor(rng() * 5)) {
-    if (Math.abs(x - SNAG.x) < 4) continue;
-    const h = rng() < 0.12 ? 30 + Math.floor(rng() * 10) : 8 + Math.floor(rng() * 18);
-    if (rng() < 0.14) conifer(p, x, base, h, P.tamarack, P.tamarackLit, P.tamarackDark, rng);
-    else conifer(p, x, base, h, P.spruce, P.spruceLit, P.spruceDark, rng);
+  for (let x = -2; x < AW + 2; x += 3 + Math.floor(rng() * 4)) {
+    if (Math.abs(x - SNAG.x) < 3) continue;
+    const h = rng() < 0.12 ? 22 + Math.floor(rng() * 8) : 6 + Math.floor(rng() * 14);
+    conifer(p, x, base, h, rng() < 0.14 ? P.tamarack : P.spruce, x + 100);
   }
-  for (let i = 0; i < 6; i++) birch(p, 8 + Math.floor(rng() * (AW - 16)), base, 10 + Math.floor(rng() * 8), rng);
+  for (let i = 0; i < 5; i++) birch(p, 6 + Math.floor(rng() * (AW - 12)), base, 8 + Math.floor(rng() * 6), i + 70);
   // rocky shoreline
   for (let x = 0; x < AW; x++) {
-    const top = base - (rng() < 0.3 ? 1 : 0);
+    const top = base - (noise(x, 0, 30) < 0.3 ? 1 : 0);
     for (let y = top; y < HORIZON; y++) {
-      let c = y === top ? P.shoreLit : P.shore;
-      if (rng() < 0.15) c = P.stone;
-      p.px(x, y, c);
+      const stone = noise(x, y, 31) < 0.2;
+      p.px(x, y, shade(stone ? P.stone : P.shore, (y === top ? 0.35 : -0.1) + grain(x, y, 32, 0.2)));
     }
   }
   p.texture(scene, 'forest');
@@ -182,14 +190,24 @@ function paintWater(scene, rng, mountains, forest) {
   const p = new Painter(AW, h);
   vgradient(p, 0, h, [[0, P.water0], [0.03, P.water1], [0.12, P.water2], [0.3, P.water3], [0.6, P.water4], [1, P.water5]]);
 
+  // Wind texture: ripple bands that stretch out as they come closer.
+  for (let r = 1; r < h; r++) {
+    const stretch = 1 + r / 25;
+    for (let x = 0; x < AW; x++) {
+      const n = noise(Math.floor((x + r * 3) / stretch), r, 11);
+      if (n < 0.1) p.recolor(x, r, shade(p.get(x, r), 0.3));
+      else if (n > 0.86) p.recolor(x, r, shade(p.get(x, r), -0.25));
+    }
+  }
+
   // The shore mirrored in still water, broken by faint ripple lines.
-  const R = 58;
+  const R = 44;
   for (let r = 0; r < R; r++) {
     const sy = HORIZON - 1 - r;
     if (sy < 0) break;
     const a = 0.6 * (1 - r / R);
-    const wob = Math.round(Math.sin(r * 0.8));
-    const gap = r > 4 && r % 4 === 3;
+    const wob = Math.round(Math.sin(r * 0.9));
+    const gap = r > 3 && r % 3 === 2;
     for (let x = 0; x < AW; x++) {
       const sx = Math.min(AW - 1, Math.max(0, x + wob));
       const src = forest.alphaAt(sx, sy) ? forest.get(sx, sy) : mountains.alphaAt(sx, sy) ? mountains.get(sx, sy) : null;
@@ -200,75 +218,81 @@ function paintWater(scene, rng, mountains, forest) {
   for (let x = 0; x < AW; x++) if (rng() < 0.4) p.px(x, 0, P.waterLine, 0.6);
 
   // Glitter on the water below the sun.
-  for (let r = 1; r < 110; r += 2) {
+  for (let r = 1; r < 82; r += 2) {
     if (rng() < 0.35) continue;
-    const spread = 3 + r * 0.25;
+    const spread = 2 + r * 0.25;
     const cx = SUN.x + Math.round((rng() - 0.5) * spread * 2);
-    const len = 1 + Math.floor(rng() * Math.max(1, 6 - r / 30));
-    p.hline(cx - len, cx + len, r, P.sunGlow, 0.75 * (1 - r / 110));
+    const len = Math.floor(rng() * Math.max(1, 5 - r / 25));
+    p.hline(cx - len, cx + len, r, P.sunGlow, 0.75 * (1 - r / 82));
   }
 
-  island(p, rng, 20, 40);
+  island(p, rng, 15, 30);
   basking(p, Math.round(AW * 0.66), Math.round(h * 0.42));
-  lilyPads(p, rng, 30, 92, 5, true);
-  lilyPads(p, rng, 200, h - 150, 4, false);
+  lilyPads(p, rng, 22, 69, 5, true);
+  lilyPads(p, rng, 150, h - 112, 4, false);
   p.texture(scene, 'water');
 }
 
 // A granite islet with a few spruce, mirrored in the water below it.
 function island(p, rng, cx, cy) {
-  const isle = new Painter(44, 30);
-  const base = 24;
-  conifer(isle, 14, base - 1, 14, P.spruce, P.spruceLit, P.spruceDark, rng);
-  conifer(isle, 20, base - 1, 20, P.spruce, P.spruceLit, P.spruceDark, rng);
-  conifer(isle, 26, base - 1, 12, P.tamarack, P.tamarackLit, P.tamarackDark, rng);
-  conifer(isle, 31, base - 1, 9, P.spruce, P.spruceLit, P.spruceDark, rng);
-  for (let y = 0; y < 4; y++) {
-    for (let x = 6 + y; x < 38 - y * 2; x++) isle.px(x, base + y - 1, y === 0 ? P.stoneLit : rng() < 0.2 ? P.lichen2 : y > 1 ? P.stoneDark : P.stone);
+  const isle = new Painter(34, 24);
+  const base = 18;
+  conifer(isle, 10, base - 1, 10, P.spruce, 201);
+  conifer(isle, 15, base - 1, 15, P.spruce, 202);
+  conifer(isle, 20, base - 1, 9, P.tamarack, 203);
+  conifer(isle, 24, base - 1, 7, P.spruce, 204);
+  for (let y = 0; y < 3; y++) {
+    for (let x = 4 + y; x < 29 - y * 2; x++) {
+      isle.px(x, base + y - 1, shade(noise(x, y, 205) < 0.2 ? P.lichen2 : P.stone, (y === 0 ? 0.4 : -0.3 * y) + grain(x, y, 206, 0.2)));
+    }
   }
-  const ox = cx - 22;
+  const ox = cx - 17;
   const oy = cy - base;
   for (let y = 0; y < isle.h; y++) {
     for (let x = 0; x < isle.w; x++) {
       if (!isle.alphaAt(x, y)) continue;
       p.px(ox + x, oy + y, isle.get(x, y));
       const ry = base + 2 + (base - y); // reflection
-      if (ry < isle.h + 14 && ry % 3 !== 0) p.px(ox + x, oy + ry, mix(isle.get(x, y), p.get(ox + x, Math.min(p.h - 1, oy + ry)), 0.55), 0.6);
+      if (ry < isle.h + 12 && ry % 3 !== 0) p.px(ox + x, oy + ry, mix(isle.get(x, y), p.get(ox + x, Math.min(p.h - 1, oy + ry)), 0.55), 0.6);
     }
   }
 }
 
 // A half-sunk log with a painted turtle catching the morning sun.
 function basking(p, x, y) {
-  p.hline(x, x + 25, y, '#8a7a62');
-  p.hline(x - 1, x + 26, y + 1, '#5a4a3a');
-  p.hline(x, x + 25, y + 2, '#3a3028', 0.7);
-  p.px(x + 27, y - 1, '#5a4a3a');
-  p.px(x + 28, y - 2, '#5a4a3a');
-  p.hline(x - 3, x + 29, y + 3, P.waterLine, 0.35);
-  // turtle: dark shell with a yellow rim, striped head raised to the sun
-  p.hline(x + 9, x + 13, y - 2, '#3f4a30');
-  p.hline(x + 8, x + 14, y - 1, '#3f4a30');
-  p.px(x + 10, y - 2, '#56663e');
-  p.px(x + 8, y - 1, '#c9b048');
-  p.px(x + 14, y - 1, '#c9b048');
-  p.px(x + 15, y - 2, '#2e3a26');
-  p.px(x + 16, y - 3, '#2e3a26');
-  p.px(x + 16, y - 2, '#d9b84a');
+  for (let i = 0; i < 20; i++) {
+    p.px(x + i, y, shade('#8a7a62', 0.2 + grain(i, 0, 300, 0.25)));
+    p.px(x + i - 1, y + 1, shade('#5a4a3a', grain(i, 1, 300, 0.25)));
+    p.px(x + i, y + 2, '#3a3028', 0.7);
+  }
+  p.px(x + 20, y - 1, '#5a4a3a');
+  p.px(x + 21, y - 2, '#6a5a48');
+  p.hline(x - 2, x + 22, y + 3, P.waterLine, 0.35);
+  p.hline(x + 7, x + 10, y - 2, '#56663e');
+  p.px(x + 8, y - 2, '#6f8050');
+  p.hline(x + 6, x + 11, y - 1, '#3f4a30');
+  p.px(x + 6, y - 1, '#c9b048');
+  p.px(x + 11, y - 1, '#c9b048');
+  p.px(x + 12, y - 2, '#2e3a26');
+  p.px(x + 13, y - 2, '#d9b84a');
 }
 
 function lilyPads(p, rng, cx, cy, n, flower) {
   for (let i = 0; i < n; i++) {
-    const x = cx + Math.round((rng() - 0.5) * 18);
-    const y = cy + Math.round((rng() - 0.5) * 8);
-    const rx = 2 + Math.floor(rng() * 2);
-    p.ellipse(x, y, rx, 1, rng() < 0.35 ? P.padYellow : P.pad);
-    p.px(x - 1, y - 1, P.padLit);
-    p.px(x + 1, y, P.padDark);
-    p.px(x + 2, y, P.padDark);
+    const x = cx + Math.round((rng() - 0.5) * 14);
+    const y = cy + Math.round((rng() - 0.5) * 6);
+    const rx = 1 + Math.floor(rng() * 2);
+    const base = rng() < 0.35 ? P.padYellow : P.pad;
+    // Seen nearly edge-on, a pad is a flat oval: two rows, with a notch.
+    for (let dx = -rx - 1; dx <= rx + 1; dx++) {
+      if (Math.abs(dx) <= rx) p.px(x + dx, y - 1, shade(base, 0.3 + grain(x + dx, y, 400, 0.15)));
+      p.px(x + dx, y, shade(base, -0.15 + grain(x + dx, y + 1, 400, 0.15)));
+    }
+    p.px(x + 1, y - 1, shade(base, -0.7));
+    p.hline(x - rx - 1, x + rx + 1, y + 1, P.water5, 0.35);
     if (flower && i === 0) {
       p.hline(x - 1, x + 1, y - 1, P.enamel);
-      p.px(x, y - 2, P.enamel);
+      p.px(x, y - 2, '#fffaf0');
       p.px(x, y - 1, '#e8c547');
     }
   }
@@ -276,61 +300,65 @@ function lilyPads(p, rng, cx, cy, n, flower) {
 
 function paintBanks(scene, rng) {
   const p = new Painter(AW, AH);
-  const yTop = AH - 150;
-  const edgeAt = (y) => Math.round(6 + (y - yTop) * 0.34 + Math.sin(y * 0.25) * 2);
+  const yTop = AH - 112;
+  const edgeAt = (y) => Math.round(4 + (y - yTop) * 0.34 + Math.sin(y * 0.33) * 1.5);
 
   // left bank: earth, autumn grass, rust-coloured bracken
   for (let y = yTop; y < AH; y++) {
     const e = edgeAt(y);
     for (let x = 0; x <= e; x++) {
-      let c = rng() < 0.2 ? P.earthLit : P.earth;
-      if (e - x < 2) c = P.grassGold;
-      else if (e - x === 2 && rng() < 0.5) c = P.grass;
+      let c = shade(P.earth, grain(x, y, 500, 0.35) + (noise(Math.floor(x / 2), Math.floor(y / 2), 501) < 0.15 ? 0.4 : 0));
+      if (e - x < 2) c = shade(P.grassGold, (e - x === 0 ? 0.3 : -0.1) + grain(x, y, 502, 0.25));
+      else if (e - x === 2 && noise(x, y, 503) < 0.5) c = shade(P.grass, grain(x, y, 504, 0.25));
       p.px(x, y, c);
     }
     p.px(e + 1, y, P.water5, 0.6);
   }
-  for (let i = 0; i < 6; i++) {
-    const y = yTop + 20 + Math.floor(rng() * 120);
-    fern(p, Math.floor(rng() * (edgeAt(y) - 4)) + 2, y, rng);
+  for (let i = 0; i < 5; i++) {
+    const y = yTop + 15 + Math.floor(rng() * 90);
+    fern(p, Math.floor(rng() * Math.max(1, edgeAt(y) - 3)) + 2, y);
   }
-  for (let i = 0; i < 18; i++) {
-    const by = yTop + 6 + Math.floor(rng() * 140);
+  for (let i = 0; i < 16; i++) {
+    const by = yTop + 5 + Math.floor(rng() * 105);
     if (by >= AH) continue;
-    reed(p, edgeAt(by) - Math.floor(rng() * 5), by, 18 + Math.floor(rng() * 26), (rng() - 0.3) * 6, rng() < 0.5, rng);
+    reed(p, edgeAt(by) - Math.floor(rng() * 4), by, 14 + Math.floor(rng() * 19), (rng() - 0.3) * 5, rng() < 0.5, i);
   }
-  grassTufts(p, rng, 0, yTop, 40, AH - yTop, 30);
+  grassTufts(p, rng, 0, yTop, 30, AH - yTop, 26);
 
   // right bank: lichen-spotted granite
-  for (const [cx, cy, rx, ry] of [[238, AH - 80, 10, 9], [236, AH - 46, 14, 12], [226, AH - 64, 9, 7], [218, AH - 14, 22, 14], [200, AH - 5, 14, 8]]) {
-    boulder(p, cx, cy, rx, ry, rng);
+  for (const [cx, cy, rx, ry] of [[178, AH - 60, 8, 7], [177, AH - 34, 10, 9], [170, AH - 48, 7, 5], [164, AH - 10, 16, 10], [150, AH - 4, 10, 6]]) {
+    boulder(p, cx, cy, rx, ry);
   }
   for (let i = 0; i < 6; i++) {
-    const by = AH - 100 + Math.floor(rng() * 40);
-    reed(p, 214 + Math.floor(rng() * 22), by, 14 + Math.floor(rng() * 14), (rng() - 0.6) * 5, rng() < 0.3, rng);
+    reed(p, 160 + Math.floor(rng() * 16), AH - 75 + Math.floor(rng() * 30), 11 + Math.floor(rng() * 10), (rng() - 0.6) * 4, rng() < 0.3, i + 40);
   }
-  grassTufts(p, rng, 206, AH - 96, 34, 90, 14);
+  grassTufts(p, rng, 154, AH - 72, 26, 68, 12);
   p.texture(scene, 'banks');
 }
 
-function reed(p, bx, by, h, lean, cattail, rng) {
+function reed(p, bx, by, h, lean, cattail, seed) {
   for (let k = 0; k < h; k++) {
     const t = k / h;
-    p.px(bx + Math.round(lean * t * t), by - k, k % 5 === 0 ? P.reedDark : rng() < 0.2 ? P.grassGold : P.reed);
+    const base = noise(k, seed, 600) < 0.25 ? P.grassGold : P.reed;
+    p.px(bx + Math.round(lean * t * t), by - k, shade(base, (t - 0.5) * 0.4 + grain(k, seed, 601, 0.2)));
   }
   if (cattail) {
     const x = bx + Math.round(lean * 0.64);
     const top = by - Math.round(h * 0.8);
-    p.rect(x, top - 5, 2, 6, P.cattail);
-    p.px(x + 1, top - 4, P.cattailLit);
-    p.px(x + 1, top - 3, P.cattailLit);
+    for (let y = top - 4; y <= top; y++) {
+      p.px(x, y, shade(P.cattail, -0.2 + grain(x, y, 602, 0.15)));
+      p.px(x + 1, y, shade(P.cattail, 0.3 + grain(x + 1, y, 602, 0.15)));
+    }
+    p.px(x, top - 5, shade(P.reed, 0.2));
   }
 }
 
-function fern(p, x, y, rng) {
+function fern(p, x, y) {
   for (let i = 0; i < 5; i++) {
     const dir = i - 2;
-    for (let k = 0; k < 5; k++) p.px(x + Math.round(dir * k * 0.6), y - k + Math.abs(dir) * Math.floor(k / 3), rng() < 0.3 ? P.fernDark : P.fern);
+    for (let k = 0; k < 4; k++) {
+      p.px(x + Math.round(dir * k * 0.6), y - k + Math.abs(dir) * Math.floor(k / 2), shade(P.fern, (dir > 0 ? 0.25 : -0.2) + grain(i, k, 610, 0.2)));
+    }
   }
 }
 
@@ -339,24 +367,23 @@ function grassTufts(p, rng, x0, y0, w, h, n) {
     const x = x0 + Math.floor(rng() * w);
     const y = y0 + Math.floor(rng() * h);
     if (!p.alphaAt(x, y)) continue;
-    for (let k = 0; k < 3 + Math.floor(rng() * 3); k++) p.px(x + (k > 2 ? 1 : 0), y - k, rng() < 0.5 ? P.grassGold : P.grass);
+    const blades = 2 + Math.floor(rng() * 3);
+    for (let k = 0; k < blades; k++) p.px(x + (k > 1 ? 1 : 0), y - k, shade(rng() < 0.5 ? P.grassGold : P.grass, 0.1 + k * 0.1));
   }
 }
 
-function boulder(p, cx, cy, rx, ry, rng) {
+// Granite boulder lit as a sphere, with crusts of lichen.
+function boulder(p, cx, cy, rx, ry) {
   p.hline(cx - rx, cx + rx, cy + ry + 1, P.water5, 0.6);
   for (let y = -ry; y <= ry; y++) {
     for (let x = -rx; x <= rx; x++) {
       const d = (x * x) / (rx * rx) + (y * y) / (ry * ry);
       if (d > 1) continue;
-      const u = x / rx;
-      const v = y / ry;
-      let c = P.stone;
-      if (d > 0.82) c = P.stoneDark;
-      else if (v > 0.35) c = P.stoneDark;
-      else if (u > -0.1 && v < -0.2) c = P.stoneLit;
-      if (d <= 0.82 && rng() < 0.06) c = rng() < 0.5 ? P.lichen : P.lichen2;
-      p.px(cx + x, cy + y, c);
+      const nz = Math.sqrt(1 - d);
+      const lit = (x / rx) * 0.5 - (y / ry) * 0.6 + nz * 0.6;
+      const lichen = noise(Math.floor((cx + x) / 2), Math.floor((cy + y) / 2), 700) < 0.14;
+      const base = lichen ? (noise(cx + x, cy + y, 701) < 0.5 ? P.lichen : P.lichen2) : P.stone;
+      p.px(cx + x, cy + y, shade(base, (lit - 0.55) * 1.2 + grain(cx + x, cy + y, 702, 0.2)));
     }
   }
 }
@@ -364,98 +391,104 @@ function boulder(p, cx, cy, rx, ry, rng) {
 function paintDock(scene, rng) {
   const p = new Painter(AW, AH);
   const y0 = DOCK_AY;
-  const leftAt = (y) => Math.round(53 - ((y - y0) * 26) / 60);
-  const rightAt = (y) => Math.round(187 + ((y - y0) * 26) / 60);
+  const depth = AH - y0;
+  const leftAt = (y) => Math.round(40 - ((y - y0) * 20) / depth);
+  const rightAt = (y) => Math.round(140 + ((y - y0) * 20) / depth);
 
   // pilings at the far corners, one with a coil of rope
-  for (const x of [52, 184]) {
-    p.rect(x, y0 - 7, 4, 9, P.woodDark);
-    p.hline(x, x + 3, y0 - 7, P.woodLit);
-    p.vline(x + 3, y0 - 6, y0 + 1, P.wood);
+  for (const x of [38, 139]) {
+    for (let y = y0 - 6; y <= y0 + 1; y++) {
+      for (let i = 0; i < 3; i++) p.px(x + i, y, shade(P.wood, (i - 1) * 0.4 + (y === y0 - 6 ? 0.4 : 0) + grain(x + i, y, 800, 0.15)));
+    }
   }
-  p.hline(51, 56, y0 - 3, P.rope);
-  p.hline(51, 56, y0 - 1, P.rope);
+  for (const y of [y0 - 3, y0 - 1]) for (let x = 37; x <= 42; x++) p.px(x, y, shade(P.rope, (x % 2 ? 0.25 : -0.15)));
 
+  // weathered planks: each board its own tone, with grain, knots and nails
   for (let y = y0; y < AH; y++) {
-    const row = (y - y0) % 6;
-    const board = Math.floor((y - y0) / 6);
+    const row = (y - y0) % 5;
+    const board = Math.floor((y - y0) / 5);
+    const tone = mix(P.wood, noise(board, 0, 801) < 0.3 ? '#8d8577' : P.woodAlt, noise(board, 1, 802) * 0.6);
     const l = leftAt(y);
     const r = rightAt(y);
-    let streak = 0;
     for (let x = l; x <= r; x++) {
-      let c = board % 2 ? P.woodAlt : P.wood;
-      if (row === 5) c = P.woodGap;
-      else if (row === 0) c = P.woodLit;
-      else if (row === 4) c = P.woodDark;
-      else if (streak > 0 || rng() < 0.03) {
-        c = P.woodDark;
-        streak = streak > 0 ? streak - 1 : 2 + Math.floor(rng() * 3);
+      let c;
+      if (row === 4 || x === l || x === r) c = P.woodGap;
+      else {
+        let k = row === 0 ? 0.35 : row === 3 ? -0.35 : 0;
+        k += grain(Math.floor(x / 3), y, 803 + board, 0.22);
+        if (noise(Math.floor((x + board * 7) / 2), row, 804) < 0.1) k -= 0.3; // grain streaks
+        c = shade(tone, k);
       }
-      if (x === l || x === r) c = P.woodGap;
       p.px(x, y, c);
     }
-    if (row === 2) {
-      p.px(l + 3, y, P.nail);
-      p.px(r - 3, y, P.nail);
+    if (row === 1) {
+      p.px(l + 2, y, P.nail);
+      p.px(r - 2, y, P.nail);
+    }
+    if (row === 2 && noise(board, 2, 805) < 0.35) {
+      const kx = Math.round(l + 10 + noise(board, 3, 806) * (r - l - 20));
+      p.px(kx, y, shade(tone, -0.7));
+      p.px(kx + 1, y, shade(tone, -0.4));
     }
   }
 
   // shadows under the angler and the dog
-  p.ellipse(PLAYER_AX, y0 + 17, 8, 1, P.ink, 0.3);
-  p.ellipse(DOG.x, DOG.y, 9, 1, P.ink, 0.25);
+  p.ellipse(PLAYER_AX, y0 + 13, 6, 1, P.ink, 0.3);
+  p.ellipse(DOG.x, DOG.y, 7, 1, P.ink, 0.25);
 
   // tackle box
-  const tx = 144;
-  const ty = y0 + 14;
-  p.rect(tx, ty, 15, 7, P.tackle);
-  p.rect(tx, ty - 2, 15, 2, P.tackleDark);
-  p.hline(tx + 5, tx + 9, ty - 4, P.metal);
-  p.px(tx + 5, ty - 3, P.metal);
-  p.px(tx + 9, ty - 3, P.metal);
-  p.px(tx + 7, ty, P.metal);
-  p.hline(tx, tx + 14, ty + 6, P.tackleDark);
-  p.hline(tx, tx + 14, ty + 7, P.ink, 0.3);
+  const tx = 106;
+  const ty = y0 + 10;
+  for (let y = 0; y < 6; y++) for (let x = 0; x < 11; x++) p.px(tx + x, ty + y, shade(y < 2 ? P.tackleDark : P.tackle, (y === 2 ? 0.35 : 0) + (x === 10 ? 0.3 : x === 0 ? -0.3 : 0) + grain(x, y, 810, 0.12)));
+  p.hline(tx + 4, tx + 7, ty - 2, P.metal);
+  p.px(tx + 4, ty - 1, P.metalDark);
+  p.px(tx + 7, ty - 1, P.metalDark);
+  p.px(tx + 5, ty + 2, P.metal);
+  p.hline(tx, tx + 10, ty + 6, P.ink, 0.3);
 
   // enamel camp mug
   const { x: mx, y: my } = MUG;
-  p.rect(mx, my, 4, 5, P.mug);
-  p.hline(mx, mx + 3, my, P.enamel);
-  p.px(mx + 1, my + 2, P.mugLit);
-  p.px(mx + 2, my + 3, P.enamel);
-  p.px(mx + 4, my + 1, P.mug);
-  p.px(mx + 5, my + 2, P.mug);
-  p.px(mx + 4, my + 3, P.mug);
-  p.hline(mx, mx + 4, my + 5, P.ink, 0.3);
+  for (let y = 0; y < 4; y++) for (let x = 0; x < 3; x++) p.px(mx + x, my + y, shade(P.mug, (x - 1) * 0.35 + grain(x, y, 820, 0.1)));
+  p.hline(mx, mx + 2, my, P.enamel);
+  p.px(mx + 1, my + 2, P.enamel);
+  p.px(mx + 3, my + 1, P.mug);
+  p.px(mx + 3, my + 2, P.mug);
+  p.hline(mx, mx + 3, my + 4, P.ink, 0.3);
 
   // galvanised bait bucket
-  const bx = 170;
-  const by = y0 + 30;
-  for (let y = 0; y < 8; y++) p.hline(bx + (y >> 2), bx + 7 - (y >> 2), by + y, y === 0 ? P.enamel : y % 3 === 1 ? P.metalDark : P.metal);
+  const bx = 127;
+  const by = y0 + 23;
+  for (let y = 0; y < 6; y++) {
+    for (let x = (y >> 2); x <= 5 - (y >> 2); x++) p.px(bx + x, by + y, y === 0 ? P.enamel : shade(P.metal, (x - 2.5) * 0.18 + (y % 2 ? -0.15 : 0.05)));
+  }
+  p.hline(bx, bx + 5, by - 2, P.metalDark);
   p.px(bx - 1, by - 1, P.metalDark);
-  p.hline(bx, bx + 7, by - 2, P.metalDark);
-  p.px(bx + 8, by - 1, P.metalDark);
-  p.hline(bx + 1, bx + 7, by + 8, P.ink, 0.3);
+  p.px(bx + 6, by - 1, P.metalDark);
+  p.hline(bx + 1, bx + 5, by + 6, P.ink, 0.3);
 
   p.texture(scene, 'dock');
 }
 
 function paintCloud(scene, key, w, h, rng) {
   const p = new Painter(w, h);
-  const puffs = 3 + Math.floor(w / 10);
+  // A cumulus: billows piled highest in the middle, on a flat base.
+  const puffs = 3 + Math.floor(w / 6);
   for (let i = 0; i < puffs; i++) {
-    const r = 2 + rng() * (h - 4);
-    const cx = r + rng() * (w - 2 * r);
-    p.ellipse(Math.round(cx), Math.round(h - 2 - r * 0.7), Math.round(r * 1.3), Math.round(r), P.cloud);
+    const cx = 2 + (i / (puffs - 1)) * (w - 4) + (rng() - 0.5) * 2;
+    const r = Math.max(1.5, (h - 2) * (0.3 + 0.45 * Math.sin((Math.PI * cx) / w)) * (0.7 + rng() * 0.5));
+    p.ellipse(Math.round(cx), Math.round(h - 1 - r), Math.round(r), Math.round(r), P.cloud);
   }
-  // Shade a copy so lit tops and flat grey bottoms read clearly.
+  // Shade a copy: sunlit upper right, cool flat base, soft lumpy texture.
   const shaded = new Painter(w, h);
   for (let y = 0; y < h - 1; y++) {
     for (let x = 0; x < w; x++) {
       if (!p.alphaAt(x, y)) continue;
-      let c = P.cloud;
-      if (!p.alphaAt(x, y - 1) || !p.alphaAt(x, y - 2)) c = P.cloudLight;
-      else if (y >= h - 3) c = P.cloudShade;
-      shaded.px(x, y, c);
+      let k = grain(x, y, w, 0.12) + ((x / w) - 0.5) * 0.3;
+      if (!p.alphaAt(x, y - 1)) k += 0.45;
+      else if (!p.alphaAt(x, y - 2)) k += 0.2;
+      if (y >= h - 3) k -= 0.4;
+      // Cloud shadows take the blue of the sky around them.
+      shaded.px(x, y, k < 0 ? mix(P.cloud, P.sky1, Math.min(1, -k * 1.2)) : shade(P.cloud, k));
     }
   }
   shaded.texture(scene, key);
@@ -464,9 +497,9 @@ function paintCloud(scene, key, w, h, rng) {
 // Soft dithered mist that tiles seamlessly left to right.
 function paintMist(scene, key, w, h, density, rng) {
   const p = new Painter(w, h);
-  const step = 16;
+  const step = 12;
   const knots = Array.from({ length: Math.ceil(w / step) }, () => rng());
-  const noise = (x) => {
+  const wave = (x) => {
     const i = Math.floor(x / step);
     const t = (x % step) / step;
     const a = knots[i % knots.length];
@@ -475,7 +508,7 @@ function paintMist(scene, key, w, h, density, rng) {
   };
   for (let y = 0; y < h; y++) {
     const v = Math.sin((Math.PI * (y + 0.5)) / h);
-    for (let x = 0; x < w; x++) if (dither(x, y, v * noise(x) * density)) p.px(x, y, P.mist);
+    for (let x = 0; x < w; x++) if (dither(x, y, v * wave(x) * density)) p.px(x, y, P.mist);
   }
   p.texture(scene, key);
 }

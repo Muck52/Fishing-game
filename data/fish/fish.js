@@ -10,10 +10,14 @@ export const FISH = [
     note: 'Males sweep saucer-shaped nests in the shallows and guard them against all comers.',
     rarity: 'common', minWeight: 0.2, maxWeight: 1.2, strength: 0.3, value: 5,
     art: {
-      length: 22, depth: 8, peak: 0.42, nose: 0.35, ped: 0.3, eye: 0.12,
-      back: '#3e5a5c', side: '#7a9480', belly: '#e0a048', backTo: 0.3, sideTo: 0.68,
-      fin: '#56705f', dorsal: [0.3, 0.86], dorsalH: 0.35, spiny: true, tail: 'square',
-      pattern: [{ type: 'bars', n: 6, color: '#3b5148' }, { type: 'ear', color: '#141c24' }],
+      length: 34, depth: 12, peak: 0.42, nose: 0.33, ped: 0.28, eye: 0.13, gill: 0.27, mouth: 0.07,
+      back: '#33504f', side: '#6f8a73', belly: '#e3a74c', backTo: 0.32, sideTo: 0.7,
+      fin: '#4f6656', dorsal: [0.3, 0.88], dorsalH: 0.32, spiny: 0.5, dorsalSpot: '#1c2622', tail: 'square', scales: 2,
+      pattern: [
+        { type: 'bars', n: 6, color: '#2c403a', depth: 0.8 },
+        { type: 'cheek', color: '#7fb0d8' },
+        { type: 'ear', color: '#10161c' },
+      ],
     },
   },
   {
@@ -23,10 +27,10 @@ export const FISH = [
     note: 'Perch travel in loose schools. Where there is one, there are usually more.',
     rarity: 'common', minWeight: 0.3, maxWeight: 1.5, strength: 0.35, value: 6,
     art: {
-      length: 26, depth: 6, peak: 0.4, nose: 0.3, ped: 0.28, eye: 0.12,
-      back: '#4f5a28', side: '#d4b446', belly: '#efe6c0', backTo: 0.3, sideTo: 0.72,
-      fin: '#d97a36', dorsal: [0.22, 0.78], dorsalH: 0.5, spiny: true, tail: 'fork',
-      pattern: [{ type: 'bars', n: 7, color: '#3d4a1e' }],
+      length: 40, depth: 9, peak: 0.4, nose: 0.3, ped: 0.26, eye: 0.12, gill: 0.25, mouth: 0.08,
+      back: '#45531f', side: '#d8b640', belly: '#f1e8c6', backTo: 0.28, sideTo: 0.75,
+      fin: '#c9a63a', lowerFin: '#e07a2e', dorsal: [0.2, 0.8], dorsalH: 0.5, spiny: 0.55, dorsalSpot: '#26301a', tail: 'fork', scales: 2,
+      pattern: [{ type: 'bars', n: 7, color: '#36421a', taper: true, depth: 0.82 }],
     },
   },
   {
@@ -36,10 +40,13 @@ export const FISH = [
     note: 'Bronze-backed and fond of rocky drop-offs. Pound for pound, few fish fight harder.',
     rarity: 'uncommon', minWeight: 1, maxWeight: 6, strength: 0.55, value: 15,
     art: {
-      length: 32, depth: 8, peak: 0.45, nose: 0.4, ped: 0.3, eye: 0.12, eyeColor: '#c8402c',
-      back: '#5a4a2a', side: '#9c7c46', belly: '#e4d4a6', backTo: 0.32, sideTo: 0.72,
-      fin: '#86693c', dorsal: [0.3, 0.82], dorsalH: 0.38, spiny: true, tail: 'square',
-      pattern: [{ type: 'bars', n: 9, color: '#5c4626' }],
+      length: 50, depth: 12, peak: 0.45, nose: 0.4, ped: 0.3, eye: 0.12, eyeColor: '#c8402c', gill: 0.26, mouth: 0.14, mouthSlope: 0.25,
+      back: '#4f4024', side: '#9a7a44', belly: '#e6d8b0', backTo: 0.3, sideTo: 0.74,
+      fin: '#7f6639', dorsal: [0.28, 0.84], dorsalH: 0.38, spiny: 0.5, tail: 'square', scales: 3,
+      pattern: [
+        { type: 'bars', n: 9, color: '#4a3820', depth: 0.75, strength: 0.45 },
+        { type: 'eyebars', color: '#3a2c18' },
+      ],
     },
   },
   {
@@ -49,12 +56,14 @@ export const FISH = [
     note: 'Strictly a char, not a trout. Its red, blue-haloed spots are a sign of cold, clean water.',
     rarity: 'uncommon', minWeight: 0.5, maxWeight: 5, strength: 0.6, value: 18,
     art: {
-      length: 32, depth: 6.5, peak: 0.45, nose: 0.35, ped: 0.32, eye: 0.12,
-      back: '#3a4a33', side: '#6c7a58', belly: '#e07a3c', backTo: 0.35, sideTo: 0.72,
-      fin: '#d86a36', dorsal: [0.4, 0.55], dorsalH: 0.5, tail: 'square',
+      length: 50, depth: 10, peak: 0.45, nose: 0.33, ped: 0.3, eye: 0.12, gill: 0.24, mouth: 0.1,
+      back: '#2f3f2c', side: '#5e6e4c', belly: '#e2703a', backTo: 0.4, sideTo: 0.72,
+      fin: '#7a7a4a', lowerFin: '#d8603a', finEdge: true, finBars: true, dorsal: [0.4, 0.56], dorsalH: 0.5, tail: 'square',
+      scales: 0, lateral: 0.42,
       pattern: [
-        { type: 'vermic', color: '#c9c28c' },
-        { type: 'spots', color: '#d8442e', halo: '#6f8fc4', density: 0.05, v0: 0.42, v1: 0.7 },
+        { type: 'vermic', color: '#c8c08a' },
+        { type: 'spots', color: '#d8c060', density: 0.35, cell: 4, v0: 0.35, v1: 0.7, seed: 30 },
+        { type: 'spots', color: '#d8442e', halo: '#5f86c6', density: 0.22, cell: 6, size: 0.7, v0: 0.42, v1: 0.72, seed: 40 },
       ],
     },
   },
@@ -65,10 +74,11 @@ export const FISH = [
     note: "The lake's only cod. Burbot spawn in midwinter, in tangled balls beneath the ice.",
     rarity: 'rare', minWeight: 2, maxWeight: 12, strength: 0.75, value: 35,
     art: {
-      length: 40, depth: 5, peak: 0.25, nose: 0.55, ped: 0.3, eye: 0.1,
-      back: '#4a4228', side: '#7a6c44', belly: '#d9cfa6', backTo: 0.4, sideTo: 0.75,
-      fin: '#5e5434', dorsal: [0.44, 0.94], dorsalH: 0.3, anal: [0.52, 0.94], tail: 'round', barbels: true,
-      pattern: [{ type: 'mottle', color: '#2e2a1a' }],
+      length: 60, depth: 8, peak: 0.25, nose: 0.55, ped: 0.28, eye: 0.09, gill: 0.2, mouth: 0.08,
+      back: '#40391f', side: '#73663e', belly: '#d8cfa6', backTo: 0.42, sideTo: 0.78,
+      fin: '#5a5032', dorsal: [0.44, 0.95], dorsal2: [0.33, 0.4], dorsalH: 0.28, anal: [0.5, 0.95], analH: 0.28,
+      tail: 'round', barbels: 'chin', scales: 0,
+      pattern: [{ type: 'mottle', color: '#2a2614' }],
     },
   },
   {
@@ -78,10 +88,11 @@ export const FISH = [
     note: 'Waits motionless in the weeds, then strikes faster than the eye can follow.',
     rarity: 'rare', minWeight: 4, maxWeight: 20, strength: 0.85, value: 45,
     art: {
-      length: 46, depth: 5, peak: 0.55, nose: 0.18, snout: 1.4, ped: 0.32, eye: 0.14, gill: 0.22,
-      back: '#2f4a2c', side: '#5f7f45', belly: '#e6e6c4', backTo: 0.3, sideTo: 0.7,
-      fin: '#9a6a3a', dorsal: [0.76, 0.9], dorsalH: 0.7, anal: [0.76, 0.9], tail: 'fork',
-      pattern: [{ type: 'beans', color: '#d4dc98' }],
+      length: 70, depth: 8, peak: 0.55, nose: 0.14, snout: 1.5, ped: 0.3, eye: 0.13, gill: 0.22, mouth: 0.16, mouthSlope: 0.1,
+      back: '#28411f', side: '#557a3c', belly: '#ecebcf', backTo: 0.3, sideTo: 0.72,
+      fin: '#8f6a3a', dorsal: [0.77, 0.9], dorsalH: 0.65, anal: [0.77, 0.9], analH: 0.55, finBars: true, tail: 'fork', scales: 2,
+      scaleStrength: 0.6,
+      pattern: [{ type: 'spots', color: '#d6dc94', density: 0.85, cell: 4, rx: 1.6, ry: 0.8, size: 0.9, v0: 0.18, v1: 0.8, seed: 50 }],
     },
   },
   {
@@ -91,10 +102,10 @@ export const FISH = [
     note: 'A lineage older than the dinosaurs. This one may have outlived every tree on the shore.',
     rarity: 'legendary', minWeight: 15, maxWeight: 80, strength: 1.0, value: 150,
     art: {
-      length: 46, depth: 6, peak: 0.35, nose: 0.12, snout: 1.6, ped: 0.22, eye: 0.14,
-      back: '#48524d', side: '#7c8780', belly: '#d9d7c9', backTo: 0.35, sideTo: 0.72,
-      fin: '#5f6964', dorsal: [0.76, 0.86], dorsalH: 0.5, tail: 'shark', barbels: true,
-      pattern: [{ type: 'scutes', color: '#cdd0c4' }],
+      length: 72, depth: 9, peak: 0.33, nose: 0.1, snout: 1.7, ped: 0.2, eye: 0.13, gill: 0.22, mouth: 0,
+      back: '#434b43', side: '#77806f', belly: '#e0ddcd', backTo: 0.36, sideTo: 0.74,
+      fin: '#59625a', dorsal: [0.78, 0.87], dorsalH: 0.45, tail: 'shark', barbels: 'four', scales: 0, lateral: false,
+      pattern: [{ type: 'scutes', color: '#c9ccbf' }],
     },
   },
 ];

@@ -1,5 +1,5 @@
 // All art is pixel art: one art pixel is drawn as a PX x PX block on screen.
-export const PX = 3;
+export const PX = 4;
 
 // Game is laid out on a fixed-width portrait canvas and scaled to fit the phone.
 // Height stretches to fill taller phones so there are no empty bars.
@@ -55,7 +55,7 @@ export const lerp = (a, b, t) => a + (b - a) * t;
 
 // Things far out on the lake draw at a smaller pixel scale.
 export function pxScale(y) {
-  return y < WATER_Y + (DOCK_Y - WATER_Y) * 0.45 ? 2 : 3;
+  return y < WATER_Y + (DOCK_Y - WATER_Y) * 0.45 ? PX - 1 : PX;
 }
 
 // Outlined text that reads over sky, forest and water.

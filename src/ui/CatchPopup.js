@@ -1,8 +1,8 @@
 import { W, H, PX, DEPTH, INK, textStyle, inkStyle } from '../core/constants.js';
 import { RARITY } from '../../data/fish/fish.js';
 
-const CARD_W = 200 * PX;
-const CARD_H = 236 * PX;
+const CARD_W = 150 * PX;
+const CARD_H = 178 * PX;
 const BROWN = '#7a6248';
 
 // A page from the angler's field journal, shown after each catch.
@@ -50,7 +50,7 @@ export class CatchPopup {
     this.badge.setText(isNew ? 'New species for your journal!' : isRecord ? 'New personal best!' : '');
 
     this.fish.setTexture(`fish-${fish.id}`);
-    const scale = Math.max(3, Math.min(8, Math.floor(Math.min(420 / this.fish.width, 170 / this.fish.height))));
+    const scale = Math.max(3, Math.min(6, Math.floor(Math.min(420 / this.fish.width, 190 / this.fish.height))));
     this.fish.setScale(scale);
 
     this.canClose = false;
