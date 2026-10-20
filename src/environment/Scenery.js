@@ -1,5 +1,5 @@
 import { W, PX, AW, HORIZON, WATER_Y, DOCK_AY, DEPTH } from '../core/constants.js';
-import { SUN, MUG, DOG, FALLS } from '../art/SceneryArt.js';
+import { SUN, MUG, DOG, FALLS, REED_BED } from '../art/SceneryArt.js';
 import { Wind } from './Wind.js';
 import { Waves } from './Waves.js';
 import { Sun } from './Sun.js';
@@ -73,6 +73,10 @@ export class Scenery {
       this.leaves.push(leaf);
     }
 
+    // a rowboat moored by the reeds, rocking on the swell
+    this.boat = scene.add.sprite((REED_BED.x + 30) * PX, (REED_BED.y + 3) * PX, 'boat').setOrigin(0.5, 1).setScale(PX - 1).setDepth(DEPTH.BANKS + 0.3);
+    this.boatY = this.boat.y;
+
     this.dog = scene.add.sprite(DOG.x * PX, DOG.y * PX, 'dog', 0).setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.DOCK_LIFE);
     this.nextWag = scene.time.now + 4000;
     scene.add.sprite((MUG.x + 2) * PX, MUG.y * PX, 'steam').setOrigin(0.5, 1).setScale(PX).setAlpha(0.55).setDepth(DEPTH.DOCK_LIFE).play('steam-rise');
@@ -130,6 +134,8 @@ export class Scenery {
     this.waves.update(time, dt);
     this.reeds.update();
     this.falls.tilePositionY -= 40 * dt;
+    this.boat.y = this.boatY + Math.round(Math.sin(time / 900)) * (PX - 1);
+    this.boat.rotation = Math.sin(time / 1300) * 0.03 * (0.5 + w);
     for (const c of this.clouds) {
       c.x += c.speed * (0.4 + w * 1.4) * dt;
       if (c.x > W) c.x = -c.width * PX;

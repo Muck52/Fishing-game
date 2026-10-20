@@ -8,9 +8,21 @@ import { AW, AH, HORIZON, DOCK_AY } from '../core/constants.js';
 export const SUN = { x: 138, y: 30 };
 export const SNAG = { x: 30, top: HORIZON - 40 }; // dead pine the eagle perches on
 export const FALLS = { x: 6, top: HORIZON - 30, w: 8 }; // waterfall off the cliff
-export const PLAYER_AX = 70; // where the angler stands on the dock
-export const MUG = { x: 125, y: DOCK_AY + 8 };
-export const DOG = { x: 51, y: DOCK_AY + 11 };
+const lerp = (a, b, t) => a + (b - a) * t;
+
+// The pier runs in from the bottom-left corner on a slight diagonal and
+// narrows as it recedes over the water. Edges are in art pixels: `back` is
+// the lake-side edge, `front` the edge nearest the viewer.
+export const DOCK = { x0: -6, x1: 136, back0: AH - 36, back1: DOCK_AY - 10, front0: AH - 4, front1: DOCK_AY - 2 };
+export function dockAt(x) {
+  const t = Math.max(0, Math.min(1, (x - DOCK.x0) / (DOCK.x1 - DOCK.x0)));
+  return { t, back: lerp(DOCK.back0, DOCK.back1, t), front: lerp(DOCK.front0, DOCK.front1, t) };
+}
+// The angler sits at the lake-side edge near the far end, facing the water.
+export const PLAYER = { x: 108, y: Math.round(dockAt(108).back) + 3 };
+export const MUG = { x: 116, y: Math.round(dockAt(116).back) + 8 };
+export const DOG = { x: 60, y: Math.round((dockAt(60).back + dockAt(60).front) / 2) + 3 };
+export const REED_BED = { x: 0, w: 44, y: HORIZON + 46 }; // waterline of the reed bed
 
 // One clean band of a colour ramp. Light is quantised to thirds so surfaces
 // read as a few crisp tones.
@@ -121,7 +133,7 @@ export const WAVE_BANDS = [
   { y0: HORIZON + 3, y1: HORIZON + 22, gap: 3, len: [1, 3], alpha: 0.6 },
   { y0: HORIZON + 22, y1: HORIZON + 50, gap: 4, len: [2, 5], alpha: 0.75 },
   { y0: HORIZON + 50, y1: HORIZON + 95, gap: 5, len: [3, 7], alpha: 0.9 },
-  { y0: HORIZON + 95, y1: DOCK_AY + 12, gap: 6, len: [4, 10], alpha: 1 },
+  { y0: HORIZON + 95, y1: AH, gap: 6, len: [4, 10], alpha: 1 },
 ];
 function paintWaves(scene, rng) {
   WAVE_BANDS.forEach((b, i) => {
@@ -401,10 +413,10 @@ function paintWater(scene, rng, mountains, forest) {
     p.hline(cx - len, cx + len, r, '#ffffff', 0.7 * (1 - r / 80));
   }
 
-  island(p, 15, 30);
+  island(p, 160, 20);
   basking(p, Math.round(AW * 0.66), Math.round(h * 0.42));
-  lilyPads(p, rng, 22, 69, 5);
-  lilyPads(p, rng, 150, h - 112, 4);
+  lilyPads(p, rng, 56, REED_BED.y - HORIZON + 4, 5);
+  lilyPads(p, rng, 150, Math.round(h * 0.62), 3);
   p.texture(scene, 'water');
 }
 
@@ -490,138 +502,117 @@ function reed(bx, by, h, lean, kind, seed) {
   };
 }
 
+// A reed bed standing out in the shallows on the west side: a dense dark
+// base of stems at the water, with taller reeds and cattails above it that
+// sway in the wind, and their reflection below.
 function paintBanks(scene, rng) {
   REEDS.length = 0;
   const p = new Painter(AW, AH);
-  const yTop = AH - 112;
-  const edgeAt = (y) => Math.round(4 + (y - yTop) * 0.34 + Math.sin(y * 0.33) * 1.5);
-
-  // left bank: a lush meadow sloping to the water
-  stamp(p, 50, AH - yTop + 2, 0, yTop - 1, (s) => {
-    for (let y = yTop; y < AH; y++) {
-      const e = edgeAt(y);
-      for (let x = 0; x <= e; x++) {
-        if (e - x < 2) {
-          s.px(x, y - yTop + 1, tone(P.earth, e - x === 0 ? -0.33 : 0));
-          continue;
-        }
-        // grass tufts: small lighter chevrons scattered through the turf
-        let k = (x - e) * 0.03;
-        const tx = x % 4;
-        const ty = (y + Math.floor(x / 4) * 2) % 5;
-        if (ty === 0 && tx === 1) k += 0.66;
-        else if (ty === 1 && (tx === 0 || tx === 2)) k += 0.33;
-        else if (ty === 3) k -= 0.2;
-        s.px(x, y - yTop + 1, tone(P.grass, k));
+  const { x: bx, w, y: by } = REED_BED;
+  stamp(p, w + 4, 16, bx - 1, by - 13, (s) => {
+    for (let x = 1; x <= w; x++) {
+      const fade = 1 - Math.max(0, (x - w * 0.6) / (w * 0.4));
+      const h = Math.max(1, Math.round((7 + 3 * Math.sin(x * 0.35) + noise(x, 0, 500) * 3) * fade));
+      for (let y = 13 - h; y <= 13; y++) {
+        let k = -0.33 + (noise(x, Math.floor(y / 2), 501) < 0.3 ? 0.33 : 0);
+        if (y === 13 - h) k += 0.33;
+        s.px(x, y, tone(noise(x, y, 502) < 0.2 ? P.grassGold : P.reed, k));
       }
     }
   });
-  for (let y = yTop; y < AH; y++) p.px(edgeAt(y) + 2, y, P.waterLine, 0.6);
-  for (let i = 0; i < 14; i++) {
-    const y = yTop + 8 + Math.floor(rng() * 100);
-    const x = 2 + Math.floor(rng() * Math.max(1, edgeAt(y) - 5));
-    p.px(x, y, [P.flowerRed, P.flowerYellow, P.flowerWhite, P.flowerViolet][i % 4]);
+  for (let x = bx; x < bx + w; x++) {
+    p.px(x, by + 2, P.waterLine, 0.6);
+    for (let i = 3; i < 7; i++) if (i % 2) p.px(x, by + i, P.water5, 0.35);
   }
-  for (let i = 0; i < 14; i++) {
-    const by = yTop + 5 + Math.floor(rng() * 105);
-    if (by >= AH) continue;
-    REEDS.push(reed(edgeAt(by) - Math.floor(rng() * 4), by, 14 + Math.floor(rng() * 19), (rng() - 0.3) * 5, rng() < 0.5 ? 'cattail' : 'reed', i));
-  }
-  for (let i = 0; i < 10; i++) {
-    const by = yTop + 10 + Math.floor(rng() * 95);
-    if (by >= AH) continue;
-    REEDS.push(reed(2 + Math.floor(rng() * Math.max(1, edgeAt(by) - 6)), by, 5 + Math.floor(rng() * 5), (rng() - 0.5) * 2, 'flower', i + 20));
-  }
-
-  // right bank: mossy boulders
-  for (const [cx, cy, rx, ry] of [[178, AH - 60, 8, 7], [177, AH - 34, 10, 9], [170, AH - 48, 7, 5], [164, AH - 10, 16, 10], [150, AH - 4, 10, 6]]) {
-    boulder(p, cx, cy, rx, ry);
-  }
-  for (let i = 0; i < 6; i++) {
-    REEDS.push(reed(160 + Math.floor(rng() * 16), AH - 75 + Math.floor(rng() * 30), 11 + Math.floor(rng() * 10), (rng() - 0.6) * 4, rng() < 0.3 ? 'cattail' : 'reed', i + 40));
+  for (let i = 0; i < 26; i++) {
+    const x = bx + 1 + Math.floor(rng() * (w - 6));
+    const h = Math.round((9 + rng() * 13) * (1 - x / (w * 1.6)));
+    REEDS.push(reed(x, by - Math.floor(rng() * 3), h, (rng() - 0.3) * 3, rng() < 0.3 ? 'cattail' : 'reed', i));
   }
   p.texture(scene, 'banks');
 }
 
-// A boulder lit as a sphere in clean bands, with a cap of moss.
-function boulder(p, cx, cy, rx, ry) {
-  p.hline(cx - rx - 1, cx + rx + 1, cy + ry + 2, P.waterLine, 0.6);
-  stamp(p, rx * 2 + 3, ry * 2 + 3, cx - rx - 1, cy - ry - 1, (s) => {
-    for (let y = -ry; y <= ry; y++) {
-      for (let x = -rx; x <= rx; x++) {
-        const d = (x * x) / (rx * rx) + (y * y) / (ry * ry);
-        if (d > 1) continue;
-        const nz = Math.sqrt(1 - d);
-        const lit = (x / rx) * 0.5 - (y / ry) * 0.6 + nz * 0.6;
-        const moss = y / ry < -0.45 + Math.sin(x * 0.8) * 0.12;
-        const base = moss ? P.rockMoss : noise(cx + x, cy + y, 700) < 0.05 ? P.lichen : P.stone;
-        s.px(rx + 1 + x, ry + 1 + y, tone(base, (lit - 0.55) * 1.3));
+function paintDock(scene) {
+  const d = new Painter(AW, AH);
+  const N = 18; // planks along the pier
+  // Planks get narrower with distance; this maps distance along the pier
+  // to a plank number.
+  const plankAt = (t) => N * (1 - Math.pow(1 - t, 1 / 1.7));
+  const tOfPlank = (i) => 1 - Math.pow(1 - i / N, 1.7);
+
+  // posts under the near side, standing down into the water
+  for (let i = 1; i < N; i += 3) {
+    const t = tOfPlank(i);
+    const x = Math.round(lerp(DOCK.x0, DOCK.x1, t));
+    const { front } = dockAt(x);
+    const top = Math.round(front) + 2;
+    const pw = Math.max(2, Math.round(lerp(5, 2, t)));
+    const len = Math.round(lerp(20, 7, t));
+    const water = Math.round(len * 0.4);
+    for (let y = 0; y < len; y++) {
+      for (let k = 0; k < pw; k++) {
+        const c = tone(P.woodDark, k === pw - 1 ? 0.33 : k === 0 ? -0.66 : -0.2);
+        d.px(x + k, top + y, y > water ? mix(c, P.water4, 0.35 + (y - water) / len) : c);
       }
     }
-  });
-}
-
-function paintDock(scene) {
-  const p = new Painter(AW, AH);
-  const y0 = DOCK_AY;
-  const depth = AH - y0;
-  const leftAt = (y) => Math.round(40 - ((y - y0) * 20) / depth);
-  const rightAt = (y) => Math.round(140 + ((y - y0) * 20) / depth);
-
-  for (const x of [38, 139]) {
-    stamp(p, 5, 10, x - 1, y0 - 7, (s) => {
-      for (let y = 1; y < 9; y++) for (let i = 0; i < 3; i++) s.px(1 + i, y, tone(P.wood, (i - 1) * 0.5 + (y === 1 ? 0.5 : 0)));
-    });
+    d.hline(x - 1, x + pw, top + water, P.waterLine);
   }
-  for (const y of [y0 - 3, y0 - 1]) for (let x = 37; x <= 42; x++) p.px(x, y, tone(P.rope, x % 2 ? 0.33 : -0.33));
 
-  // planks, alternating warm tones, with nails and darker grain
-  for (let y = y0; y < AH; y++) {
-    const row = (y - y0) % 5;
-    const board = Math.floor((y - y0) / 5);
-    const plank = board % 3 === 1 ? P.woodAlt : P.wood;
-    const l = leftAt(y);
-    const r = rightAt(y);
-    for (let x = l; x <= r; x++) {
+  // deck and the beam along its near side
+  for (let x = DOCK.x0; x <= DOCK.x1; x++) {
+    const { t, back, front } = dockAt(x);
+    const y0 = Math.ceil(back);
+    const y1 = Math.floor(front);
+    for (let y = y0; y <= y1; y++) {
+      const v = (y - back) / Math.max(1, front - back);
+      const q = plankAt(Math.min(1, Math.max(0, t + (v - 0.5) * 0.03))); // planks lie at a slight slant
+      const idx = Math.floor(q);
+      const f = q - idx;
       let c;
-      if (row === 4 || x === l || x === r) c = P.woodGap;
-      else c = tone(plank, row === 0 ? 0.66 : row === 3 ? -0.33 : noise(Math.floor((x + board * 7) / 5), row, 804) < 0.15 ? -0.33 : 0);
-      p.px(x, y, c);
+      if (f < 0.1) c = P.woodGap;
+      else {
+        let k = f < 0.22 ? 0.66 : f > 0.88 ? -0.33 : 0;
+        if (y === y0) k += 0.33;
+        if (noise(idx, Math.floor(v * 6), 804) < 0.15) k -= 0.33; // weathered grain
+        c = tone(idx % 3 === 1 ? P.woodAlt : P.wood, k);
+        if (f > 0.5 && f < 0.6 && (y === y0 + 1 || y === y1 - 1) && t < 0.35) c = P.nail;
+      }
+      d.px(x, y, c);
     }
-    if (row === 1) {
-      p.px(l + 2, y, P.nail);
-      p.px(r - 2, y, P.nail);
-    }
+    // plank ends, then the side beam in shadow
+    const beam = Math.max(2, Math.round(lerp(4, 2, t)));
+    const endF = plankAt(t) % 1;
+    d.px(x, y1 + 1, endF < 0.1 ? P.woodGap : tone(P.wood, 0.33));
+    for (let i = 2; i <= beam; i++) d.px(x, y1 + i, tone(P.woodDark, -0.2 - i * 0.12));
   }
+  // the far end's cut face
+  const end = dockAt(DOCK.x1);
+  for (let y = Math.ceil(end.back); y <= Math.floor(end.front) + 2; y++) d.px(DOCK.x1 + 1, y, tone(P.woodDark, -0.5));
 
-  p.ellipse(PLAYER_AX, y0 + 12, 4, 1, P.ink, 0.3);
+  // tackle box, bait bucket and camp mug beside the angler
+  const tb = dockAt(82);
+  const tby = Math.round((tb.back + tb.front) / 2) - 1;
+  for (let y = 0; y < 5; y++) for (let x = 0; x < 9; x++) d.px(78 + x, tby + y, tone(y < 2 ? P.tackleDark : P.tackle, (y === 2 ? 0.5 : 0) + (x > 6 ? 0.33 : x < 2 ? -0.33 : 0)));
+  d.hline(81, 84, tby - 1, P.metal);
+  d.px(82, tby + 3, '#ffe060');
+  const bk = dockAt(122);
+  const bky = Math.round(bk.back) - 2;
+  for (let y = 0; y < 6; y++) for (let x = y >> 2; x <= 5 - (y >> 2); x++) d.px(120 + x, bky + y, y === 0 ? P.enamel : tone(P.metal, (x - 2.5) * 0.25 + (y % 2 ? -0.33 : 0)));
+  d.hline(120, 125, bky - 2, P.metalDark);
+  for (let y = 0; y < 4; y++) for (let x = 0; x < 3; x++) d.px(MUG.x + x, MUG.y - 4 + y, tone(P.mug, (x - 1) * 0.5));
+  d.hline(MUG.x, MUG.x + 2, MUG.y - 4, P.enamel);
+  d.px(MUG.x + 3, MUG.y - 3, P.mug);
+  d.outerOutline(P.outline);
+
+  // the pier's shadow on the water, then the pier over it
+  const p = new Painter(AW, AH);
+  for (let x = Math.max(0, DOCK.x0); x <= DOCK.x1; x++) {
+    const { t, front } = dockAt(x);
+    for (let i = 0; i < Math.round(lerp(7, 3, t)); i++) p.px(x, Math.round(front) + 3 + i, P.water5, 0.3);
+  }
+  for (let y = 0; y < AH; y++) for (let x = 0; x < AW; x++) if (d.alphaAt(x, y)) p.px(x, y, d.get(x, y));
+  p.ellipse(PLAYER.x, PLAYER.y, 4, 1, P.ink, 0.3);
   p.ellipse(DOG.x, DOG.y, 7, 1, P.ink, 0.25);
-
-  // tackle box
-  stamp(p, 13, 9, 105, y0 + 7, (s) => {
-    for (let y = 0; y < 6; y++) for (let x = 0; x < 11; x++) s.px(1 + x, 2 + y, tone(y < 2 ? P.tackleDark : P.tackle, (y === 2 ? 0.5 : 0) + (x > 8 ? 0.33 : x < 2 ? -0.33 : 0)));
-    s.hline(5, 8, 0, P.metal);
-    s.px(5, 1, P.metalDark);
-    s.px(8, 1, P.metalDark);
-    s.px(6, 4, '#ffe060');
-  });
-
-  // enamel camp mug
-  stamp(p, 6, 6, MUG.x - 1, MUG.y - 1, (s) => {
-    for (let y = 0; y < 4; y++) for (let x = 0; x < 3; x++) s.px(1 + x, 1 + y, tone(P.mug, (x - 1) * 0.5));
-    s.hline(1, 3, 1, P.enamel);
-    s.px(4, 2, P.mug);
-    s.px(4, 3, P.mug);
-  });
-
-  // galvanised bait bucket
-  stamp(p, 9, 10, 126, y0 + 21, (s) => {
-    for (let y = 0; y < 6; y++) for (let x = y >> 2; x <= 5 - (y >> 2); x++) s.px(1 + x, 3 + y, y === 0 ? P.enamel : tone(P.metal, (x - 2.5) * 0.25 + (y % 2 ? -0.33 : 0)));
-    s.hline(1, 6, 1, P.metalDark);
-    s.px(0, 2, P.metalDark);
-    s.px(7, 2, P.metalDark);
-  });
-
   p.texture(scene, 'dock');
 }
 

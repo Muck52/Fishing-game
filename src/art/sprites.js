@@ -226,6 +226,7 @@ export function paintSprites(scene) {
   sheet(scene, 'steam', STEAM_FRAMES, STEAM);
   sheet(scene, 'bobber', BOBBER_FRAMES, BOB, { strength: 0.5, grain: 0.05, flat: 'kL', seed: 11 });
   sheet(scene, 'butterfly', [BUTTERFLY_OPEN, BUTTERFLY_SHUT], BUTTERFLY);
+  sheet(scene, 'boat', [BOAT_MAP], BOAT, { strength: 0.4, seed: 13, outline: P.outline });
   paintPlayer(scene);
   paintRipples(scene);
   paintSparkles(scene);
@@ -251,17 +252,18 @@ export function paintSprites(scene) {
   }
 }
 
-// The angler, seen from behind and turned slightly toward the rod: a straw
-// hat, red shirt under a green vest, a leather strap to the wicker creel on
-// the hip, and slim legs. Each material has its own light, mid and shadow
-// tone, lit from the upper right.
+// The angler, seen from behind, sitting on the lake-side edge of the pier
+// with his legs over the water: a straw hat, red shirt under a green vest, a
+// strap to the wicker creel on his hip, both hands on the pole out to his
+// left. Each material has its own light, mid and shadow tone, lit from the
+// upper right.
 const ANGLER = {
   H: '#f8d878', h: '#e0b050', d: '#a87830', R: '#e04040',
-  A: '#7a4a24', a: '#4a2410', S: '#f0b888', s: '#c88860',
+  A: '#7a4a24', a: '#4a2410', S: '#f0b888',
   C: '#f06a50', c: '#d04030', e: '#902a28',
   V: '#3ab87a', v: '#2a8a5a', w: '#1a5a40', L: '#8a5a2a',
   P: '#5a7af0', p: '#3a5ad8', q: '#283a98',
-  K: '#d8a060', k: '#8a5a2a', B: '#9a5a2a', b: '#5a3018',
+  K: '#d8a060', k: '#8a5a2a',
 };
 const ANGLER_MAP = [
   '......hHHh......',
@@ -271,32 +273,36 @@ const ANGLER_MAP = [
   '..hhHHHHHHHHhd..',
   '.dhhhhhhhhhhhdd.',
   '....aAAAAAAa....',
-  '...saAAaAAAAs...',
+  '...SaAAaAAAAS...',
   '....aAAaAAAa....',
   '.....aSSSSa.....',
   '...eCCCCCCCCe...',
-  '..ecwvVVVVvwce..',
-  '..ecwvVLVVvwcCe.',
-  '..ecwvVVLVvwcCCe',
-  '..ecwvvVVLvw.eSS',
-  '..ecwvvvvvLw..sS',
-  '..ecwwwvvvwwL...',
-  '..ssqpPPPPpqkK..',
-  '...sqpPPpPpqkk..',
-  '.....qpP.Ppq....',
-  '.....qpP.Ppq....',
-  '.....qpP.Ppq....',
-  '.....qpP.Ppq....',
-  '.....bBB.BBb....',
-  '....bbBB.BBbb...',
+  '.SceCwvVVVVwce..',
+  'SSeecwvVLVVwce..',
+  '.eecwwvVVLVwce..',
+  '..eecwvvVVLwce..',
+  '...ecwwvvvvLwc..',
+  '..qqpPPPPPPPpqK.',
+  '.qqpPPPPPPPPPpqk',
 ];
-export const PLAYER_HAND = { x: 16, y: 15 }; // in the outlined sprite
+export const PLAYER_HAND = { x: 2, y: 13 }; // in the outlined sprite
 function paintPlayer(scene) {
   const p = new Painter(18, ANGLER_MAP.length + 2);
   p.sprite(ANGLER_MAP, ANGLER, 1, 1);
   p.outerOutline(P.outline);
   p.texture(scene, 'player');
 }
+
+// A small white rowboat moored by the reeds, bow to the right.
+const BOAT = { L: '#b0703a', W: '#f4f4fc', w: '#c8d0e0', B: '#3a6ad8', b: '#283a98', s: '#8a5a2a' };
+const BOAT_MAP = [
+  '.L..........s..L.',
+  '.LLLLLLLLLLLLLLLL',
+  'WWWWWWWWWWWWWWWWW',
+  '.wWWWWWWWWWWWWWw.',
+  '..BBBBBBBBBBBBB..',
+  '...bbbbbbbbbbb...',
+];
 
 function ring(p, ox, oy, rx, ry, c, a) {
   const inside = (x, y, rx2, ry2) => rx2 > 0 && ry2 > 0 && (x * x) / (rx2 * rx2) + (y * y) / (ry2 * ry2) <= 1;

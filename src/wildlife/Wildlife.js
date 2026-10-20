@@ -1,7 +1,7 @@
 // The animals of Loon Lake. Some are always about (eagle, loon, heron,
 // dragonflies); others pass through now and then and get a field note.
-import { W, PX, AH, HORIZON, DOCK_AY, DEPTH, pxScale } from '../core/constants.js';
-import { SNAG } from '../art/SceneryArt.js';
+import { W, PX, HORIZON, DOCK_AY, DEPTH, pxScale } from '../core/constants.js';
+import { SNAG, REED_BED } from '../art/SceneryArt.js';
 import { splash, ripple } from '../environment/Effects.js';
 
 const between = (a, b) => Phaser.Math.Between(a, b);
@@ -13,11 +13,11 @@ export class Wildlife {
     this.eagle = new Eagle(this);
     this.loon = new Loon(this);
     this.heron = new Heron(this);
-    this.dragonflies = [new Dragonfly(this, 34, AH - 112), new Dragonfly(this, 158, AH - 84)];
+    this.dragonflies = [new Dragonfly(this, REED_BED.x + 34, REED_BED.y - 12), new Dragonfly(this, 120, DOCK_AY - 26)];
     this.butterflies = [
-      new Butterfly(this, 16, AH - 80, 0xffe060),
-      new Butterfly(this, 26, AH - 40, 0xffffff),
-      new Butterfly(this, 168, AH - 90, 0x7cc8ff),
+      new Butterfly(this, REED_BED.x + 14, REED_BED.y - 18, 0xffe060),
+      new Butterfly(this, 70, DOCK_AY - 30, 0xffffff),
+      new Butterfly(this, 150, DOCK_AY - 50, 0x7cc8ff),
     ];
     this.nextVisitor = scene.time.now + 5000;
     this.nextJump = scene.time.now + 3000;
@@ -264,7 +264,8 @@ class Loon {
 class Heron {
   constructor(w) {
     this.s = w.scene;
-    this.spr = this.s.add.sprite(25 * PX, (AH - 100) * PX, 'heron', 0).setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.BANKS - 0.5);
+    // standing in the shallows at the edge of the reed bed
+    this.spr = this.s.add.sprite((REED_BED.x + REED_BED.w + 4) * PX, (REED_BED.y + 3) * PX, 'heron', 0).setOrigin(0.5, 1).setScale(PX - 1).setDepth(DEPTH.BANKS + 0.25);
     this.nextStrike = this.s.time.now + between(9000, 18000);
   }
 

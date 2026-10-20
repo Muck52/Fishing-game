@@ -7,13 +7,15 @@ import { Bobber } from '../fishing/Bobber.js';
 import { ReelFight } from '../fishing/ReelFight.js';
 import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
 import { strokePixels } from '../art/Painter.js';
+import { dockAt } from '../art/SceneryArt.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
 import { Hud } from '../ui/Hud.js';
 import { CatchPopup } from '../ui/CatchPopup.js';
 import { SaveManager } from '../save/SaveManager.js';
 
 const MIN_SWIPE = 70; // px of upward drag needed to count as a cast
-const NEAR_POINT = { x: W / 2, y: DOCK_Y - 50 }; // where a reeled-in fish ends up
+// where a reeled-in fish ends up: just off the lake side of the pier
+const NEAR_POINT = { x: W / 2, y: (dockAt(W / 2 / PX).back - 6) * PX };
 
 export class FishingScene extends Phaser.Scene {
   constructor() {
@@ -253,7 +255,7 @@ export class FishingScene extends Phaser.Scene {
     const t = f.distance / f.startDistance;
     const wobble = Math.sin(time / 260) * 40 * f.strength + (f.surging ? (Math.random() - 0.5) * 14 : 0);
     const x = clamp(lerp(NEAR_POINT.x, this.landing.x, t) + wobble, 60, W - 140);
-    const y = clamp(lerp(NEAR_POINT.y, this.landing.y, t), WATER_Y + 25, DOCK_Y - 40);
+    const y = clamp(lerp(NEAR_POINT.y, this.landing.y, t), WATER_Y + 25, NEAR_POINT.y);
     const prevX = this.bobber.x;
     this.bobber.place(x, y);
     this.bobber.mode = f.pull > 0.6 ? 'nibble' : 'float';
