@@ -77,7 +77,7 @@ export class Scenery {
     this.boat = scene.add.sprite((REED_BED.x + 30) * PX, (REED_BED.y + 3) * PX, 'boat').setOrigin(0.5, 1).setScale(PX - 1).setDepth(DEPTH.BANKS + 0.3);
     this.boatY = this.boat.y;
 
-    this.dog = scene.add.sprite(DOG.x * PX, DOG.y * PX, 'dog', 0).setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.DOCK_LIFE);
+    this.dog = scene.add.sprite(DOG.x * PX, DOG.y * PX, 'dog', 0).setOrigin(0.5, 1).setScale(PX).setFlipX(true).setDepth(DEPTH.DOCK_LIFE);
     this.nextWag = scene.time.now + 4000;
     scene.add.sprite((MUG.x + 2) * PX, MUG.y * PX, 'steam').setOrigin(0.5, 1).setScale(PX).setAlpha(0.55).setDepth(DEPTH.DOCK_LIFE).play('steam-rise');
   }

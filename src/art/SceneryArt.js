@@ -10,13 +10,13 @@ export const SNAG = { x: 30, top: HORIZON - 40 }; // dead pine the eagle perches
 export const FALLS = { x: 6, top: HORIZON - 30, w: 8 }; // waterfall off the cliff
 const lerp = (a, b, t) => a + (b - a) * t;
 
-// The pier runs in from the bottom-left corner on a slight diagonal and
-// narrows as it recedes over the water. It is laid out along its near
-// (front) edge, parameter t from 0 at the shore end to 1 at the far end.
-// Planks run across it: each one starts on the front edge and rises up and
-// to the right to the back (lake-side) edge, as boards do when a pier is
-// seen from one side. All values are art pixels.
-export const DOCK = { x0: -34, x1: 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 38, w1: 8, slant: 0.8 };
+// The pier runs in from the bottom-right corner on a slight diagonal and
+// narrows as it recedes over the water toward the upper left. It is laid
+// out along its near (front) edge, parameter t from 0 at the shore end to 1
+// at the far end. Planks run across it: each one starts on the front edge
+// and rises up and to the left to the back (lake-side) edge, as boards do
+// when a pier is seen from one side. All values are art pixels.
+export const DOCK = { x0: AW + 34, x1: AW - 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 38, w1: 8, slant: -0.8 };
 const front = (t) => ({ x: lerp(DOCK.x0, DOCK.x1, t), y: lerp(DOCK.y0, DOCK.y1, t) });
 const width = (t) => lerp(DOCK.w0, DOCK.w1, t);
 // where the plank that meets the front edge at t meets the back edge
@@ -30,9 +30,9 @@ export function dockAt(x) {
   return { t, front: front(t).y, back: backOf(tb).y };
 }
 // The angler sits at the lake-side edge near the far end, facing the water.
-export const PLAYER = { x: 108, y: Math.round(dockAt(108).back) + 3 };
-export const MUG = { x: 116, y: Math.round(dockAt(116).back) + 8 };
-export const DOG = { x: 60, y: Math.round((dockAt(60).back + dockAt(60).front) / 2) + 3 };
+export const PLAYER = { x: 72, y: Math.round(dockAt(72).back) + 3 };
+export const MUG = { x: 84, y: Math.round(dockAt(84).back) + 8 };
+export const DOG = { x: 120, y: Math.round((dockAt(120).back + dockAt(120).front) / 2) + 3 };
 export const REED_BED = { x: 0, w: 44, y: HORIZON + 46 }; // waterline of the reed bed
 
 // One clean band of a colour ramp. Light is quantised to thirds so surfaces
@@ -550,7 +550,7 @@ function paintDock(scene) {
   // to a plank number.
   const plankAt = (t) => N * (1 - Math.pow(1 - t, 1 / 1.7));
   const tOfPlank = (i) => 1 - Math.pow(1 - i / N, 1.7);
-  const span = DOCK.x1 - DOCK.x0;
+  const span = Math.abs(DOCK.x1 - DOCK.x0);
 
   // deck: walk along the pier and across each plank, painting as we go
   for (let i = 0; i <= span * 4; i++) {
@@ -609,15 +609,15 @@ function paintDock(scene) {
   }
 
   // tackle box, bait bucket and camp mug beside the angler
-  const tb = dockAt(82);
+  const tb = dockAt(100);
   const tby = Math.round((tb.back + tb.front) / 2) - 2;
-  for (let y = 0; y < 5; y++) for (let x = 0; x < 9; x++) d.px(78 + x, tby + y, tone(y < 2 ? P.tackleDark : P.tackle, (y === 2 ? 0.5 : 0) + (x > 6 ? 0.33 : x < 2 ? -0.33 : 0)));
-  d.hline(81, 84, tby - 1, P.metal);
-  d.px(82, tby + 3, '#ffe060');
-  const bk = dockAt(124);
+  for (let y = 0; y < 5; y++) for (let x = 0; x < 9; x++) d.px(96 + x, tby + y, tone(y < 2 ? P.tackleDark : P.tackle, (y === 2 ? 0.5 : 0) + (x > 6 ? 0.33 : x < 2 ? -0.33 : 0)));
+  d.hline(99, 102, tby - 1, P.metal);
+  d.px(100, tby + 3, '#ffe060');
+  const bk = dockAt(57);
   const bky = Math.round(bk.back) - 1;
-  for (let y = 0; y < 6; y++) for (let x = y >> 2; x <= 5 - (y >> 2); x++) d.px(121 + x, bky + y, y === 0 ? P.enamel : tone(P.metal, (x - 2.5) * 0.25 + (y % 2 ? -0.33 : 0)));
-  d.hline(121, 126, bky - 2, P.metalDark);
+  for (let y = 0; y < 6; y++) for (let x = y >> 2; x <= 5 - (y >> 2); x++) d.px(54 + x, bky + y, y === 0 ? P.enamel : tone(P.metal, (x - 2.5) * 0.25 + (y % 2 ? -0.33 : 0)));
+  d.hline(54, 59, bky - 2, P.metalDark);
   for (let y = 0; y < 4; y++) for (let x = 0; x < 3; x++) d.px(MUG.x + x, MUG.y - 4 + y, tone(P.mug, (x - 1) * 0.5));
   d.hline(MUG.x, MUG.x + 2, MUG.y - 4, P.enamel);
   d.px(MUG.x + 3, MUG.y - 3, P.mug);
@@ -628,7 +628,7 @@ function paintDock(scene) {
   for (let i = 0; i <= span; i++) {
     const t = i / span;
     const f0 = front(t);
-    for (let k = 0; k < Math.round(lerp(8, 3, t)); k++) p.px(Math.round(f0.x) + k, Math.round(f0.y) + 4 + k, P.water5, 0.25);
+    for (let k = 0; k < Math.round(lerp(8, 3, t)); k++) p.px(Math.round(f0.x) - k, Math.round(f0.y) + 4 + k, P.water5, 0.25);
   }
   for (let y = 0; y < AH; y++) for (let x = 0; x < AW; x++) if (d.alphaAt(x, y)) p.px(x, y, d.get(x, y));
   p.ellipse(PLAYER.x, PLAYER.y, 4, 1, P.ink, 0.3);
