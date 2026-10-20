@@ -1,5 +1,5 @@
 // Hand-drawn pixel sprites. Each frame is rows of characters; '.' is clear.
-import { sheet, Painter, shade } from './Painter.js';
+import { sheet, Painter } from './Painter.js';
 import { P } from './palette.js';
 
 const BIRD = { k: '#3a3d3a' };
@@ -251,34 +251,49 @@ export function paintSprites(scene) {
   }
 }
 
-// The angler, seen from behind and drawn chibi-style: a wide straw hat,
-// a big round head of hair, a short body in a red shirt and green vest.
-export const PLAYER_HAND = { x: 20, y: 22 };
+// The angler, seen from behind and turned slightly toward the rod: a straw
+// hat, red shirt under a green vest, a leather strap to the wicker creel on
+// the hip, and slim legs. Each material has its own light, mid and shadow
+// tone, lit from the upper right.
+const ANGLER = {
+  H: '#f8d878', h: '#e0b050', d: '#a87830', R: '#e04040',
+  A: '#7a4a24', a: '#4a2410', S: '#f0b888', s: '#c88860',
+  C: '#f06a50', c: '#d04030', e: '#902a28',
+  V: '#3ab87a', v: '#2a8a5a', w: '#1a5a40', L: '#8a5a2a',
+  P: '#5a7af0', p: '#3a5ad8', q: '#283a98',
+  K: '#d8a060', k: '#8a5a2a', B: '#9a5a2a', b: '#5a3018',
+};
+const ANGLER_MAP = [
+  '......hHHh......',
+  '.....hHHHHh.....',
+  '.....hhHHHd.....',
+  '.....RRRRRR.....',
+  '..hhHHHHHHHHhd..',
+  '.dhhhhhhhhhhhdd.',
+  '....aAAAAAAa....',
+  '...saAAaAAAAs...',
+  '....aAAaAAAa....',
+  '.....aSSSSa.....',
+  '...eCCCCCCCCe...',
+  '..ecwvVVVVvwce..',
+  '..ecwvVLVVvwcCe.',
+  '..ecwvVVLVvwcCCe',
+  '..ecwvvVVLvw.eSS',
+  '..ecwvvvvvLw..sS',
+  '..ecwwwvvvwwL...',
+  '..ssqpPPPPpqkK..',
+  '...sqpPPpPpqkk..',
+  '.....qpP.Ppq....',
+  '.....qpP.Ppq....',
+  '.....qpP.Ppq....',
+  '.....qpP.Ppq....',
+  '.....bBB.BBb....',
+  '....bbBB.BBbb...',
+];
+export const PLAYER_HAND = { x: 16, y: 15 }; // in the outlined sprite
 function paintPlayer(scene) {
-  const p = new Painter(26, 36);
-  const C = { hat: '#f0c860', band: '#e04040', hair: '#6a3a1a', skin: '#f0b888', shirt: '#e05040', vest: '#2a9a6a', pants: '#3a5ad8', boot: '#7a4422' };
-  const o = 1; // margin for the outline
-  p.rect(o + 7, 31, 4, 3, C.boot);
-  p.rect(o + 13, 31, 4, 3, C.boot);
-  p.rect(o + 7, 25, 10, 2, C.pants);
-  p.rect(o + 7, 27, 4, 4, C.pants);
-  p.rect(o + 13, 27, 4, 4, C.pants);
-  p.rect(o + 6, 15, 12, 11, C.shirt);
-  p.rect(o + 7, 16, 10, 9, C.vest);
-  p.vline(o + 12, 16, 24, shade(C.vest, -0.5));
-  p.rect(o + 4, 16, 2, 7, C.shirt);
-  p.rect(o + 4, 23, 2, 2, C.skin);
-  p.rect(o + 18, 16, 2, 5, C.shirt);
-  p.rect(o + 19, 21, 2, 2, C.skin);
-  p.ellipse(o + 12, 12, 6, 4, C.hair);
-  for (const x of [8, 11, 15]) p.px(o + x, 16, C.hair);
-  p.px(o + 5, 12, C.skin);
-  p.px(o + 19, 12, C.skin);
-  p.ellipse(o + 12, 5, 5, 4, C.hat);
-  p.hline(o + 7, o + 17, 7, C.band);
-  p.ellipse(o + 12, 9, 10, 1, C.hat);
-  for (let x = o + 3; x <= o + 21; x += 3) p.px(x, 9, shade(C.hat, -0.33));
-  p.light({ strength: 0.5, grain: 0.03, flat: [C.skin, C.band], seed: 12 });
+  const p = new Painter(18, ANGLER_MAP.length + 2);
+  p.sprite(ANGLER_MAP, ANGLER, 1, 1);
   p.outerOutline(P.outline);
   p.texture(scene, 'player');
 }

@@ -594,7 +594,7 @@ function paintDock(scene) {
     }
   }
 
-  p.ellipse(PLAYER_AX, y0 + 12, 6, 1, P.ink, 0.3);
+  p.ellipse(PLAYER_AX, y0 + 12, 4, 1, P.ink, 0.3);
   p.ellipse(DOG.x, DOG.y, 7, 1, P.ink, 0.25);
 
   // tackle box
