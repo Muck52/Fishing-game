@@ -16,7 +16,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 // and widens toward the upper right, where it ends. Planks run across it at
 // a slant. The upper edge faces the lake; the lower edge is where the side
 // beam and the pilings hang down into the water. All values are art pixels.
-export const DOCK = { x0: -34, x1: 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 32, w1: 18, slant: -0.6 };
+export const DOCK = { x0: -34, x1: 136, y0: AH + 8, y1: DOCK_AY - 2, w0: 30, w1: 22, slant: -0.35 };
 // After turning, the pier is raised so its beam and pilings sit fully on screen.
 const LIFT = 30;
 const CENTER = { x: (DOCK.x0 + DOCK.x1) / 2, y: (DOCK.y0 + DOCK.y1) / 2 };
@@ -556,8 +556,8 @@ function paintDock(scene) {
   const N = 18; // planks along the pier
   // Planks get narrower with distance; this maps distance along the pier
   // to a plank number.
-  const plankAt = (t) => N * (1 - Math.pow(1 - t, 1 / 1.25));
-  const tOfPlank = (i) => 1 - Math.pow(1 - i / N, 1.25);
+  const plankAt = (t) => N * (1 - Math.pow(1 - t, 1 / 1.1));
+  const tOfPlank = (i) => 1 - Math.pow(1 - i / N, 1.1);
   const span = DOCK.x1 - DOCK.x0;
 
   // Weathered boards. Sun and rain have silvered most of them grey; a few
