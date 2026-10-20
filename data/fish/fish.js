@@ -110,10 +110,10 @@ export const FISH = [
   },
 ];
 
-// Colours are dark enough to read on the parchment field-journal card.
+// Colours are bright enough to read on the blue field-journal window.
 export const RARITY = {
-  common: { weight: 60, label: 'Common', color: '#6b6458' },
-  uncommon: { weight: 25, label: 'Uncommon', color: '#4f7a3a' },
-  rare: { weight: 12, label: 'Rare', color: '#2f6a9a' },
-  legendary: { weight: 3, label: 'Legendary', color: '#a8740b' },
+  common: { weight: 60, label: 'Common', color: '#d0d4e8' },
+  uncommon: { weight: 25, label: 'Uncommon', color: '#7cf07c' },
+  rare: { weight: 12, label: 'Rare', color: '#7cc8ff' },
+  legendary: { weight: 3, label: 'Legendary', color: '#ffd84a' },
 };

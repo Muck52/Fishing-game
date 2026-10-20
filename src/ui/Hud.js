@@ -2,9 +2,9 @@ import { W, PX, DEPTH, inkStyle } from '../core/constants.js';
 import { FISH } from '../../data/fish/fish.js';
 
 const TOP = 18;
-const STYLE = inkStyle(32, '#fbf3dc', { shadow: { offsetX: 0, offsetY: 3, color: '#36210f', blur: 0, fill: true } });
+const STYLE = inkStyle(32);
 
-// Two wooden signboards: coins on the left, species found on the right.
+// Two small menu windows: coins on the left, species found on the right.
 export class Hud {
   constructor(scene) {
     const add = (o) => o.setDepth(DEPTH.UI);

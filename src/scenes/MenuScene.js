@@ -1,4 +1,4 @@
-import { W, H, PX, DEPTH, INK, textStyle, inkStyle } from '../core/constants.js';
+import { W, H, PX, DEPTH, textStyle, inkStyle } from '../core/constants.js';
 import { Scenery } from '../environment/Scenery.js';
 import { Wildlife } from '../wildlife/Wildlife.js';
 import { SaveManager } from '../save/SaveManager.js';
@@ -14,14 +14,14 @@ export class MenuScene extends Phaser.Scene {
     this.wildlife = new Wildlife(this);
     const save = new SaveManager().data;
 
-    const title = this.add.text(W / 2, 200, 'Reel It In', textStyle(118, '#fbf3dc')).setOrigin(0.5).setDepth(DEPTH.UI);
-    this.add.text(W / 2, 290, 'Loon Lake  ·  late September', textStyle(30, '#f6dcae')).setOrigin(0.5).setDepth(DEPTH.UI);
+    const title = this.add.text(W / 2, 200, 'Reel It In', textStyle(118, '#ffe070')).setOrigin(0.5).setDepth(DEPTH.UI);
+    this.add.text(W / 2, 290, 'Loon Lake  ·  late summer', textStyle(30, '#d8f0ff')).setOrigin(0.5).setDepth(DEPTH.UI);
     this.tweens.add({ targets: title, y: 208, duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
     const cy = H / 2 + 40;
     this.add.image(W / 2, cy, 'panel-menu').setScale(PX).setDepth(DEPTH.UI);
     this.add
-      .text(W / 2, cy, 'Swipe up to cast\nTap when the bobber goes under\nHold to reel, ease off when it pulls tight', inkStyle(25, INK, { lineSpacing: 10 }))
+      .text(W / 2, cy, 'Swipe up to cast\nTap when the bobber goes under\nHold to reel, ease off when it pulls tight', inkStyle(25, '#ffffff', { lineSpacing: 10 }))
       .setOrigin(0.5)
       .setDepth(DEPTH.UI);
 

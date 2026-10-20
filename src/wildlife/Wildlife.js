@@ -14,6 +14,11 @@ export class Wildlife {
     this.loon = new Loon(this);
     this.heron = new Heron(this);
     this.dragonflies = [new Dragonfly(this, 34, AH - 112), new Dragonfly(this, 158, AH - 84)];
+    this.butterflies = [
+      new Butterfly(this, 16, AH - 80, 0xffe060),
+      new Butterfly(this, 26, AH - 40, 0xffffff),
+      new Butterfly(this, 168, AH - 90, 0x7cc8ff),
+    ];
     this.nextVisitor = scene.time.now + 5000;
     this.nextJump = scene.time.now + 3000;
     this.lastVisitor = null;
@@ -31,6 +36,7 @@ export class Wildlife {
     this.eagle.update(time);
     this.loon.update(time, dt);
     this.heron.update(time);
+    for (const b of this.butterflies) b.update(time, dt);
   }
 
   visit() {
@@ -80,7 +86,7 @@ function geese(w) {
   const s = w.scene;
   const n = between(5, 8);
   const y0 = between(30, 70) * PX;
-  w.note('Geese overhead, heading south.');
+  w.note('A skein of geese passes over the lake.');
   for (let i = 0; i < n; i++) {
     const k = Math.ceil(i / 2);
     const side = i % 2 ? 1 : -1;
@@ -295,3 +301,21 @@ class Dragonfly {
   }
 }
 
+// Butterflies drift in loose loops over the meadow, wings beating, and
+// wander off now and then before circling back.
+class Butterfly {
+  constructor(w, ax, ay, tint) {
+    this.home = { x: ax * PX, y: ay * PX };
+    this.spr = w.scene.add.sprite(this.home.x, this.home.y, 'butterfly').setScale(PX).setTint(tint).setDepth(DEPTH.BANK_LIFE).play({ key: 'butterfly-flap', startFrame: Math.floor(Math.random() * 2) });
+    this.phase = Math.random() * 10;
+    this.reach = 18 + Math.random() * 14;
+  }
+
+  update(time) {
+    const t = time / 1000 + this.phase;
+    const x = this.home.x + Math.sin(t * 0.7) * this.reach * PX * 0.5 + Math.sin(t * 2.1) * 6 * PX * 0.25;
+    const y = this.home.y + Math.sin(t * 1.1) * 8 * PX * 0.5 + Math.abs(Math.sin(t * 3.4)) * -3 * PX;
+    this.spr.setFlipX(x < this.spr.x);
+    this.spr.setPosition(x, y);
+  }
+}

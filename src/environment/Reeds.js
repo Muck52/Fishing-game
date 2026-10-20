@@ -1,7 +1,7 @@
 import { PX, DEPTH } from '../core/constants.js';
 import { REEDS } from '../art/SceneryArt.js';
 
-// Reeds and cattails along the banks, redrawn each frame bending with the wind.
+// Reeds, cattails and meadow flowers, redrawn each frame bending with the wind.
 // Stems are anchored at the base and bend most at the tip.
 export class Reeds {
   constructor(scene, wind) {
@@ -30,6 +30,15 @@ export class Reeds {
         });
         g.fillStyle(r.tip, 1);
         g.fillRect(xAt(0.84) * PX, (top - 5) * PX, PX, PX);
+      }
+      if (r.bloom) {
+        // a little five-pixel blossom nodding at the top of the stem
+        const x = xAt(1);
+        const y = r.by - r.h;
+        for (const [dx, dy, c] of [[-1, 0, r.bloom.petal], [1, 0, r.bloom.petal], [0, 1, r.bloom.petal], [0, -1, r.bloom.lit], [0, 0, r.bloom.heart]]) {
+          g.fillStyle(c, 1);
+          g.fillRect((x + dx) * PX, (y + dy) * PX, PX, PX);
+        }
       }
     }
   }

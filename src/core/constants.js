@@ -17,7 +17,7 @@ export const DOCK_Y = H - 180; // far edge of the dock
 export const DOCK_AY = DOCK_Y / PX;
 
 export const FONT = '"Pixelify Sans", "Courier New", monospace';
-export const INK = '#2a2620';
+export const INK = '#1a1a3a';
 
 // Draw order, back to front.
 export const DEPTH = {
@@ -72,7 +72,15 @@ export function textStyle(size, color = '#fbf3dc', extra = {}) {
   };
 }
 
-// Plain text for parchment and wood panels.
-export function inkStyle(size, color = INK, extra = {}) {
-  return { fontFamily: FONT, fontSize: `${size}px`, color, align: 'center', ...extra };
+// Window text: light lettering with a hard navy drop shadow, as on the
+// blue menu windows.
+export function inkStyle(size, color = '#ffffff', extra = {}) {
+  return {
+    fontFamily: FONT,
+    fontSize: `${size}px`,
+    color,
+    align: 'center',
+    shadow: { offsetX: Math.max(2, Math.round(size / 14)), offsetY: Math.max(2, Math.round(size / 14)), color: '#0a0a30', blur: 0, fill: true },
+    ...extra,
+  };
 }

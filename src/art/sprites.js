@@ -1,5 +1,5 @@
 // Hand-drawn pixel sprites. Each frame is rows of characters; '.' is clear.
-import { sheet, Painter } from './Painter.js';
+import { sheet, Painter, shade } from './Painter.js';
 import { P } from './palette.js';
 
 const BIRD = { k: '#3a3d3a' };
@@ -29,7 +29,7 @@ const EAGLE_FLAP = [
 const EAGLE_PERCH = ['.HH..', 'YHHH.', '.KKK.', 'KKKKK', 'KKKKK', '.KKKK', '..HH.', '.Y.Y.'];
 
 // White-tailed doe, facing right.
-const DEER = { B: '#9b6b40', D: '#6e4828', L: '#dcc6a1', K: '#2a1d14', W: '#f2ece0' };
+const DEER = { B: '#c07838', D: '#8a4a20', L: '#f0d8b0', K: '#2a1d14', W: '#ffffff' };
 const DEER_TOP = [
   '............D.D..',
   '............BBB..',
@@ -60,7 +60,7 @@ const DEER_DRINK = [
 ];
 
 // Bull moose, facing right. Pale legs, dark body, palmate antlers.
-const MOOSE = { B: '#3a2a20', A: '#cdb48a', L: '#9a8468', K: '#1c1410', b: '#2a1e16' };
+const MOOSE = { B: '#5a3a24', A: '#e8d0a0', L: '#b09878', K: '#1c1410', b: '#3a2416' };
 const MOOSE_TOP = [
   '..............A.A.A.....',
   '..............AAAAA.A...',
@@ -93,7 +93,7 @@ const MOOSE_B = [
 ];
 
 // Great blue heron, facing left.
-const HERON = { G: '#7f93a3', g: '#5d6f7e', W: '#e8ece9', K: '#1f2528', Y: '#d9a531', L: '#6b5a3a' };
+const HERON = { G: '#8aa0c8', g: '#5a6aa0', W: '#ffffff', K: '#1f2528', Y: '#f0b830', L: '#a08040' };
 const HERON_LEGS = ['......L.L..', '......L.L..', '......L.L..', '......L.L..', '......L.L..', '.....LL.LL.'];
 const HERON_IDLE = [
   '....KK.....',
@@ -147,18 +147,23 @@ const LOON_SWIM = [
 ];
 
 // Beaver towing an aspen branch, facing left.
-const BEAVER = { B: '#6b4428', b: '#4a2e1a', K: '#1c1410', g: '#7f8a3a', Y: '#e3b955' };
+const BEAVER = { B: '#8a5a2a', b: '#5a3a1a', K: '#1c1410', g: '#4aa83a', Y: '#a8e05a' };
 const BEAVER_SWIM = ['......Y.Y..', '.BBBB.gYgY.', 'KBBBBBBgg..', '..bb.......'];
 
 const DRAGONFLY = { B: '#2f8f8a', K: '#1c3a3a', W: '#d8eef0' };
 const DRAGONFLY_A = ['.WW.WW.', 'BBBBBBK', '.WW.WW.'];
 const DRAGONFLY_B = ['..W.W..', 'BBBBBBK', '..W.W..'];
 
+// A white butterfly; each one is tinted its own colour in the scene.
+const BUTTERFLY = { W: '#ffffff', B: '#2a2a3a' };
+const BUTTERFLY_OPEN = ['WW.WW', 'WWBWW', '.W.W.'];
+const BUTTERFLY_SHUT = ['.....', '.WBW.', '..B..'];
+
 const JUMPER = { S: '#c9d2cc', B: '#5d6b66', T: '#8a968f' };
 const JUMP_FISH = ['.BBBB..T', 'SSSSSSTT', '.SSSS..T'];
 
 // Nova Scotia duck toller asleep on the dock, facing right.
-const DOG = { O: '#c4622d', D: '#8e4520', W: '#f3ece0', K: '#2a1d18', N: '#1c1410' };
+const DOG = { O: '#e0702a', D: '#a04a1a', W: '#ffffff', K: '#2a1d18', N: '#1c1410' };
 const DOG_REST_A = [
   '..................',
   '..................',
@@ -208,18 +213,19 @@ const BOBBER_FRAMES = [
 
 export function paintSprites(scene) {
   sheet(scene, 'bird', [BIRD_UP, BIRD_DOWN], BIRD);
-  sheet(scene, 'eagle-fly', [EAGLE_GLIDE, EAGLE_FLAP], EAGLE, { strength: 0.5, flat: 'Y', seed: 2 });
-  sheet(scene, 'eagle-perch', [EAGLE_PERCH], EAGLE, { strength: 0.6, flat: 'Y', seed: 3 });
-  sheet(scene, 'deer', [DEER_WALK_A, DEER_WALK_B, DEER_DRINK], DEER, { flat: 'K', seed: 4 });
-  sheet(scene, 'moose', [MOOSE_A, MOOSE_B], MOOSE, { flat: 'K', seed: 5 });
-  sheet(scene, 'heron', [HERON_IDLE, HERON_STRIKE], HERON, { flat: 'KY', seed: 6 });
-  sheet(scene, 'loon', [LOON_SWIM], LOON, { strength: 0.5, flat: 'R', seed: 7 });
-  sheet(scene, 'beaver', [BEAVER_SWIM], BEAVER, { flat: 'K', seed: 8 });
+  sheet(scene, 'eagle-fly', [EAGLE_GLIDE, EAGLE_FLAP], EAGLE, { strength: 0.5, flat: 'Y', seed: 2, outline: P.outline });
+  sheet(scene, 'eagle-perch', [EAGLE_PERCH], EAGLE, { strength: 0.6, flat: 'Y', seed: 3, outline: P.outline });
+  sheet(scene, 'deer', [DEER_WALK_A, DEER_WALK_B, DEER_DRINK], DEER, { flat: 'K', seed: 4, outline: P.outline });
+  sheet(scene, 'moose', [MOOSE_A, MOOSE_B], MOOSE, { flat: 'K', seed: 5, outline: P.outline });
+  sheet(scene, 'heron', [HERON_IDLE, HERON_STRIKE], HERON, { flat: 'KY', seed: 6, outline: P.outline });
+  sheet(scene, 'loon', [LOON_SWIM], LOON, { strength: 0.5, flat: 'R', seed: 7, outline: P.outline });
+  sheet(scene, 'beaver', [BEAVER_SWIM], BEAVER, { flat: 'K', seed: 8, outline: P.outline });
   sheet(scene, 'dragonfly', [DRAGONFLY_A, DRAGONFLY_B], DRAGONFLY);
-  sheet(scene, 'jumpfish', [JUMP_FISH], JUMPER, { strength: 0.7, seed: 9 });
-  sheet(scene, 'dog', [DOG_REST_A, DOG_REST_B, DOG_ALERT], DOG, { flat: 'KN', seed: 10 });
+  sheet(scene, 'jumpfish', [JUMP_FISH], JUMPER, { strength: 0.7, seed: 9, outline: P.outline });
+  sheet(scene, 'dog', [DOG_REST_A, DOG_REST_B, DOG_ALERT], DOG, { flat: 'KN', seed: 10, outline: P.outline });
   sheet(scene, 'steam', STEAM_FRAMES, STEAM);
   sheet(scene, 'bobber', BOBBER_FRAMES, BOB, { strength: 0.5, grain: 0.05, flat: 'kL', seed: 11 });
+  sheet(scene, 'butterfly', [BUTTERFLY_OPEN, BUTTERFLY_SHUT], BUTTERFLY);
   paintPlayer(scene);
   paintRipples(scene);
   paintSparkles(scene);
@@ -232,6 +238,8 @@ export function paintSprites(scene) {
     ['deer-walk', 'deer', [0, 1], 5, -1],
     ['moose-walk', 'moose', [0, 1], 3, -1],
     ['dragonfly-buzz', 'dragonfly', [0, 1], 20, -1],
+    ['butterfly-flap', 'butterfly', [0, 1], 8, -1],
+    ['foam-churn', 'foam', [0, 1, 2], 9, -1],
     ['dog-wag', 'dog', [0, 1, 0, 1, 0, 1, 0], 5, 0],
     ['steam-rise', 'steam', [0, 1, 2], 3, -1],
     ['ripple', 'ripple', [0, 1, 2, 3], 8, 0],
@@ -243,51 +251,35 @@ export function paintSprites(scene) {
   }
 }
 
-// The angler, seen from behind: knit toque, flannel jacket, jeans.
-export const PLAYER_HAND = { x: 20, y: 26 };
+// The angler, seen from behind and drawn chibi-style: a wide straw hat,
+// a big round head of hair, a short body in a red shirt and green vest.
+export const PLAYER_HAND = { x: 20, y: 22 };
 function paintPlayer(scene) {
-  const p = new Painter(22, 46);
-  const C = {
-    boot: '#4a3020', bootLit: '#6b4a30', jeans: '#41597a', jeansDark: '#2f4360',
-    red: '#b23a2c', mid: '#7d2a22', dark: '#3a1c18', skin: '#e3b48a', hair: '#5a3a24',
-    hat: '#d49a2e', hatDark: '#a9741f', pom: '#f1e6cf',
-  };
-  const plaid = (x, y) => {
-    const v = x % 4 === 0;
-    const h = y % 4 === 0;
-    return v && h ? C.dark : v || h ? C.mid : C.red;
-  };
-  p.rect(5, 42, 5, 4, C.boot);
-  p.rect(12, 42, 5, 4, C.boot);
-  p.hline(5, 9, 42, C.bootLit);
-  p.hline(12, 16, 42, C.bootLit);
-  p.rect(6, 30, 4, 12, C.jeans);
-  p.rect(12, 30, 4, 12, C.jeans);
-  p.vline(9, 30, 41, C.jeansDark);
-  p.vline(12, 30, 41, C.jeansDark);
-  for (let y = 13; y <= 31; y++) {
-    for (let x = 3; x <= 18; x++) {
-      if ((y === 13 && (x < 5 || x > 16)) || (y === 14 && (x === 3 || x === 18))) continue;
-      p.px(x, y, plaid(x, y));
-    }
-  }
-  p.vline(18, 15, 31, C.red);
-  p.hline(4, 17, 31, C.dark);
-  for (let y = 15; y <= 27; y++) p.rect(1, y, 2, 1, plaid(1, y));
-  p.rect(1, 28, 2, 2, C.skin);
-  for (let y = 15; y <= 24; y++) p.rect(18, y, 3, 1, plaid(19, y));
-  p.rect(19, 25, 2, 2, C.skin);
-  p.hline(6, 15, 12, C.dark);
-  p.rect(7, 7, 8, 5, C.hair);
-  p.px(6, 8, C.skin);
-  p.px(15, 8, C.skin);
-  p.rect(6, 1, 10, 6, C.hat);
-  p.hline(7, 14, 0, C.hat);
-  for (let x = 6; x <= 15; x += 2) p.vline(x, 5, 6, C.hatDark);
-  p.rect(9, -1, 4, 2, C.pom);
-  p.hline(10, 11, 0, C.pom);
-  p.outline(C.dark);
-  p.light({ strength: 0.55, grain: 0.12, flat: [C.skin], seed: 12 });
+  const p = new Painter(26, 36);
+  const C = { hat: '#f0c860', band: '#e04040', hair: '#6a3a1a', skin: '#f0b888', shirt: '#e05040', vest: '#2a9a6a', pants: '#3a5ad8', boot: '#7a4422' };
+  const o = 1; // margin for the outline
+  p.rect(o + 7, 31, 4, 3, C.boot);
+  p.rect(o + 13, 31, 4, 3, C.boot);
+  p.rect(o + 7, 25, 10, 2, C.pants);
+  p.rect(o + 7, 27, 4, 4, C.pants);
+  p.rect(o + 13, 27, 4, 4, C.pants);
+  p.rect(o + 6, 15, 12, 11, C.shirt);
+  p.rect(o + 7, 16, 10, 9, C.vest);
+  p.vline(o + 12, 16, 24, shade(C.vest, -0.5));
+  p.rect(o + 4, 16, 2, 7, C.shirt);
+  p.rect(o + 4, 23, 2, 2, C.skin);
+  p.rect(o + 18, 16, 2, 5, C.shirt);
+  p.rect(o + 19, 21, 2, 2, C.skin);
+  p.ellipse(o + 12, 12, 6, 4, C.hair);
+  for (const x of [8, 11, 15]) p.px(o + x, 16, C.hair);
+  p.px(o + 5, 12, C.skin);
+  p.px(o + 19, 12, C.skin);
+  p.ellipse(o + 12, 5, 5, 4, C.hat);
+  p.hline(o + 7, o + 17, 7, C.band);
+  p.ellipse(o + 12, 9, 10, 1, C.hat);
+  for (let x = o + 3; x <= o + 21; x += 3) p.px(x, 9, shade(C.hat, -0.33));
+  p.light({ strength: 0.5, grain: 0.03, flat: [C.skin, C.band], seed: 12 });
+  p.outerOutline(P.outline);
   p.texture(scene, 'player');
 }
 
@@ -324,7 +316,7 @@ function paintSparkles(scene) {
 
 function paintLeaves(scene) {
   const p = new Painter(9, 2);
-  [P.aspenLit, '#c0502e', P.tamarack].forEach((c, i) => {
+  [P.leafLit, P.leafLime, P.maple].forEach((c, i) => {
     p.hline(i * 3, i * 3 + 1, 0, c);
     p.hline(i * 3 + 1, i * 3 + 2, 1, c);
   });

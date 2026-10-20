@@ -7,7 +7,7 @@
 //   5. a dark outline around everything, and a big readable eye
 import { Painter, mix, shade, noise, hash } from './Painter.js';
 
-const OUTLINE = '#141a22';
+const OUTLINE = '#1a1a3a';
 // Light falls in a few hard-edged bands rather than a smooth gradient.
 const band = (k) => Math.round(k * 3) / 3;
 

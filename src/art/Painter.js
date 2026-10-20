@@ -59,9 +59,9 @@ export function shade(color, k) {
   const [h, s, l] = toHsl(rgb(color));
   if (q < 0) {
     const t = -q;
-    out = fromHsl(towardHue(h, 240, t * 0.22), Math.min(1, s * (1 + t * 0.15)), l * (1 - t * 0.5));
+    out = fromHsl(towardHue(h, 245, t * 0.3), Math.min(1, s * (1 + t * 0.2)), l * (1 - t * 0.5));
   } else {
-    out = fromHsl(towardHue(h, 55, q * 0.18), s * (1 - q * 0.2), l + (1 - l) * q * 0.45);
+    out = fromHsl(towardHue(h, 55, q * 0.25), s * (1 - q * 0.15), l + (1 - l) * q * 0.5);
   }
   shadeCache.set(key, out);
   return out;
@@ -193,7 +193,7 @@ export class Painter {
   // (upper right). Edges turned toward the light brighten, edges turned away
   // and undersides fall into cool shadow, and a little grain breaks up each
   // colour. Colours listed in `flat` (eyes, noses) are left untouched.
-  light({ strength = 0.6, grain = 0.15, flat = [], frameW = this.w, seed = 1 } = {}) {
+  light({ strength = 0.6, grain = 0.04, flat = [], frameW = this.w, seed = 1 } = {}) {
     const flatSet = new Set(flat.map((c) => rgb(c).join(',')));
     const { w, h } = this;
     const dist = new Float32Array(w * h);
@@ -239,6 +239,19 @@ export class Painter {
     return this;
   }
 
+  // Ring every shape in a one-pixel border just outside its edge.
+  outerOutline(color) {
+    const ring = [];
+    for (let y = 0; y < this.h; y++) {
+      for (let x = 0; x < this.w; x++) {
+        if (this.alphaAt(x, y)) continue;
+        if (this.alphaAt(x - 1, y) || this.alphaAt(x + 1, y) || this.alphaAt(x, y - 1) || this.alphaAt(x, y + 1)) ring.push([x, y]);
+      }
+    }
+    for (const [x, y] of ring) this.px(x, y, color);
+    return this;
+  }
+
   silhouette(color) {
     const s = new Painter(this.w, this.h);
     for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) if (this.alphaAt(x, y)) s.px(x, y, color);
@@ -257,13 +270,16 @@ export class Painter {
 // Builds a horizontal sprite sheet from several character-map frames.
 // Frames are bottom-aligned so feet stay planted between frames.
 // Pass `lit` to shade the sprite as a solid form; its `flat` string lists
-// palette letters to leave unshaded.
+// palette letters to leave unshaded, and `outline` wraps each frame in a
+// one-pixel dark border.
 export function sheet(scene, key, frames, pal, lit = null) {
-  const fw = Math.max(...frames.flat().map((r) => r.length));
-  const fh = Math.max(...frames.map((f) => f.length));
+  const pad = lit?.outline ? 1 : 0;
+  const fw = Math.max(...frames.flat().map((r) => r.length)) + pad * 2;
+  const fh = Math.max(...frames.map((f) => f.length)) + pad * 2;
   const p = new Painter(fw * frames.length, fh);
-  frames.forEach((rows, i) => p.sprite(rows, pal, i * fw, fh - rows.length));
+  frames.forEach((rows, i) => p.sprite(rows, pal, i * fw + pad, fh - pad - rows.length));
   if (lit) p.light({ ...lit, frameW: fw, flat: [...(lit.flat || '')].map((c) => pal[c]).filter(Boolean) });
+  if (pad) p.outerOutline(lit.outline);
   const tex = p.texture(scene, key);
   frames.forEach((_, i) => tex.add(i, 0, i * fw, 0, fw, fh));
   return tex;
