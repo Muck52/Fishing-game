@@ -46,10 +46,9 @@ export class Daylight {
   constructor(scene, pier) {
     this.scene = scene;
     this.shade = scene.add.image(0, 0, '__WHITE').setOrigin(0).setDisplaySize(W, H).setDepth(DEPTH.SHADE).setBlendMode(Phaser.BlendModes.MULTIPLY);
-    // lights that show through the dark: the hut's window and fireflies
-    // over the reeds
-    this.window = scene.add.image(pier.window.x, pier.window.y, 'glow').setDepth(DEPTH.GLOW).setBlendMode(Phaser.BlendModes.ADD);
-    this.streak = scene.add.image(pier.window.x - 30, SURFACE_Y + 1, 'light-streak').setOrigin(0.5, 0).setDepth(DEPTH.GLOW).setBlendMode(Phaser.BlendModes.ADD);
+    // lights that show through the dark: the hut's windows and doorway,
+    // and fireflies over the reeds
+    this.lights = scene.add.image(pier.hutAt.x, pier.hutAt.y, 'hut-lights').setOrigin(0).setDepth(DEPTH.GLOW);
     this.flies = scene.add.particles(0, 0, 'firefly', {
       emitZone: { type: 'random', source: new Phaser.Geom.Rectangle(0, SURFACE_Y - 70, 200, 66) },
       lifespan: { min: 2500, max: 5000 },
@@ -66,8 +65,7 @@ export class Daylight {
     const { color, night } = sample(hourNow());
     this.night = night;
     this.shade.setTint(color);
-    this.window.setAlpha(night * (0.75 + 0.1 * Math.sin(time / 300)));
-    this.streak.setAlpha(night * 0.6).setFlipX(Math.sin(time / 400) > 0); // shimmering
+    this.lights.setAlpha(Phaser.Math.Clamp((night - 0.3) / 0.5, 0, 1)); // on from dusk
     this.flies.setVisible(night > 0.5);
   }
 }

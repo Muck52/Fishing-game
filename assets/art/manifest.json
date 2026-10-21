@@ -18,8 +18,8 @@
   "lakebed": "assets/art/environments/lakebed.png",
   "shelf": "assets/art/environments/shelf.png",
   "hut": "assets/art/environments/hut.png",
+  "hut-lights": "assets/art/environments/hut-lights.png",
   "post-wet": "assets/art/environments/post-wet.png",
-  "boat": "assets/art/environments/boat.png",
   "barrel": "assets/art/environments/barrel.png",
   "bucket": "assets/art/ui/bucket.png",
   "card-bass": "assets/art/fish/bass-card.png",
@@ -35,9 +35,7 @@
   "spark": "assets/art/effects/spark.png",
   "star": "assets/art/effects/star.png",
   "mist": "assets/art/effects/mist.png",
-  "glow": "assets/art/effects/glow.png",
   "firefly": "assets/art/effects/firefly.png",
-  "light-streak": "assets/art/effects/light-streak.png",
   "ripple-map": "assets/art/effects/ripple-map.png",
   "board": "assets/art/ui/board.png"
  },
@@ -106,6 +104,12 @@
    "url": "assets/art/environments/bed-sea-flora-plant-4.png",
    "frameWidth": 24,
    "frameHeight": 35,
+   "frames": 4
+  },
+  "boat": {
+   "url": "assets/art/environments/boat.png",
+   "frameWidth": 86,
+   "frameHeight": 30,
    "frames": 4
   },
   "cattails-1": {
@@ -264,6 +268,12 @@
    "frameHeight": 32,
    "frames": 4
   },
+  "ripple-tiny": {
+   "url": "assets/art/effects/ripple-tiny.png",
+   "frameWidth": 22,
+   "frameHeight": 3,
+   "frames": 5
+  },
   "branch": {
    "url": "assets/art/effects/branch.png",
    "frameWidth": 32,
@@ -369,11 +379,7 @@
     94.0
    ],
    "w": 192,
-   "h": 122,
-   "window": {
-    "x": 109,
-    "y": 41
-   }
+   "h": 122
   },
   "angler": {
    "idle": [
@@ -446,10 +452,9 @@
   "#0e2238",
   "#0e2436",
   "#0f243a",
-  "#2a1e20",
+  "#2a1d20",
   "#10273f",
   "#1b2631",
-  "#112941",
   "#122d45",
   "#163235",
   "#14324c",
@@ -463,7 +468,7 @@
   "#1d463c",
   "#324432",
   "#1e4762",
-  "#463e35",
+  "#463e36",
   "#3d452e",
   "#3c424e",
   "#264b62",
@@ -475,25 +480,25 @@
   "#2c5c78",
   "#2e5d72",
   "#833f4c",
-  "#54585b",
   "#51642b",
   "#55690e",
+  "#565877",
   "#70553b",
-  "#635b54",
+  "#645b51",
   "#546e55",
   "#a04f45",
   "#985252",
   "#407e56",
   "#4f738b",
-  "#9a5b3a",
-  "#6c7e55",
+  "#9c5d3c",
+  "#6c7d59",
   "#e84a3a",
-  "#887366",
+  "#8a7365",
   "#c25f62",
-  "#918358",
+  "#928358",
   "#b77357",
   "#ae7764",
-  "#7fa693",
+  "#7da489",
   "#d88571",
   "#b3a494",
   "#8ad06a",
@@ -501,12 +506,13 @@
   "#b2d0d0",
   "#e7cd8d",
   "#ffd84a",
-  "#cfddc6",
+  "#cfddc7",
   "#ebd9a1",
   "#b0ebeb",
   "#b0ecf0",
-  "#f0e1af",
+  "#f7d998",
   "#eae2dc",
+  "#f3eca2",
   "#d3f0ee",
   "#f7ec9b",
   "#dafafa",
@@ -514,7 +520,7 @@
   "#e5f6f6",
   "#fff4d6",
   "#ffeffa",
-  "#ebfafa",
+  "#ecfafa",
   "#ffffff"
  ]
 }

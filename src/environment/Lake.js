@@ -1,5 +1,6 @@
 import { W, H, SURFACE_Y, BED_Y, DEPTH, webgl } from '../core/constants.js';
 import { ART } from '../core/Assets.js';
+import { tinyRipple } from './Effects.js';
 import { FISH } from '../../data/fish/fish.js';
 
 const STRIP_TOP = SURFACE_Y - 2; // the surface band's outline sits just above the waterline
@@ -63,6 +64,9 @@ export class Lake {
       blendMode: 'ADD',
     }).setDepth(DEPTH.SURFACE + 0.1);
 
+    // little ripples coming and going all over the surface
+    this.nextRipple = 0;
+
     // a branch drifting by on the surface
     this.branch = scene.add.sprite(-30, SURFACE_Y + 3, 'branch').setDepth(DEPTH.BOBBER - 0.2).play('branch-bob');
 
@@ -120,6 +124,10 @@ export class Lake {
   }
 
   update(time, dt, wind) {
+    if (time > this.nextRipple) {
+      tinyRipple(this.scene, R(6, W - 6), SURFACE_Y + R(6, 16));
+      this.nextRipple = time + R(250, 700) - wind * 200;
+    }
     this.surface.tilePositionX += (3 + wind * 9) * dt;
     this.surface.y = STRIP_TOP + Math.round(Math.sin(time / 900));
     for (const r of this.rays) r.setAlpha(0.13 + 0.07 * Math.sin(time / 1700 + r.phase));

@@ -39,7 +39,7 @@ we borrow is the thinking behind them.
    lakebed have none, so actors always read in front of scenery.
 4. **Light from above and behind.** Sun shafts slant down into the water,
    the surface twinkles, and depth darkens and cools everything. Glows are
-   dithered (`glow`, `firefly`, `light-streak`), never blurred.
+   pixel sprites (`firefly`, `hut-lights`), never blurred.
 5. **Things are to scale.** The angler is about 34 pixels tall, and
    everything is sized against him. Fish swim at 18 (bluegill) to 42
    (sturgeon) pixels long, a little larger than life so their markings
@@ -55,8 +55,9 @@ we borrow is the thinking behind them.
    (`fonts()` in the build). Text is tinted, never resized off the grid.
 9. **The hour sets the mood.** `src/environment/Daylight.js` multiplies the
    scene by a colour for the time on the phone: rose at dawn, clear by day,
-   gold then mauve at dusk, deep blue at night. After dark the hut window
-   glows, its light lies on the water and fireflies come out over the reeds.
+   gold then mauve at dusk, deep blue at night. After dark the hut's
+   window and doorway light up (only the openings change colour, so the
+   light sits exactly on the art) and fireflies come out over the reeds.
    The interface sits above the grade so it always reads the same.
 
 ## How each piece fits
@@ -66,7 +67,9 @@ we borrow is the thinking behind them.
 | Sky, peaks, far bank | CraftPix mountain river | 576 x 324, 1x, cropped to 360 | none | clouds drift; waterfall and stream roll 4 frames |
 | Underwater, shelf, lakebed | built in `build_art.py` from the palette | full width | none | displacement wobble; shafts pulse |
 | Weeds, sand, clam | Reactorcore aquatic | 1x | none | 4-frame sway |
-| Hut, posts, boat, barrel, cattails | CraftPix fishing | 1x | shared | boat bobs 1px; cattails sway |
+| Hut, posts, barrel, cattails | CraftPix fishing | 1x | shared | cattails sway; hut windows lit at night |
+| Rowboat and oars | CraftPix skiff, made double-ended; oars drawn in the build | 1x | shared | rides the swell and rocks through 4 baked tilt frames, sending tiny ripples off each end |
+| Tiny ripples | drawn in the build | 22 x 3 | none | spread and fade in 5 frames, all over the surface |
 | Angler | CraftPix fishing (turned, line erased) | 48 x 48 frames | shared | idle, fish, reel, land |
 | Fish species | the game's own field-guide paintings, redrawn small | 18–42 px long, 1x; full painting on the card | shared | 4-frame tail swish; depth tint |
 | Minnows | ansimuz underwater, redrawn small | 13 px long, 1x | shared | 4-frame swim, school |

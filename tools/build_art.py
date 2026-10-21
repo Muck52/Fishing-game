@@ -273,14 +273,69 @@ def pier():
                 x += 1
             stilts.append((s + x) / 2)
         x += 1
-    manifest["anchors"]["hut"] = {"deck": 62, "stilts": stilts, "w": hut.width, "h": hut.height, "window": {"x": 109, "y": 41}}
+    manifest["anchors"]["hut"] = {"deck": 62, "stilts": stilts, "w": hut.width, "h": hut.height}
+
+    # The hut's lights after dark: its window and doorway openings (the dark
+    # panes in the art) lit warm, drawn over the hut at night. Only the
+    # openings change, so the light sits exactly on the art.
+    lit = Image.new("RGBA", hut.size)
+    hp, lp = hut.load(), lit.load()
+    panes = {(61, 37, 59): (255, 210, 120), (86, 88, 123): (240, 170, 90)}
+    for y in range(14, 64):
+        for x in range(60, hut.width):
+            c = hp[x, y]
+            if c[3] and c[:3] in panes:
+                # brightest in the middle of each pane, a step darker at its edges
+                inner = all(hp[x + dx, y + dy][:3] == c[:3] for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)])
+                warm = panes[c[:3]]
+                lp[x, y] = (*(warm if inner else lerp(warm, (200, 110, 70), 0.5)), 255)
+    save(lit, "environments/hut-lights.png")
     tiles = load("craftpix-fishing/Pier_Tiles.png")
     save(tiles.crop((66, 64, 74, 128)), "environments/post-wet.png")
-    save(load("craftpix-fishing/Boat.png"), "environments/boat.png", actor=True)
+    rowboat()
     save(load("craftpix-fishing/Fishbarrel4.png"), "environments/barrel.png", actor=True)
     for i in range(1, 5):
         sheet, size = sway(load(f"craftpix-fishing/Grass{i}.png"), amp=1)
         save(sheet, f"environments/cattails-{i}.png", frame=size, frames=4, actor=True)
+
+
+def rowboat():
+    """The pack's skiff made into a double-ended rowboat: its curled stern
+    goes and the bow is mirrored to make the other end. Two oars rest in
+    their locks, blades in the water. It rocks through baked frames, tilted
+    on the pixel grid, so the game never rotates it."""
+    src = load("craftpix-fishing/Boat.png")
+    w, h = src.size
+    half = src.crop((0, 0, w // 2, h))
+    hull = Image.new("RGBA", (half.width * 2, h))
+    hull.alpha_composite(half, (0, 0))
+    hull.alpha_composite(flip(half), (half.width, 0))
+    W_, H_ = hull.width, h
+    pad = 6
+    boat = Image.new("RGBA", (W_ + pad * 2, H_ + pad * 2))
+    wood, dark, blade = (214, 160, 100), (150, 96, 60), (190, 132, 82)
+
+    def oar(x0, y0, x1, y1, shade):
+        """Shaft from handle (x0, y0) to blade tip (x1, y1); the last third is
+        a wider blade."""
+        n = max(abs(x1 - x0), abs(y1 - y0))
+        d = ImageDraw.Draw(boat)
+        for i in range(n + 1):
+            t = i / n
+            x, y = round(x0 + (x1 - x0) * t), round(y0 + (y1 - y0) * t)
+            d.point((x, y), fill=(*shade, 255))
+            if t > 0.68:  # the blade
+                d.point((x + 1, y), fill=(*blade, 255))
+                d.point((x - 1, y), fill=(*blade, 255))
+    # the far oar, behind the hull, then the hull, then the near oar
+    oar(pad + W_ // 2 + 4, pad + 1, pad + W_ - 4, pad + H_ + 4, dark)
+    boat.alpha_composite(hull, (pad, pad))
+    oar(pad + W_ // 2 - 4, pad - 2, pad + 6, pad + H_ + 4, wood)
+    # oarlocks on the gunwale
+    for x in (pad + W_ // 2 - 6, pad + W_ // 2 + 6):
+        boat.putpixel((x, pad + 1), (*OUTLINE, 255))
+    frames = [boat.rotate(a, resample=Image.Resampling.NEAREST) for a in (0, 2.5, 0, -2.5)]
+    save(strip(frames), "environments/boat.png", frame=boat.size, frames=4, actor=True)
 
 
 # ---------------------------------------------------------------- the angler
@@ -417,6 +472,24 @@ def effects():
     bub = [load(f"{th}/Water_Bubbles/{i}.png") for i in range(1, 4)]
     save(strip(bub), "effects/bubble.png", frame=(7, 7), frames=3)
     save(load("amberfall-lake/ripples.png"), "effects/ripple.png", frame=(32, 32), frames=4)
+
+    # tiny ripples: a pair of short glints that spread apart and fade
+    tw, th_ = 22, 3
+    tiny = []
+    for k in range(5):
+        fr = Image.new("RGBA", (tw, th_))
+        r = 2 + k * 2
+        c = (250, 255, 255) if k < 2 else (200, 236, 240) if k < 4 else (140, 196, 210)
+        for side in (-1, 1):
+            for i in range(2 if k < 4 else 1):
+                x = tw // 2 + side * (r + i) - (1 if side < 0 else 0)
+                fr.putpixel((x, 1), (*c, 255))
+                if k < 3:
+                    fr.putpixel((x, 2), (30, 70, 98, 255))  # the dark trough under the glint
+        if k < 2:
+            fr.putpixel((tw // 2, 0), (*c, 255))
+        tiny.append(fr)
+    save(strip(tiny), "effects/ripple-tiny.png", frame=(tw, th_), frames=5)
     save(load("amberfall-lake/floatingbranch.png"), "effects/branch.png", frame=(32, 32), frames=4, actor=True)
     save(load("nelson-yiap-bobbles/fishing_bobbles.png").crop((0, 0, 48, 24)), "effects/bobber.png", frame=(24, 24), frames=2, actor=True)
 
@@ -441,17 +514,6 @@ def effects():
                 puff.putpixel((x, y), (236, 246, 250, round(200 * (1 - d))))
     save(puff, "effects/mist.png", grade=False)
 
-    # a soft round glow for lamps and fireflies, dithered rather than
-    # smooth so it sits on the pixel grid
-    G = 33
-    glow = Image.new("RGBA", (G, G))
-    for y in range(G):
-        for x in range(G):
-            t = max(0, 1 - math.hypot(x - 16, y - 16) / 16.5) ** 1.6
-            if t * 16 > BAYER[(y & 3) * 4 + (x & 3)] + 0.5:
-                glow.putpixel((x, y), (255, 214, 140, 255) if t > 0.55 else (255, 180, 100, 255) if t > 0.25 else (200, 120, 80, 255))
-    save(glow, "effects/glow.png", grade=False)
-
     # a firefly: one hot pixel in a dim halo
     fly = Image.new("RGBA", (5, 5))
     for x, y in [(1, 2), (3, 2), (2, 1), (2, 3)]:
@@ -459,14 +521,6 @@ def effects():
     fly.putpixel((2, 2), (255, 250, 170, 255))
     save(fly, "effects/firefly.png", grade=False)
 
-    # the hut window's light lying on the water: broken, wavering bars
-    rw_, rh_ = 16, 30
-    streak = Image.new("RGBA", (rw_, rh_))
-    for y in range(0, rh_, 2):
-        half = round((rw_ / 2 - 1) * (1 - y / rh_) * (0.6 + 0.4 * math.sin(y * 1.3)))
-        for x in range(rw_ // 2 - half, rw_ // 2 + half):
-            streak.putpixel((x, y), (255, 200, 120, 255) if y < rh_ / 2 else (200, 130, 80, 255))
-    save(streak, "effects/light-streak.png", grade=False)
     # a displacement map that makes the deep water waver: bands of sideways
     # push (red) and a little lift (green)
     dm = Image.new("RGBA", (64, 256))

@@ -8,6 +8,12 @@ export function ripple(scene, x) {
   r.on('animationcomplete', () => r.destroy());
 }
 
+// A very small ripple: two glints spreading apart on the surface.
+export function tinyRipple(scene, x, y = SURFACE_Y + 7) {
+  const r = scene.add.sprite(Math.round(x), y, 'ripple-tiny').setDepth(DEPTH.SURFACE + 0.2).play('ripple-tiny');
+  r.on('animationcomplete', () => r.destroy());
+}
+
 // One droplet emitter per scene, shared by every splash.
 function drops(scene) {
   if (!scene.splashDrops?.scene) {

@@ -38,6 +38,7 @@ const ANIMS = [
   ['splash', 'splash', range(0, 4), 14, 0],
   ['bubble-pop', 'bubble', range(0, 2), 8, -1],
   ['ripple', 'ripple', range(0, 3), 9, 0],
+  ['ripple-tiny', 'ripple-tiny', range(0, 4), 7, 0],
   ['branch-bob', 'branch', range(0, 3), 4, -1],
   ['bobber-bob', 'bobber', [0, 1], 3, -1],
   ['coin-spin', 'coin', range(0, 3), 10, -1],
