@@ -8,19 +8,24 @@ import { Angler } from '../player/Angler.js';
 import { Tackle } from '../fishing/Tackle.js';
 import { ReelFight } from '../fishing/ReelFight.js';
 import { RhythmFight } from '../fishing/RhythmFight.js';
+import { BarFight } from '../fishing/BarFight.js';
 import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
 import { Striker, strikeOf } from '../fish/Strike.js';
 import { FISH } from '../../data/fish/fish.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
+import { FishBar } from '../ui/FishBar.js';
 import { Hud } from '../ui/Hud.js';
 import { CatchPopup } from '../ui/CatchPopup.js';
 import { SaveManager } from '../save/SaveManager.js';
 
 const MIN_SWIPE = 70; // px of upward drag needed to count as a cast
 const STEER = 24; // px of drag that counts as a steering swipe in a fight
-// Reeling is rhythm tugs; ?reel=hold in the address brings back the old
-// hold-to-reel fight for comparison.
-const HOLD_REEL = new URLSearchParams(window.location.search).get('reel') === 'hold';
+// Reeling is the Stardew-style catch bar; ?reel=rhythm (rhythm tugs) or
+// ?reel=hold (the old hold-to-reel) in the address bring back the others.
+const REEL = new URLSearchParams(window.location.search).get('reel') || 'bar';
+const HOLD_REEL = REEL === 'hold';
+const RHYTHM = REEL === 'rhythm';
+const BAR = !HOLD_REEL && !RHYTHM;
 // Where each kind of cover is, for a fish bolting toward it.
 const COVER = {
   weeds: (f) => ({ x: 36, y: clamp(f.y, SURFACE_Y + 60, BED_Y - 40) }),
@@ -45,6 +50,7 @@ export class FishingScene extends Phaser.Scene {
     this.hud = new Hud(this);
     this.hud.update(this.save.data);
     this.meter = new TensionMeter(this);
+    this.bar = new FishBar(this);
     this.popup = new CatchPopup(this);
     this.hint = label(this, W / 2, 165, '', { font: 'head', size: 2 }).setDepth(DEPTH.UI);
     this.note = label(this, W / 2, 95, '', { width: W - 40 }).setDepth(DEPTH.UI).setAlpha(0);
@@ -193,21 +199,23 @@ export class FishingScene extends Phaser.Scene {
     this.note.setAlpha(0);
     this.weight = rollWeight(this.fish);
     const start = 40 + this.castPower * 60;
-    this.fight = HOLD_REEL ? new ReelFight(this.fish, start) : new RhythmFight(this.fish, start);
+    this.fight = BAR ? new BarFight(this.fish, start) : HOLD_REEL ? new ReelFight(this.fish, start) : new RhythmFight(this.fish, start);
     this.far = { x: this.tackle.x, y: this.tackle.hookY };
     this.off = { x: 0, y: 0 }; // where the fight throws the fish, off its line toward the pier
-    this.meter.show(true);
+    if (BAR) this.bar.show(true);
+    else this.meter.show(true);
     this.angler.fight();
     this.striker.hooked();
     this.tackle.shake = 0;
     this.fishSprite.setFlipX(true);
-    this.setHint(HOLD_REEL ? 'Hold to reel!\nLet go when the line pulls tight' : 'Tap just after\neach tug!', 2400);
+    this.setHint(BAR ? 'Hold to raise the bar\nKeep the fish in it!' : HOLD_REEL ? 'Hold to reel!\nLet go when the line pulls tight' : 'Tap just after\neach tug!', 2400);
   }
 
   lose(message, snapped = false) {
     this.state = STATE.RESULT;
     this.tackle.show(false);
     this.meter.show(false);
+    this.bar.show(false);
     this.fleeFish();
     if (snapped) this.angler.hurt();
     else this.angler.idle();
@@ -218,6 +226,7 @@ export class FishingScene extends Phaser.Scene {
   land() {
     this.state = STATE.RESULT;
     this.meter.show(false);
+    this.bar.show(false);
     this.tackle.show(false);
     this.setHint('');
     const f = this.fishSprite;
@@ -241,7 +250,19 @@ export class FishingScene extends Phaser.Scene {
     });
     f.clearTint();
 
-    const value = catchValue(this.fish, this.weight);
+    let value = catchValue(this.fish, this.weight);
+    // Stardew's bonuses: a perfect catch is worth more, and a chest holds coins
+    const bonus = [];
+    if (BAR && this.fight.perfect) {
+      value = Math.round(value * 1.25);
+      bonus.push('PERFECT!');
+    }
+    if (BAR && this.fight.treasure?.got) {
+      const loot = 10 + R(0, 20) + Math.round(this.fish.value * 0.5);
+      value += loot;
+      bonus.push(`Treasure +${loot}`);
+    }
+    if (bonus.length) this.pop(bonus.join('  '), INK.gold);
     const { isNew, isRecord } = this.save.recordCatch(this.fish, this.weight, value);
     this.time.delayedCall(750, () => {
       this.hud.coinBurst(ANGLER_X, DECK_Y - 30, value);
@@ -254,8 +275,8 @@ export class FishingScene extends Phaser.Scene {
 
   onDown(pointer) {
     this.downAt = { x: pointer.x, y: pointer.y };
-    if (this.state === STATE.REELING && !HOLD_REEL) {
-      this.fight.tap();
+    if (this.state === STATE.REELING) {
+      if (RHYTHM) this.fight.tap();
     } else if (this.state === STATE.BITE) {
       this.hook();
     } else if (this.state === STATE.WAITING) {
@@ -268,7 +289,7 @@ export class FishingScene extends Phaser.Scene {
   }
 
   onUp(pointer) {
-    if (this.state === STATE.REELING && !HOLD_REEL && this.downAt) {
+    if (this.state === STATE.REELING && RHYTHM && this.downAt) {
       // a drag steers the fish's head away from cover
       const dx = pointer.x - this.downAt.x;
       const dy = this.downAt.y - pointer.y;
@@ -383,6 +404,22 @@ export class FishingScene extends Phaser.Scene {
     }
   }
 
+  // What the catch bar just did.
+  onBarEvent(e) {
+    const s = this.fishSprite;
+    if (e.kind === 'chest') {
+      this.pop('A chest!', INK.gold);
+    } else if (e.kind === 'chestGot') {
+      this.pop('Got the chest!', INK.gold);
+      bubbles(this, s.x, s.y, 2);
+    } else if (e.kind === 'escaping') {
+      this.setHint('It\'s getting away!', 1000);
+      try { navigator.vibrate?.(40); } catch (err) { /* no vibration */ }
+    } else if (e.kind === 'saved') {
+      this.setHint('');
+    }
+  }
+
   // Where the fish is on its way in: from where it bit to under the pier,
   // by how much line is out.
   fightBase() {
@@ -395,10 +432,16 @@ export class FishingScene extends Phaser.Scene {
   updateFight(time, dt) {
     const f = this.fight;
     let result;
-    if (HOLD_REEL) {
-      const reeling = this.input.activePointer.isDown;
-      result = f.update(dt, reeling);
-      if (reeling && Math.random() < 0.1) this.angler.reel();
+    const holding = this.input.activePointer.isDown;
+    if (BAR) {
+      result = f.update(dt, holding);
+      for (const e of f.events.splice(0)) this.onBarEvent(e);
+      this.angler.crank += holding ? dt * 14 : 0;
+      this.angler.lift = holding ? Math.min(3, this.angler.lift + dt * 20) : Math.max(0, this.angler.lift - dt * 20);
+      this.bar.update(f, holding);
+    } else if (HOLD_REEL) {
+      result = f.update(dt, holding);
+      if (holding && Math.random() < 0.1) this.angler.reel();
     } else {
       result = f.update(dt);
       for (const e of f.events.splice(0)) this.onFightEvent(e);
@@ -407,6 +450,8 @@ export class FishingScene extends Phaser.Scene {
     // the fish: on its way in, thrown about by the fight
     const s = this.fishSprite;
     const base = this.fightBase();
+    // in the catch bar, the fish's depth in the lake follows its place in the bar
+    if (BAR) base.y = lerp(SURFACE_Y + 20, BED_Y - 14, f.fishPos / 540);
     const wob = Math.sin(time / 230) * 5 * f.strength;
     s.x = Math.round(clamp(base.x + this.off.x + wob, 20, W - 30));
     s.y = Math.round(clamp(base.y + this.off.y + Math.cos(time / 310) * 4 * f.strength, SURFACE_Y + 20, BED_Y - 12));
@@ -422,11 +467,11 @@ export class FishingScene extends Phaser.Scene {
     this.tackle.x = this.mouth().x + 15;
     this.tackle.dip = this.leaping ? 0 : f.tension / 16 + f.pull * 3;
 
-    this.meter.update(f.tension, f.distance, HOLD_REEL ? null : f.phase);
+    if (!BAR) this.meter.update(f.tension, f.distance, HOLD_REEL ? null : f.phase);
     if (result === 'caught') this.land();
     else if (result === 'snapped') {
       this.cameras.main.shake(250, 0.01);
       this.lose('SNAP! The line broke.', true);
-    } else if (result === 'escaped') this.lose('It ran off with all your line.');
+    } else if (result === 'escaped') this.lose(BAR ? 'It slipped the hook...' : 'It ran off with all your line.');
   }
 }

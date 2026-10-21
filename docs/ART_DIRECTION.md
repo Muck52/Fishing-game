@@ -125,7 +125,27 @@ fast its tail beats (a hurrying fish beats faster). Nothing is rotated.
 Add `?fish=walleye` (any species id) to the address to make that species
 bite every time while tuning.
 
-## Reeling in: rhythm tugs
+## Reeling in: the catch bar
+
+`src/fishing/BarFight.js` and `src/ui/FishBar.js`, after Stardew Valley's
+fishing. A wooden column stands beside the angler with a water track, a
+green bar and the fish. Hold anywhere to float the bar up; let go and it
+sinks (and bounces off the bottom). Keep the fish inside the bar to fill the
+catch meter beside it; let it out and the meter drains. Full, it's caught;
+empty, it slips the hook. The bar is a little sluggish while the fish is in
+it, which helps you hold it there.
+
+Each species moves in its own way (`MOVES`): bluegill and bass wander,
+perch, trout, pike and muskie dart, walleye glide smoothly, carp, catfish
+and drum sink toward the bottom, crappie float up. `difficulty` sets how far
+and how often. The hooked fish's depth in the lake follows its place in the
+bar.
+
+- **Perfect catch:** never let it leave the bar for +25% coins.
+- **Treasure chest:** sometimes a chest appears in the track; keep it in the
+  bar until its little meter fills for bonus coins.
+
+## The rhythm-tug fight (?reel=rhythm)
 
 `src/fishing/RhythmFight.js`. A hooked fish pulls in tugs, each species to
 its own beat (`TUGS`): the rod tip quivers (the tell), the fish tugs, and
@@ -138,7 +158,7 @@ meter says WAIT, REEL! or STEER.
 - **Runs for cover:** some fish bolt for the weeds, the hut's posts or the
   bottom. Swipe away from it (weeds: right, posts: left, bottom: up) to turn
   its head, or the line snags and it takes line.
-- `?reel=hold` brings back the old hold-to-reel fight for comparison.
+- `?reel=hold` brings back the first hold-to-reel fight for comparison.
 
 The angler acts it out: idle he glances back at the hut, shifts his feet
 and breathes; waiting, he jigs the bait and leans in to peer at the water;
