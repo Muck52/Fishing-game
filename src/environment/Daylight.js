@@ -24,8 +24,8 @@ const LIFT = 0x0e1424;
 // The hour the lake shows: the phone's clock, or ?hour=21 in the address
 // bar to look at another time.
 export function hourNow() {
-  const forced = Number(new URLSearchParams(window.location.search).get('hour'));
-  if (forced || forced === 0) return forced % 24;
+  const forced = new URLSearchParams(window.location.search).get('hour');
+  if (forced !== null && forced !== '' && Number.isFinite(Number(forced))) return Number(forced) % 24;
   const d = new Date();
   return d.getHours() + d.getMinutes() / 60;
 }
