@@ -17,52 +17,64 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from kit import blank, put, outline, wing, ink, write  # noqa: E402
+from kit import blank, put, outline, bird_wing, ink, write  # noqa: E402
 
 INK = ink(
-    W="#faffff",  # white head and body
-    w="#dde0cd",  # white in shade
-    G="#b2d0d0",  # pale grey back and wings
-    g="#86a398",  # far wing, in shade
+    W="#faffff",  # white head, body, tail, trailing edge, mirrors
+    w="#dde0cd",  # white in shade, the underwing
+    G="#b2d0d0",  # pale grey wings
+    g="#86a398",  # grey in shade, the far wing
     K="#33323d",  # black wingtips
     Y="#ffd84a",  # bill
-    E="#25131a",  # eye, bill ring
+    y="#c79a49",  # lower bill, in shade
+    E="#25131a",  # eye, the ring on the bill
 )
 
-FW, FH = 30, 30
+FW, FH = 32, 34
 BODY = [
-    "...ooo..........",
-    ".ooWWWoo........",
-    "YEWWEWWWooooo...",
-    ".ooWWWWWGGGGWooo",
-    "...owWWWWWWWWWWWo",
-    "....oowwwwwwwwoo.",
-    "......oooooooo...",
+    "....ooo...........",
+    "..ooWWWoo.........",
+    ".oWWWWWWWoooo.....",
+    "oYEYWEWWWWWWWoooo.",
+    "ooyyowWWWWWWWWWWWo",
+    "...oowWWWWWWWWWWwo",
+    ".....oowwwwwwwwwo.",
+    ".......ooooooooo..",
 ]
-BODY_AT = (2, 13)
-SHOULDER = (12, 15)
-# (far wingtip, near wingtip) for each moment of a wingbeat: wings up,
-# halfway, spread wide, swept down
-TIPS = {"up": ((16, 1), (17, 6)), "half": ((15, 3), (16, 22)), "level": ((14, 2), (15, 27)), "down": ((15, 9), (14, 27))}
+BODY_AT = (1, 13)
+NEAR, FAR = (11, 17), (12, 16)  # shoulders
+# A wingbeat after Marey's chronophotographs of gulls (1887): the downstroke
+# on fully spread wings, then the upstroke with the wrist bent and the hand
+# swept back so the wing slips up through the air. (wrist, tip) offsets
+# from each shoulder, near wing then far wing.
+POSES = {
+    "up": (((2, -6), (5, -12)), ((3, -7), (6, -14))),
+    "sweep": (((0, 3), (2, 8)), ((1, -7), (4, -13))),
+    "spread": (((-1, 7), (3, 14)), ((0, -7), (4, -13))),
+    "down": (((0, 7), (2, 14)), ((-1, 4), (1, 9))),
+    "fold": (((2, 3), (8, 4)), ((2, -3), (8, -4))),
+    "rise": (((1, -3), (6, -8)), ((2, -5), (7, -10))),
+    "glide": (((-1, 7), (5, 13)), ((0, -7), (5, -12))),
+}
+NEAR_INK = {"lead": "W", "covert": "w", "second": "G", "edge": "W", "primary": "G", "tip": "K", "mirror": "W"}
+FAR_INK = {"lead": "G", "covert": "G", "second": "g", "edge": "W", "primary": "g", "tip": "K", "mirror": "W"}
 
 
-def pose(tip, lift=0):
+def pose(name, lift=0):
     g = blank(FW, FH)
-    sx, sy = SHOULDER
-    (fx, fy), (nx, ny) = TIPS[tip]
-    # the far wing, up behind the body, its underside in shade
-    wing(g, (sx + 1, sy - 1 + lift), (fx, fy + lift), 6, "g", "K", tip_share=0.22, tip_chord=4)
+    (nw, nt), (fw, ft) = POSES[name]
+
+    bird_wing(g, FAR, fw, ft, 4.5, 3, "far", FAR_INK, lift, serrate=False)
     put(g, BODY, BODY_AT[0], BODY_AT[1] + lift)
-    # the near wing, nearer the eye, its white underside to us
-    wing(g, (sx, sy + 1 + lift), (nx, ny + lift), 6, "w", "K", tip_share=0.22, lead="G", tip_chord=4)
+    bird_wing(g, NEAR, nw, nt, 4.5, 3, "near", NEAR_INK, lift, serrate=False)
     return outline(g)
 
 
 def animations():
     return {
-        # down from high to low (the body rising as the wings push), then back up
-        "fly": ([pose("up"), pose("half"), pose("level", -1), pose("down", -1), pose("half")], 9, True),
-        "glide": ([pose("level")], 1, False),
+        # the body lifts a pixel as the wings push down
+        "fly": ([pose("up"), pose("sweep"), pose("spread", -1), pose("down", -1), pose("fold"), pose("rise")], 10, True),
+        "glide": ([pose("glide")], 1, False),
     }
 
 

@@ -15,13 +15,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from kit import blank, put, outline, wing, ink, write  # noqa: E402
+from kit import blank, put, outline, bird_wing, ink, write  # noqa: E402
 
 INK = ink(
     D="#543426",  # dark brown body and wings
     d="#342a24",  # far wing, in shade
     B="#704a30",  # light on the brown
-    b="#3f2939",  # tips of the far wing
     W="#faffff",  # white head and tail
     w="#dde0cd",  # white in shade
     Y="#ffd84a",  # bill, feet
@@ -29,52 +28,49 @@ INK = ink(
     E="#25131a",  # eye
 )
 
-FW, FH = 36, 40
+FW, FH = 40, 50
 BODY = [
-    "....ooooo.............",
-    "..ooWWWWWoo...........",
-    "oYYWWEWWWWWo..........",
-    "oyYoWWWWWWWDooooo.....",
-    ".ooo.owwWDDDDDDDDDoooo",
-    ".....oDDDDDDDDDDDDDWWWo",
-    "......oDDDDDDDDDDDDWWWWo",
-    ".......ooDDDDDDYYooooo..",
-    ".........ooooooooo......",
+    "....ooooo..............",
+    "..ooWWWWWoo............",
+    "oYYWWWEWWWWo...........",
+    "oyYYoWWWWWWWBoooo......",
+    ".ooo..owWWDBBDDDDDooo..",
+    "......oDDDDDDDDDDDDWWWo",
+    ".......oDDDDDDDDDDWWWWWo",
+    "........ooDDDYYDDoWWWWo.",
+    "..........ooooooooooooo.",
 ]
-BODY_AT = (0, 14)
-SHOULDER = (14, 18)
-TIPS = {"up": ((19, 0), (20, 8)), "half": ((17, 2), (18, 32)), "level": ((16, 1), (17, 37)), "down": ((18, 10), (16, 37))}
+BODY_AT = (0, 20)
+NEAR, FAR = (13, 25), (14, 24)
+# slow, deep beats and long soaring glides on flat wings, fingers spread;
+# (wrist, tip) offsets from each shoulder, near wing then far wing
+POSES = {
+    "up": (((3, -9), (7, -18)), ((4, -10), (8, -20))),
+    "sweep": (((1, 4), (3, 11)), ((2, -10), (6, -20))),
+    "spread": (((-1, 10), (3, 21)), ((0, -10), (4, -21))),
+    "down": (((0, 10), (2, 21)), ((-1, 6), (1, 13))),
+    "fold": (((3, 4), (11, 6)), ((3, -4), (11, -6))),
+    "rise": (((2, -4), (8, -11)), ((3, -6), (9, -14))),
+    "glide": (((-1, 10), (2, 22)), ((0, -10), (3, -22))),
+}
+NEAR_INK = {"lead": "B", "covert": "D", "second": "D", "primary": "d"}
+FAR_INK = {"lead": "D", "covert": "d", "second": "d", "primary": "d"}
 
 
-def fingers(g, tip, ch, down):
-    """The spread primaries at a soaring wing's tip: notches between them."""
-    tx, ty = tip
-    for k in (1, 3):
-        y, x = ty + (-2 if down else 2), tx + k
-        if 0 <= y < FH and 0 <= x < FW and g[y][x] == ch:
-            g[y][x] = "."
-        y2 = ty + (-1 if down else 1)
-        if 0 <= y2 < FH and 0 <= x < FW and g[y2][x] == ch:
-            g[y2][x] = "."
-
-
-def pose(tip, lift=0):
+def pose(name, lift=0):
     g = blank(FW, FH)
-    sx, sy = SHOULDER
-    (fx, fy), (nx, ny) = TIPS[tip]
-    wing(g, (sx + 2, sy - 1 + lift), (fx, fy + lift), 7, "d", tip_chord=6)
+    (nw, nt), (fw, ft) = POSES[name]
+    spread = name in ("spread", "glide")
+    bird_wing(g, FAR, fw, ft, 7, 6, "far", FAR_INK, lift, fingers=4 if spread else 0, tip_width=5, serrate=False)
     put(g, BODY, BODY_AT[0], BODY_AT[1] + lift)
-    wing(g, (sx, sy + 1 + lift), (nx, ny + lift), 7, "D", lead="B", tip_chord=6)
-    if tip == "level":
-        fingers(g, (fx, fy + lift), "d", False)
-        fingers(g, (nx, ny + lift), "D", True)
+    bird_wing(g, NEAR, nw, nt, 7, 6, "near", NEAR_INK, lift, fingers=4 if spread else 0, tip_width=5, serrate=False)
     return outline(g)
 
 
 def animations():
     return {
-        "fly": ([pose("level"), pose("half"), pose("up"), pose("half"), pose("level", -1), pose("down", -1), pose("half")], 6, True),
-        "glide": ([pose("level")], 1, False),
+        "fly": ([pose("glide"), pose("up"), pose("sweep"), pose("spread", -1), pose("down", -1), pose("fold"), pose("rise")], 6, True),
+        "glide": ([pose("glide")], 1, False),
     }
 
 

@@ -46,6 +46,19 @@ journal and the backpack, and from the research below.
    wing down in front. Gulls and the eagle beat and glide; ducks beat fast
    and never glide; sparrows fly in bounds, a burst of beats then wings
    shut. On the downstroke the body lifts a pixel.
+
+   Each wing is built like a real one (`feathered_wing` in the kit): an
+   arm from shoulder to wrist and a hand from wrist to tip, the bones along
+   the leading edge and the feathers trailing behind, coloured in bands as
+   on the bird (lit marginal coverts, coverts, then secondaries along the
+   arm and primaries along the hand, a gull's black tips with their white
+   mirror, the mallard's blue speculum edged in white, an eagle's spread
+   fingers on a broad, blunt wing). The wingbeat follows Marey's
+   chronophotographs of gulls (1887): a downstroke on fully spread wings,
+   then an upstroke with the wrist bent and the hand swept back so the wing
+   slips up through the air. Wings are drawn four times larger and brought
+   down to the grid by vote (`supersampled`), so their slanted and curved
+   edges come out as clean, even steps.
 8. **Moving with the feet.** A creature moves only when its walk advances a
    frame, by a step that comes from its gait, so its feet don't slide.
 
@@ -84,7 +97,10 @@ lineup above.
 - Pixel-art walk cycles: [Walk cycle guide (OpenGameArt)](https://opengameart.org/content/walk-cycle-guide),
   [AGS forums on quadruped walks](https://www.adventuregamestudio.co.uk/forums/index.php?msg=394078),
   [Pixel art walk cycle animation (itch.io)](https://itch.io/blog/526535/pixel-art-walk-cycle-animation)
-- Bird flight: [Small birds, 2D Animation: Animate Flying Creatures](https://origin-www.lynda.com/3D-Animation-tutorials/Small-birds/501129/602246-4.html)
+- Bird flight: Étienne-Jules Marey's chronophotographs of gulls, 1887, public domain
+  ([Marey on Wikipedia](https://en.wikipedia.org/wiki/%C3%89tienne-Jules_Marey),
+  [*Nature*, 1888](https://www.nature.com/articles/037369a0.pdf));
+  [Small birds, 2D Animation: Animate Flying Creatures](https://origin-www.lynda.com/3D-Animation-tutorials/Small-birds/501129/602246-4.html)
   (the wings reverse and fold on the upstroke; the body moves against the wings)
 - The CC0 [animated wild animals](https://opengameart.org/content/animated-wild-animals) by ScratchIO,
   studied for a canid's body plan and walk at sprite size (nothing copied)

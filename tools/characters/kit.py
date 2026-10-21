@@ -260,3 +260,122 @@ def wing(g, root, tip, chord, fill, tip_fill=None, tip_share=0.3, lead=None, tip
         for x, y in line(front, (tx, ty))[:-2]:
             if 0 <= y < len(g) and 0 <= x < len(g[0]) and g[y][x] == fill:
                 g[y][x] = lead
+
+
+def feathered_wing(g, shoulder, wrist, tip, arm_chord, hand_chord, side, ink_map, fingers=0, serrate=True, tip_width=1, unit=1):
+    """A bird's wing built like a real one, seen from below: the arm runs
+    from the shoulder to the wrist and the hand from the wrist to the tip;
+    the bones lie along the leading edge, and the feathers trail behind
+    them. Across the wing, from the leading edge back: the lit marginal
+    coverts ('lead'), the coverts ('covert'), then the flight feathers:
+    secondaries along the arm ('second'), primaries along the hand
+    ('primary'), with an optional 'mirror' (a gull's white spot) near the
+    tip and a pale 'edge' along the trailing edge of the arm. The primaries'
+    trailing edge is notched (serrate), and `fingers` opens gaps between the
+    outermost ones, like a soaring eagle's. tip_width: a pointed wing (1) or a
+    broad, blunt one (an eagle's). unit: the size of a pixel (when drawn
+    larger to be brought down to the grid).
+
+    side: 'near' (the wing toward the viewer, hanging below the body) or
+    'far' (reaching up behind it); it decides which way is "behind"."""
+    h, w = len(g), len(g[0])
+    sx, sy = shoulder
+    pts = [shoulder, wrist, tip]
+    segs = [(pts[0], pts[1], arm_chord, hand_chord + 1, "arm"), (pts[1], pts[2], hand_chord + 1, tip_width, "hand")]
+    seglen = [math.dist(a, b) for a, b, *_ in segs]
+    total = sum(seglen) or 1
+    done = 0.0
+    for (a, b, c0, c1, part), L in zip(segs, seglen):
+        n = max(1, int(L * 4))
+        dx, dy = (b[0] - a[0]) / (L or 1), (b[1] - a[1]) / (L or 1)
+        # "behind" the bone: square to it, on the trailing side
+        px, py = (dy, -dx) if side == "near" else (-dy, dx)
+        if L == 0:
+            px, py = 1, 0
+        for i in range(n + 1):
+            t = i / n
+            x0, y0 = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+            along = (done + L * t) / total
+            chord = c0 + (c1 - c0) * t
+            m = max(1, int(chord * 4))
+            for j in range(m + 1):
+                u = j / m  # 0 at the leading edge, 1 at the trailing edge
+                x, y = round(x0 + px * chord * u), round(y0 + py * chord * u)
+                if not (0 <= y < h and 0 <= x < w):
+                    continue
+                if u < 0.2 and chord > 1.5:
+                    key = "lead"
+                elif part == "arm" and u < 0.55:
+                    key = "covert"
+                elif part == "arm":
+                    key = "edge" if u > 0.9 and "edge" in ink_map else "second"
+                elif u < 0.4 and t < 0.5 and chord > 2:
+                    key = "covert"
+                else:
+                    key = "primary"
+                    if "mirror" in ink_map and 0.82 < along < 0.92 and 0.3 < u < 0.8:
+                        key = "mirror"
+                    if "tip" in ink_map and along > 0.66:
+                        key = "tip" if not (key == "mirror") else key
+                g[y][x] = ink_map[key]
+        done += L
+    # notches along the hand's trailing edge, and the eagle's fingers
+    a, b = pts[1], pts[2]
+    L = math.dist(a, b)
+    if L and (serrate or fingers):
+        dx, dy = (b[0] - a[0]) / L, (b[1] - a[1]) / L
+        px, py = (dy, -dx) if side == "near" else (-dy, dx)
+        for i, t in enumerate([0.35, 0.55, 0.75]):
+            chord = (hand_chord + 1) * (1 - t) + t
+            x, y = round(a[0] + (b[0] - a[0]) * t + px * chord), round(a[1] + (b[1] - a[1]) * t + py * chord)
+            if 0 <= y < h and 0 <= x < w and g[y][x] != ".":
+                g[y][x] = "."
+        # slits between the outer primaries, cut in from the tip
+        tc = tip_width
+        for i in range(fingers):
+            u = (i + 1) / (fingers + 1)
+            bx, by = b[0] + px * tc * u, b[1] + py * tc * u
+            for d in range(int(2.6 * unit)):
+                for e in range(-int(unit * 0.35), int(unit * 0.35) + 1):
+                    x, y = round(bx - dx * d + px * e), round(by - dy * d + py * e)
+                    if 0 <= y < h and 0 <= x < w:
+                        g[y][x] = "."
+
+
+def supersampled(g, draw, k=4, keep=0.5):
+    """Draws a shape k times larger, then brings it down to the grid one
+    pixel at a time by vote: a pixel is filled if at least `keep` of it is
+    covered, with the letter that covers most of it. Curves and slanted
+    edges come out as clean, even steps instead of the ragged edges of
+    drawing at 1x. `draw(big, k)` draws onto the large grid, with every
+    coordinate and size multiplied by k."""
+    h, w = len(g), len(g[0])
+    big = blank(w * k, h * k)
+    draw(big, k)
+    for y in range(h):
+        for x in range(w):
+            votes = {}
+            for yy in range(y * k, y * k + k):
+                for xx in range(x * k, x * k + k):
+                    ch = big[yy][xx]
+                    votes[ch] = votes.get(ch, 0) + 1
+            filled = k * k - votes.pop(".", 0)
+            if filled >= keep * k * k:
+                g[y][x] = max(votes, key=votes.get)
+
+
+def bird_wing(g, shoulder, wrist, tip, arm, hand, side, ink_map, lift=0, **kw):
+    """One wing of a bird seen from below (`feathered_wing`), drawn four
+    times larger and brought down to the grid for clean edges. wrist and tip
+    are offsets from the shoulder; lift raises or lowers the whole wing."""
+    sx, sy = shoulder
+
+    def draw(big, k):
+        sc = lambda p: ((p[0] + 0.5) * k, (p[1] + lift + 0.5) * k)  # noqa: E731
+        if "tip_width" in kw:
+            kw2 = {**kw, "tip_width": kw["tip_width"] * k}
+        else:
+            kw2 = kw
+        feathered_wing(big, sc(shoulder), sc((sx + wrist[0], sy + wrist[1])), sc((sx + tip[0], sy + tip[1])), arm * k, hand * k, side, ink_map, unit=k, **kw2)
+
+    supersampled(g, draw)

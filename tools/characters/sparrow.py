@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from kit import blank, put, outline, wing, ink, write  # noqa: E402
+from kit import blank, put, outline, bird_wing, ink, write  # noqa: E402
 
 INK = ink(
     B="#a9805f",  # warm brown
@@ -24,37 +24,43 @@ INK = ink(
     E="#25131a",  # eye
 )
 
-FW, FH = 12, 12
+FW, FH = 12, 14
 BODY = [
-    ".oo......",
-    "ogEboooo.",
-    "oWWbBBbBo",
-    ".oWbWWbo.",
-    "..ooooo..",
+    "..ooo.....",
+    ".oBBBoo...",
+    "oggEBBBooo",
+    ".oWWbBbBBo",
+    "..oWbWbWo.",
+    "...ooooo..",
 ]
-BODY_AT = (0, 4)
-SHOULDER = (4, 5)
-TIPS = {"up": ((6, 0), (6, 2)), "half": ((5, 1), (5, 10)), "down": ((6, 3), (5, 11))}
+BODY_AT = (0, 5)
+NEAR, FAR = (4, 7), (5, 6)
+POSES = {
+    "up": (((1, -2), (2, -5)), ((1, -3), (2, -6))),
+    "spread": (((0, 2), (1, 5)), ((0, -3), (1, -6))),
+    "down": (((0, 2), (1, 5)), ((0, 2), (0, 4))),
+}
+NEAR_INK = {"lead": "w", "covert": "w", "second": "w", "primary": "B"}
+FAR_INK = {"lead": "B", "covert": "B", "second": "b", "primary": "b"}
 
 
-def pose(tip, lift=0):
+def pose(name, lift=0):
     g = blank(FW, FH)
-    if tip == "shut":
+    if name == "shut":
         put(g, BODY, BODY_AT[0], BODY_AT[1] + lift)
         g[BODY_AT[1] + 2 + lift][5] = "b"  # wing folded along the back
         return outline(g)
-    sx, sy = SHOULDER
-    (fx, fy), (nx, ny) = TIPS[tip]
-    wing(g, (sx + 1, sy - 1 + lift), (fx, fy + lift), 3, "b", tip_chord=2)
+    (nw, nt), (fw, ft) = POSES[name]
+    bird_wing(g, FAR, fw, ft, 2.5, 1.8, "far", FAR_INK, lift, serrate=False)
     put(g, BODY, BODY_AT[0], BODY_AT[1] + lift)
-    wing(g, (sx, sy + 1 + lift), (nx, ny + lift), 3, "w", tip_chord=2)
+    bird_wing(g, NEAR, nw, nt, 2.5, 1.8, "near", NEAR_INK, lift, serrate=False)
     return outline(g)
 
 
 def animations():
     return {
         # a burst of beats, then wings shut for the dip
-        "fly": ([pose("up"), pose("down", -1), pose("up"), pose("down", -1), pose("half"), pose("shut"), pose("shut", 1), pose("shut", 1)], 14, True),
+        "fly": ([pose("up"), pose("spread", -1), pose("down", -1), pose("up"), pose("spread", -1), pose("down", -1), pose("shut"), pose("shut", 1), pose("shut", 1)], 14, True),
     }
 
 

@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from kit import blank, put, outline, wing, ink, write  # noqa: E402
+from kit import blank, put, outline, bird_wing, ink, write  # noqa: E402
 
 INK = ink(
     G="#2d442e",  # drake's green head
@@ -30,10 +30,12 @@ INK = ink(
     O="#b77357",  # hen's bill
     U="#275571",  # blue speculum
     F="#c79a49",  # feet
+    B="#8b7373",  # upper wing, grey-brown
+    b="#6e5e50",  # primaries
     E="#25131a",  # eye
 )
 
-FW, FH = 20, 22
+FW, FH = 20, 26
 DRAKE = [
     "..ooo.........",
     ".oGgGo........",
@@ -52,29 +54,32 @@ HEN = [
     "...ooohhhFoo..",
     "......ooo.....",
 ]
-BODY_AT = (0, 8)
-SHOULDER = (7, 10)
-# fast, shallow beats: (far wingtip, near wingtip)
-TIPS = {"up": ((9, 0), (10, 5)), "half": ((8, 2), (9, 18)), "down": ((10, 6), (8, 21))}
+BODY_AT = (0, 11)
+NEAR, FAR = (7, 14), (8, 13)
+# fast, shallow beats, never a glide: (wrist, tip) from each shoulder
+POSES = {
+    "up": (((1, -4), (3, -9)), ((2, -5), (4, -10))),
+    "spread": (((-1, 4), (1, 9)), ((0, -4), (2, -9))),
+    "down": (((0, 4), (1, 9)), ((-1, 3), (0, 6))),
+    "fold": (((2, 2), (5, 3)), ((2, -2), (5, -3))),
+}
+# the near wing shows its pale underside; the far wing its upper side, grey
+# brown with the blue speculum edged in white along the trailing edge
+NEAR_INK = {"lead": "S", "covert": "S", "second": "s", "primary": "s"}
+FAR_INK = {"lead": "B", "covert": "B", "second": "U", "edge": "W", "primary": "b"}
 
 
-def pose(body, tip, lift=0):
+def pose(body, name, lift=0):
     g = blank(FW, FH)
-    sx, sy = SHOULDER
-    (fx, fy), (nx, ny) = TIPS[tip]
-    wing(g, (sx + 1, sy - 1 + lift), (fx, fy + lift), 4, "s", tip_chord=3)
+    (nw, nt), (fw, ft) = POSES[name]
+    bird_wing(g, FAR, fw, ft, 3.5, 2.5, "far", FAR_INK, lift, serrate=False)
     put(g, body, BODY_AT[0], BODY_AT[1] + lift)
-    wing(g, (sx, sy + 1 + lift), (nx, ny + lift), 4, "S", tip_chord=3)
-    # the blue speculum with its white edge, near the wing root
-    for y in range(FH):
-        for x in range(FW):
-            if g[y][x] == "S" and y > sy + lift + 1 and abs(y - (sy + lift + 3)) <= 1 and x >= sx:
-                g[y][x] = "U" if y != sy + lift + 4 else "W"
+    bird_wing(g, NEAR, nw, nt, 3.5, 2.5, "near", NEAR_INK, lift, serrate=False)
     return outline(g)
 
 
 def animations():
-    beat = ["up", "half", "down", "half"]
+    beat = ["up", "spread", "down", "fold"]
     return {
         "fly": ([pose(DRAKE, t, -1 if t == "down" else 0) for t in beat], 12, True),
         "hen": ([pose(HEN, t, -1 if t == "down" else 0) for t in beat], 12, True),

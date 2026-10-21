@@ -179,26 +179,26 @@
   },
   "gull": {
    "url": "assets/art/characters/gull.png",
-   "frameWidth": 30,
-   "frameHeight": 30,
-   "frames": 6
+   "frameWidth": 32,
+   "frameHeight": 34,
+   "frames": 7
   },
   "sparrow": {
    "url": "assets/art/characters/sparrow.png",
    "frameWidth": 12,
-   "frameHeight": 12,
-   "frames": 8
+   "frameHeight": 14,
+   "frames": 9
   },
   "mallard": {
    "url": "assets/art/characters/mallard.png",
    "frameWidth": 20,
-   "frameHeight": 22,
+   "frameHeight": 26,
    "frames": 8
   },
   "eagle": {
    "url": "assets/art/characters/eagle.png",
-   "frameWidth": 36,
-   "frameHeight": 40,
+   "frameWidth": 40,
+   "frameHeight": 50,
    "frames": 8
   },
   "minnow": {
@@ -674,14 +674,15 @@
       1,
       2,
       3,
-      4
+      4,
+      5
      ],
-     "fps": 9,
+     "fps": 10,
      "loop": true
     },
     "glide": {
      "frames": [
-      5
+      6
      ],
      "fps": 1,
      "loop": false
@@ -697,7 +698,8 @@
       4,
       5,
       6,
-      7
+      7,
+      8
      ],
      "fps": 14,
      "loop": true
