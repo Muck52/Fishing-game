@@ -7,7 +7,10 @@ import { P } from './palette.js';
 const PACKS = {
   overworld: 'assets/art/environments/zelda-like-overworld.png',
   town: 'assets/art/environments/tiny-town.png',
+  shore: 'assets/art/environments/shore-tiles.png', // built from the overworld by tools/build_shore_tiles.py
 };
+// Tiled maps laid out with the pack tilesets.
+const MAPS = { 'shore-map': 'assets/art/environments/shore.json' };
 
 // Named pieces cut from the packs: [pack, x, y, w, h] in pack pixels.
 export const PIECES = {
@@ -65,6 +68,7 @@ const pixels = {}; // recoloured pack pixels, by pack name
 
 export function preloadPacks(scene) {
   for (const [name, url] of Object.entries(PACKS)) scene.load.image(`pack-${name}`, url);
+  for (const [key, url] of Object.entries(MAPS)) scene.load.tilemapTiledJSON(key, url);
 }
 
 // Recolours each loaded pack and replaces its texture with the result.

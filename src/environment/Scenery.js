@@ -1,5 +1,5 @@
 import { W, PX, AW, HORIZON, WATER_Y, DOCK_AY, DEPTH } from '../core/constants.js';
-import { SUN, MUG, DOG, FALLS, REED_BED } from '../art/SceneryArt.js';
+import { SUN, MUG, DOG, FALLS } from '../art/SceneryArt.js';
 import { Wind } from './Wind.js';
 import { Waves } from './Waves.js';
 import { Sun } from './Sun.js';
@@ -7,6 +7,7 @@ import { Reeds } from './Reeds.js';
 import { Lighting } from './Lighting.js';
 import { SceneFx } from './SceneFx.js';
 import { Particles } from './Particles.js';
+import { addShore, MOORING } from './Shore.js';
 
 const layer = (scene, key, y, depth) => scene.add.image(0, y, key).setOrigin(0).setScale(PX).setDepth(depth);
 
@@ -24,6 +25,7 @@ export class Scenery {
     this.falls = scene.add.tileSprite(FALLS.x * PX, FALLS.top * PX, FALLS.w, fallsH, 'falls').setOrigin(0).setScale(PX).setDepth(DEPTH.FOREST + 0.2);
     scene.add.sprite((FALLS.x + FALLS.w / 2) * PX, HORIZON * PX + PX, 'foam').setScale(PX).setDepth(DEPTH.WATER_LIFE).play('foam-churn');
     this.water = layer(scene, 'water', WATER_Y, DEPTH.WATER);
+    addShore(scene);
     layer(scene, 'banks', 0, DEPTH.BANKS);
     layer(scene, 'dock', 0, DEPTH.DOCK);
 
@@ -78,8 +80,8 @@ export class Scenery {
       this.leaves.push(leaf);
     }
 
-    // a rowboat moored by the reeds, rocking on the swell
-    this.boat = scene.add.sprite((REED_BED.x + 30) * PX, (REED_BED.y + 3) * PX, 'boat').setOrigin(0.5, 1).setScale(PX - 1).setDepth(DEPTH.BANKS + 0.3);
+    // a rowboat tied up at the raft landing, rocking on the swell
+    this.boat = scene.add.sprite(MOORING.x * PX, MOORING.y * PX, 'boat').setOrigin(0.5, 1).setScale(PX - 1).setDepth(DEPTH.BANKS + 0.3);
     this.boatY = this.boat.y;
 
     this.dog = scene.add.sprite(DOG.x * PX, DOG.y * PX, 'dog', 0).setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.DOCK_LIFE);

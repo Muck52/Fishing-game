@@ -437,7 +437,7 @@ function paintWater(scene, rng, mountains, forest) {
   }
 
   // rocks breaking the surface, ringed in foam
-  placePiece(p, 'rock-wet-0', 58, REED_BED.y - HORIZON + 12);
+  placePiece(p, 'rock-wet-0', 114, REED_BED.y - HORIZON + 20);
   placePiece(p, 'rock-wet-1', 118, 36, true);
   island(p, 160, 20);
   basking(p, Math.round(AW * 0.66), Math.round(h * 0.42));
@@ -528,9 +528,9 @@ function reed(bx, by, h, lean, kind, seed) {
   };
 }
 
-// A reed bed standing out in the shallows on the west side: a dense dark
-// base of stems at the water, with taller reeds and cattails above it that
-// sway in the wind, and their reflection below.
+// A reed bed along the grassy point on the west side (a Tiled map, see
+// environment/Shore.js): a dense dark base of stems, with taller reeds and
+// cattails above it that sway in the wind.
 function paintBanks(scene, rng) {
   REEDS.length = 0;
   const p = new Painter(AW, AH);
@@ -546,10 +546,6 @@ function paintBanks(scene, rng) {
       }
     }
   });
-  for (let x = bx; x < bx + w; x++) {
-    p.px(x, by + 2, P.waterLine, 0.6);
-    for (let i = 3; i < 7; i++) if (i % 2) p.px(x, by + i, P.water5, 0.35);
-  }
   for (let i = 0; i < 26; i++) {
     const x = bx + 1 + Math.floor(rng() * (w - 6));
     const h = Math.round((9 + rng() * 13) * (1 - x / (w * 1.6)));

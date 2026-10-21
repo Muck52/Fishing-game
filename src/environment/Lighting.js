@@ -26,7 +26,8 @@ export class Lighting {
 
   flush() {
     for (const obj of this.pending) {
-      if (!obj.scene || !obj.texture || obj.depth >= DEPTH.UI || UNLIT.test(obj.texture.key)) continue;
+      const key = obj.texture?.key ?? obj.tileset?.[0]?.image?.key;
+      if (!obj.scene || !key || obj.depth >= DEPTH.UI || UNLIT.test(key)) continue;
       if (obj.type === 'Image' || obj.type === 'Sprite' || obj.type === 'TileSprite' || obj.type === 'TilemapLayer') obj.setPipeline('Light2D');
     }
     this.pending.length = 0;

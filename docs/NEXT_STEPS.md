@@ -31,6 +31,18 @@ Plan for the next working session on Reel It In.
 - Tilemaps built with the Tiled editor for the shoreline and dock, once
   tilesets from the art packs are in.
 
+## Status
+- Done: Zelda-like overworld (ArMM1998) and Kenney Tiny Town packs, recoloured
+  on load (`src/art/Packs.js`); far-shore trees and rocks come from them.
+- Done: Light2D sun with generated normal maps (`src/art/NormalMaps.js`,
+  `src/environment/Lighting.js`); bloom, glow, water displacement and
+  vignette (`src/environment/SceneFx.js`); particles
+  (`src/environment/Particles.js`, `src/environment/Effects.js`); a Tiled
+  map for the west shore and a raft landing (`assets/art/environments/
+  shore.json`, `src/environment/Shore.js`).
+- Next: tune the look in a browser (light strength, bloom, ripple amount),
+  and swap more painted pieces (pier boards, props) for pack art.
+
 ## Current scene, for reference
 - 16-bit RPG look, late-summer palette, blue menu windows.
 - Horizon at 44% of screen height (`WATER_Y` in `src/core/constants.js`).
