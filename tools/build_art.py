@@ -800,12 +800,13 @@ def journal():
     # rather than standing flat; it darkens toward the spine and casts a
     # soft shadow on the page beside it; the gutter is the darkest line in
     # the book. The cover board overhangs the pages, and the page edges
-    # show the book's thickness. The thumb holds the page from the front
-    # with the fingertips curled round the cover behind.
+    # show the book's thickness. We're well into the book, so the lifted
+    # half is thick with turned pages: a deep block of page edges along its
+    # free edge and its top and bottom (deeper toward the free edge, which
+    # is nearer), a few pages standing proud of the rest, and the cover
+    # board behind them.
     LEATHER_MID = hexc("#833f4c")
     BASE, AGED, DEEP, EDGE2 = hexc("#f0ecd0"), hexc("#ebd9a1"), hexc("#e7cd8d"), hexc("#daab76")
-    SKIN, SKIN_DK, SKIN_LT, NAIL = hexc("#daab76"), hexc("#b77357"), hexc("#e7cd8d"), hexc("#f0ecd0")
-    FLANNEL, FLANNEL_DK, FLANNEL_LT = hexc("#90453b"), hexc("#543426"), hexc("#c25f62")
     IW, IH = 360, 444
     PX0, PX1, PY0, PY1 = 60, 296, 30, 405  # the right page's paper
     SP = 57  # the spine, at the gutter
@@ -858,23 +859,35 @@ def journal():
         t = (SP - x) / (SP - OUTER)
         bow = t ** 0.7
         return round((PY0 - RISE * bow) if top else (PY1 + RISE * bow))
-    for x in range(OUTER - 4, SP):
-        t = (SP - x) / (SP - OUTER)
-        y0, y1 = edge_y(max(x, OUTER), True), edge_y(max(x, OUTER), False)
-        for y in range(y0 - 6, y1 + 7):
-            if x < OUTER or y < y0 or y > y1:
-                # the cover board behind, overhanging the page
-                if x >= OUTER - 4 and y0 - 6 <= y <= y1 + 6 and (x < OUTER or y < y0 - 1 or y > y1 + 1):
-                    px[x, y] = leather(x, y)
-                elif y in (y0 - 1, y1 + 1):
-                    px[x, y] = EDGE2  # the page block's edge
+    T = 10  # the turned pages' thickness at the free edge
+    for x in range(OUTER - T - 4, SP):
+        xe = max(x, OUTER)
+        t = (SP - xe) / (SP - OUTER)
+        y0, y1 = edge_y(xe, True), edge_y(xe, False)
+        band = round(1 + 6 * t)  # the page block seen along the top and bottom
+        for y in range(y0 - band - 4, y1 + band + 5):
+            if x >= OUTER and y0 <= y <= y1:
+                n = hash01(x, y, 13)
+                # darker toward the spine where it curves and turns from the light
+                c = BASE if t > 0.55 and n > 0.04 else AGED if t > 0.25 or n > 0.5 else DEEP
+                if t < 0.12:
+                    c = DEEP if n > 0.2 else EDGE2
+                px[x, y] = c
                 continue
-            n = hash01(x, y, 13)
-            # darker toward the spine where it curves and turns from the light
-            c = BASE if t > 0.55 and n > 0.04 else AGED if t > 0.25 or n > 0.5 else DEEP
-            if t < 0.12:
-                c = DEEP if n > 0.2 else EDGE2
-            px[x, y] = c
+            # the edges of the turned pages: fine lines, each page a shade
+            # different, a few standing proud of the rest
+            if x < OUTER:
+                k = OUTER - 1 - x  # how deep into the block, along the free edge
+                proud = hash01(0, y // 3, 8) > 0.82
+                if k < T - (0 if proud else 1) and y0 - band - (k * band) // T <= y <= y1 + band + (k * band) // T:
+                    px[x, y] = (EDGE2, AGED, BASE, AGED)[(k + (y // 7) % 2) % 4] if hash01(x, y, 6) > 0.08 else DEEP
+                    continue
+            elif y0 - band <= y < y0 or y1 < y <= y1 + band:
+                k = (y0 - y) if y < y0 else (y - y1)
+                px[x, y] = (AGED, EDGE2, BASE)[k % 3] if hash01(x, y, 6) > 0.06 else DEEP
+                continue
+            # the cover board behind the pages
+            px[x, y] = leather(x, y)
     # faint lines of writing on the lifted page, squeezed by the foreshortening
     # and converging with its edges
     for j in range(1, 26):
@@ -896,48 +909,6 @@ def journal():
             for j in range(12 - i):
                 px[PX1 + 11 - i, cy + sy * j] = GLINT if i + j < 3 else BRASS if i + j < 10 else LEATHER_DK
     im = outline(im)
-    # the hand, on its own layer with its own outline: the heel of the hand
-    # and the wrist beside the cover's edge (the fingers are behind it), a
-    # flannel cuff running off the screen, and the thumb lying across the
-    # front of the page, nail at the tip
-    hand = Image.new("RGBA", (40, 50))
-    hp = hand.load()
-    def disc(cx, cy, r, c):
-        for y in range(int(cy - r), int(cy + r) + 1):
-            for x in range(int(cx - r), int(cx + r) + 1):
-                if (x - cx) ** 2 + (y - cy) ** 2 <= r * r and 0 <= x < 40 and 0 <= y < 50:
-                    hp[x, y] = c
-    for y in range(4, 34):
-        for x in range(0, 22):
-            if ((x - 9) / 12) ** 2 + ((y - 19) / 14) ** 2 <= 1:
-                hp[x, y] = SKIN
-    for y in range(28, 38):
-        for x in range(0, 13):
-            hp[x, y] = SKIN
-    for i in range(25):
-        t = i / 24
-        disc(14 + 20 * t, 19 - 6 * t, 3.4 - 0.6 * t, SKIN)
-    # light from the upper left, shadow under the thumb and down the right
-    for y in range(50):
-        for x in range(40):
-            if hp[x, y][3]:
-                up = y == 0 or not hp[x, y - 1][3]
-                down = y == 49 or not hp[x, y + 1][3]
-                if down or (x + 1 < 40 and not hp[x + 1, y][3] and y > 20):
-                    hp[x, y] = SKIN_DK
-                elif up and x < 30:
-                    hp[x, y] = SKIN_LT
-    for (x, y) in ((31, 13), (32, 13), (32, 12), (33, 12), (31, 12)):
-        hp[x, y] = NAIL
-    for (x, y) in ((16, 22), (17, 22), (18, 21), (12, 26), (13, 27)):
-        hp[x, y] = SKIN_DK  # creases at the thumb's root
-    # the flannel cuff
-    for y in range(36, 50):
-        for x in range(0, 16 - max(0, (y - 44))):
-            plaid = (x // 4 + y // 4) % 3 == 0
-            hp[x, y] = FLANNEL_DK if y < 38 else FLANNEL_LT if plaid else FLANNEL_DK if (y // 3) % 3 == 0 else FLANNEL
-    hand = outline(hand)
-    im.alpha_composite(hand, (OUTER - 22, 272))
     px = im.load()
     # a soft shadow under the book
     for x in range(SP, PX1 + 14):

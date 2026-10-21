@@ -242,9 +242,10 @@ trapezoid) with faint lines of writing converging the same way; bowing up
 out of the gutter; darker toward the spine, casting a soft shadow on the
 facing page; the gutter the darkest line in the book. The leather cover
 overhangs the pages, stitched round the edge with brass corner caps, and
-the edges of the pages beneath show along the right and bottom. The thumb
-lies across the front of the lifted page, with the heel of the hand and a
-flannel cuff beside the cover's edge. A red satin ribbon lies down the page
+the edges of the pages beneath show along the right and bottom. You're
+well into the book, so the lifted half is thick with turned pages: a deep
+block of page edges along its free edge and its top and bottom, deeper
+toward the free edge (it's nearer), a few pages standing proud of the rest. A red satin ribbon lies down the page
 beside the gutter and hangs out past the cover, V-cut at its end; tap it to
 go to the contents. The same ribbon trails from the closed journal on the
 button.
