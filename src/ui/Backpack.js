@@ -1,9 +1,10 @@
 import { W, H, DEPTH, INK, label, pin } from '../core/constants.js';
 import { board, pill } from './Panels.js';
 import { FISH } from '../../data/fish/fish.js';
+import { Flopper, FLOPS } from '../fish/Flop.js';
 
 const BW = 276; // the panel
-const BH = 236;
+const BH = 262;
 const COLS = 5;
 const ROWS = 4;
 const SW = 48; // a slot: wide enough for the sturgeon
@@ -57,10 +58,10 @@ export class Backpack {
     const title = label(scene, 0, -BH / 2 + 22, 'Backpack', { font: 'head', size: 2, color: INK.gold });
     this.slots = scene.add.graphics();
     this.items = scene.add.container(0, 0);
-    const infoY = GRID_Y + ROWS * (SH + GAP) + 26;
-    const inlay = scene.add.rectangle(0, infoY, BW - 36, 38, 0x2a160e, 0.45);
-    this.name = label(scene, 0, infoY - 8, '', { font: 'head', color: INK.gold });
-    this.info = label(scene, 0, infoY + 9, '', { color: INK.soft, width: BW - 44 });
+    const infoY = GRID_Y + ROWS * (SH + GAP) + 38;
+    const inlay = scene.add.rectangle(0, infoY, BW - 36, 64, 0x2a160e, 0.45);
+    this.name = label(scene, 0, infoY - 20, '', { font: 'head', color: INK.gold });
+    this.info = label(scene, 0, infoY + 8, '', { color: INK.soft, width: BW - 48 });
     this.card = scene.add.container(W / 2, H / 2 - 10, [this.panel, title, this.slots, this.items, inlay, this.name, this.info]);
     this.root = scene.add.container(0, 0, [dim, this.card]).setDepth(DEPTH.UI + 5).setVisible(false);
   }
@@ -69,6 +70,7 @@ export class Backpack {
   contents() {
     const d = this.save.data;
     const fish = FISH.filter((f) => d.bag[f.id] > 0).map((f) => ({
+      id: f.id,
       key: `fish-${f.id}`,
       frame: 0,
       name: f.name,
@@ -99,13 +101,17 @@ export class Backpack {
   }
 
   refresh() {
+    this.flop?.stop();
+    this.flop = null;
     this.list = this.contents();
     this.items.removeAll(true);
+    this.icons = [];
     const s = this.scene;
     this.list.forEach((it, i) => {
       const { x, y } = this.slotAt(i);
       const img = s.add.image(x + SW / 2, y + SH / 2, it.key, it.frame);
       this.items.add(img);
+      this.icons[i] = img;
       if (it.count > 1) this.items.add(label(s, x + SW - 4, y + SH - 7, `x${it.count}`, { color: INK.cream }).setOrigin(1, 0.5));
     });
     pin(this.items);
@@ -121,7 +127,7 @@ export class Backpack {
       return;
     }
     this.name.setText(it.count ? `${it.name}  x${it.count}` : it.name);
-    this.info.setText(it.note);
+    this.info.setText(it.id ? `${it.note}\n${FLOPS[it.id]?.say ?? ''}` : it.note);
   }
 
   pick(x, y) {
@@ -129,6 +135,11 @@ export class Backpack {
       const s = this.slotAt(i);
       if (x >= s.x && x < s.x + SW && y >= s.y && y < s.y + SH) {
         this.selected = i < this.list.length ? i : null;
+        // the fish you pick up comes alive: a fish out of water
+        this.flop?.stop();
+        this.flop = null;
+        const it = this.list[this.selected];
+        if (it?.id) this.flop = new Flopper(this.scene, this.icons[i], it.id, this.items);
         this.draw();
         this.describe();
         return;
@@ -161,7 +172,13 @@ export class Backpack {
   close() {
     if (!this.isOpen) return;
     this.isOpen = false;
+    this.flop?.stop();
+    this.flop = null;
     this.icon.play('bag-close');
     this.scene.tweens.add({ targets: this.card, y: H / 2 + 20, alpha: 0, duration: 160, ease: 'Quad.easeIn', onComplete: () => !this.isOpen && this.root.setVisible(false) });
+  }
+
+  update(dt) {
+    if (this.isOpen) this.flop?.update(dt);
   }
 }

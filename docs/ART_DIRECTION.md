@@ -198,7 +198,26 @@ and a float peek out and bob while you look; close the inventory and it
 shuts again. The panel is the journal's board with a 5 x 4 grid of slots
 carved into the planks (shadow along the top and left, light on the bottom
 edge) and a dark inlay that names whatever you tap. Tackle is always in the
-bag; each kind of fish you catch stacks in its own slot. The bag opens
+bag; each kind of fish you catch stacks in its own slot. Tap a fish and it
+comes alive like a fish out of water (`src/fish/Flop.js`), each species as
+it really behaves when landed, all on the grid: its own swim frames curl
+the body tail-up and tail-down, it hops in whole pixels, jitters a pixel
+side to side, flips over, and flicks off water drops when it slaps down;
+between bouts it lies still with its gills pumping.
+
+| Fish | Out of the water |
+| --- | --- |
+| Bluegill, pumpkinseed | flip end over end on their flat sides, short rests |
+| Yellow perch | a few stiff tail slaps, then still |
+| Black crappie | tires fast: weak flaps |
+| White bass | non-stop thrashing |
+| Common carp, lake sturgeon | heavy: one slow curl and slap, long rests (the sturgeon barely stirs) |
+| Smallmouth bass, rainbow trout | springy, high flops and flips (the rainbow highest) |
+| Largemouth bass, walleye, muskie | head shakes side to side (walleye lazily, muskie hard) |
+| Brook trout | fast slippery quiver |
+| Channel catfish, burbot | slow eel-like writhing, creeping along, no hopping |
+| Freshwater drum | drums: a fast buzz |
+| Northern pike | lies dead still, then explodes into a thrashing fit | The bag opens
 while you're on the dock with the rod up, and a tap outside closes it.
 
 ## How each piece fits

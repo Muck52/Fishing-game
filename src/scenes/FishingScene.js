@@ -337,6 +337,7 @@ export class FishingScene extends Phaser.Scene {
     this.world.update(time, dt);
     this.wildlife.update(time);
     this.angler.update(time);
+    this.bag.update(dt);
     const t = this.tackle;
 
     if (this.state === STATE.WAITING) {
