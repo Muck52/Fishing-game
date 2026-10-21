@@ -67,6 +67,10 @@ we borrow is the thinking behind them.
 8. **Lettering is part of the art.** Two CC0 Kenney fonts are baked into
    bitmap fonts at their native 16px with the same outline as the sprites
    (`fonts()` in the build). Text is tinted, never resized off the grid.
+   Printed pages (the journal) use the blocky Kenney Mini letters as plain
+   ink with no outline (`ink`), and a bold cut of the same letters for
+   headings (`ink-bold`, every stroke a pixel wider), so text reads cleanly
+   on paper.
 9. **The hour sets the mood.** `src/environment/Daylight.js` multiplies the
    scene by a colour for the time on the phone: rose at dawn, clear by day,
    gold then mauve at dusk, deep blue at night. After dark the hut's
@@ -228,11 +232,16 @@ patches and rubbed corners, a fish pressed into the cover, a strap with a
 brass clasp. It swings open (and a page corner lifts now and then) while
 the journal is open, and shuts when it closes.
 
-Each fish has one page of a spiral notebook (`journal-page.png`: cream
-paper yellowing at the edges, blue rules, a red margin, punched holes and
-wire rings, a coffee ring and a dog-eared corner). On it:
+Open, it's a leather-bound book (`journal-book.png`): a grained, scuffed
+leather cover stitched round the edge with brass corner caps, a ridged spine
+down the left, and the page itself, aged toward its edges and curving into
+the gutter, with the edges of the pages beneath stacked along the right and
+bottom. A red satin ribbon bookmark lies in the gutter and hangs out past
+the cover, V-cut at its end, its tail stirring now and then; the same
+ribbon trails from the closed journal on the button. Each fish has one
+page. On it:
 
-- the name in red pen and the Latin name in pencil;
+- the name as a bold red heading and the Latin name in grey;
 - a photo taped in at both corners: a window onto the lake (its own water
   colours, light shafts, sand and weed) with the fish swimming in it at 2x,
   the way that species swims (`src/fish/Swim.js`): sunfish hover and
@@ -243,7 +252,7 @@ wire rings, a coffee ring and a dog-eared corner). On it:
   the bottom and stop to root up silt, and the burbot creeps along like an
   eel. Tap it and it flops like a fish out of water, then swims on;
 - how many you've caught and the best weight;
-- notes in brown ink: where it lives, what it eats, how big it grows, and
+- notes in brown ink under bold red headings: where it lives, what it eats, how big it grows, and
   something worth knowing (`data/fish/journal.js`).
 
 A fish not yet caught is a dark silhouette with a question mark, with only
@@ -267,7 +276,7 @@ a clue to where it lives. Swipe or tap the arrows to turn the page.
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
 | Backpack (inventory button and icon) | drawn in the build (`backpack()`) in palette colours | 24 x 24, 1x | shared | closed; opens in 3 frames when the inventory opens, then a slow rummage loop; shuts again when it closes; a little hop now and then |
-| Journal (button icon and pages) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; page 320 x 520, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
+| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; book 344 x 548, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
 | Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |
 
 ## Changing the art

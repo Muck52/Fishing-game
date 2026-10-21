@@ -33,10 +33,10 @@ export const JOURNAL = {
     fact: 'Packs herd baitfish to the surface until the water "boils"; it runs up rivers to spawn each spring.',
   },
   carp: {
-    habitat: 'Warm, shallow lakes and rivers with soft, muddy bottoms.',
-    eats: 'Almost anything: it roots in the mud for larvae, snails and plants.',
-    size: 'Usually 15-30 in, 5-20 lb; can top 40 lb.',
-    fact: 'Brought from Europe in the 1800s; two pairs of barbels, and it can gulp air when oxygen runs low.',
+    habitat: 'Warm, shallow, muddy-bottomed lakes and rivers.',
+    eats: 'Almost anything it roots out of the mud: larvae, snails, plants.',
+    size: 'Usually 15-30 in, 5-20 lb.',
+    fact: 'Brought over from Europe in the 1800s. It can gulp air when the oxygen runs low.',
   },
   bass: {
     habitat: 'Clear, cool, rocky lakes and streams.',
@@ -54,7 +54,7 @@ export const JOURNAL = {
     habitat: 'Cold, clean, spring-fed streams and lakes.',
     eats: 'Aquatic and land insects, small crustaceans, little fish.',
     size: 'Usually 6-10 in in streams.',
-    fact: 'Really a char, not a true trout. Red spots in blue halos, white-edged fins; it only lives in very clean water.',
+    fact: 'Really a char, not a true trout. Red spots in blue halos; it lives only in very clean water.',
   },
   rainbow: {
     habitat: 'Cool, clear lakes and streams; widely stocked.',

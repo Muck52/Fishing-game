@@ -85,6 +85,7 @@ export class FishingScene extends Phaser.Scene {
   // Quiet captions about the wildlife, held back while a fish is on.
   fieldNote(text) {
     if (this.state !== STATE.IDLE && this.state !== STATE.WAITING) return;
+    if (this.bag?.isOpen || this.journal?.isOpen) return;
     this.tweens.killTweensOf(this.note);
     this.note.setText(text).setAlpha(0);
     this.tweens.chain({ targets: this.note, tweens: [{ alpha: 1, duration: 700 }, { alpha: 1, duration: 4200 }, { alpha: 0, duration: 900 }] });

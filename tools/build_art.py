@@ -734,6 +734,12 @@ def journal():
             put(19, 12, BRASS)
             put(18, 13, BRASS)
             put(19, 13, BRASS)
+            # the red ribbon bookmark trailing out of the bottom
+            for y in range(21, 24):
+                put(14, y, RIBBON)
+            put(13, 23, RIBBON)
+            put(15, 23, RIBBON)
+            put(14, 23, (0, 0, 0, 0))
         elif stage == 1:
             # the cover swinging open: the page block, and the cover seen
             # edge-on as it turns toward you
@@ -751,6 +757,8 @@ def journal():
             for x in range(0, 3):
                 put(x, 12, LEATHER_DK)  # the strap hanging loose
             put(0, 13, BRASS)
+            for y in range(20, 24):
+                put(15, y, RIBBON)
         else:
             # open flat: two pages, a gutter, the cover peeking round them
             for y in range(6, 21):
@@ -783,59 +791,76 @@ def journal():
 
     save(strip([icon(i) for i in range(4)]), "ui/journal.png", frame=(24, 24), frames=4, grade=False)
 
-    # A notebook page, worn and handled: cream paper aging toward its edges,
-    # blue rules and a red margin, a spiral binding across the top, a coffee
-    # ring and a few scuffs.
-    PW, PH = 320, 520
-    page = Image.new("RGBA", (PW, PH + 4))
-    pp = page.load()
-    for y in range(PH):
-        for x in range(PW):
-            d = min(x, y, PW - 1 - x, PH - 1 - y)
-            n = hash01(x, y, 7)
-            c = PAPER
-            if d < 3 or (d < 8 and n < 0.35) or (d < 14 and n < 0.08):
-                c = PAPER_DK  # yellowed edges
-            elif n < 0.03:
-                c = PAPER_DK  # paper grain
-            pp[x, y] = c
-        if y > 100 and (y - 100) % 14 == 0:
-            for x in range(4, PW - 4):
-                if hash01(x, y, 3) > 0.06:
-                    pp[x, y] = RULE
-    for y in range(18, PH - 4):
-        pp[30, y] = hexc("#c25f62") if hash01(30, y, 5) > 0.05 else PAPER
-    # the coffee ring
-    cx, cy, r = 262, 452, 20
-    for t in range(0, 360, 2):
-        for dr in (0, 1):
-            x = round(cx + (r + dr) * math.cos(math.radians(t)))
-            y = round(cy + (r + dr) * math.sin(math.radians(t)) * 0.85)
-            if hash01(t, dr, 9) > 0.25 and 0 <= x < PW:
-                pp[x, y] = hexc("#e7cd8d")
-    # a dog-eared bottom corner
-    for i in range(10):
-        for j in range(10 - i):
-            pp[PW - 1 - j, PH - 1 - i] = (0, 0, 0, 0)
-    for i in range(10):
-        pp[PW - 10 + i, PH - 1 - i] = hexc("#daab76")
-    # the spiral binding: punched holes and wire rings over the top edge
-    for hx in range(22, PW - 16, 18):
-        for (x, y) in ((hx, 9), (hx + 1, 9), (hx, 10), (hx + 1, 10)):
-            pp[x, y] = INKY
-    page = outline(page)
-    pp = page.load()
-    for hx in range(22, PW - 16, 18):
-        for y in range(0, 10):
-            pp[hx, y] = hexc("#b3a697")
-            pp[hx + 1, y] = hexc("#dde0cd") if y < 7 else hexc("#b3a697")
-        pp[hx - 1, 1] = hexc("#b3a697")
-    # a soft shadow under the page
-    for x in range(4, PW):
-        for y in (PH, PH + 1, PH + 2):
-            if not pp[x, y][3]:
-                pp[x, y] = (16, 20, 28, 110)
-    save(page, "ui/journal-page.png", grade=False)
+    # The open book, seen as its right-hand page: a leather-bound cover with
+    # stitching round the edge, scuffs and brass corner caps, and inside it
+    # the aged page, shadowed toward the spine on the left, with the edges
+    # of the pages beneath stacked along the right and bottom.
+    BW, BH = 344, 548
+    SPINE = 22
+    book = Image.new("RGBA", (BW, BH + 4))
+    bp = book.load()
+    LEATHER_MID = hexc("#833f4c")
+    for y in range(BH):
+        for x in range(BW):
+            n = hash01(x, y, 21)
+            c = LEATHER_DK if n < 0.14 else LEATHER_MID if n > 0.97 else LEATHER  # the grain
+            if hash01(x // 7, y // 7, 4) > 0.9 and n > 0.35:
+                c = WORN  # scuffed, rubbed patches
+            if min(x, y, BW - 1 - x, BH - 1 - y) < 2:
+                c = LEATHER_DK
+            bp[x, y] = c
+    # the spine: a rounded leather ridge with raised bands across it
+    for y in range(2, BH - 2):
+        for x in range(0, SPINE):
+            c = LEATHER_DK if x < 2 or x >= SPINE - 2 else LEATHER_LT if x < 6 else LEATHER
+            if (y - 20) % 64 in (0, 1, 2, 3):
+                c = LEATHER_LT if (y - 20) % 64 < 2 else LEATHER_DK
+            bp[x, y] = c
+    # stitching: a dashed thread round the cover's edge
+    for i in range(SPINE + 4, BW - 8):
+        if i % 6 < 3:
+            bp[i, 7] = STITCH
+            bp[i, BH - 8] = STITCH
+    for j in range(8, BH - 8):
+        if j % 6 < 3:
+            bp[BW - 8, j] = STITCH
+            bp[SPINE + 3, j] = STITCH
+    # the page block: edges of the pages beneath stacked along the right and
+    # bottom, then the page itself
+    PX0, PY0, PX1, PY1 = SPINE + 6, 16, BW - 18, BH - 20
+    for k in range(5, 0, -1):
+        for x in range(PX0, PX1 + k):
+            bp[x, PY1 + k - 1] = PAPER_DK if k % 2 else hexc("#daab76")
+        for y in range(PY0 + k, PY1 + k):
+            bp[PX1 + k - 1, y] = PAPER_DK if k % 2 else hexc("#daab76")
+    BASE, AGED, DEEP = hexc("#f0ecd0"), hexc("#ebd9a1"), hexc("#e7cd8d")
+    for y in range(PY0, PY1):
+        for x in range(PX0, PX1):
+            n = hash01(x, y, 11)
+            gx = x - PX0
+            d = min(PX1 - 1 - x, y - PY0, PY1 - 1 - y)
+            c = BASE if n > 0.025 else AGED
+            if d < 2 or (d < 7 and n < 0.35) or (d < 14 and n < 0.07):
+                c = AGED  # yellowed toward the edges
+            # the page curving down into the gutter
+            if gx < 4 or (gx < 9 and n < 0.65):
+                c = DEEP
+            elif gx < 16 and n < 0.35:
+                c = AGED
+            bp[x, y] = c
+    # brass caps on the outer corners
+    for (cx, cy, sx, sy) in ((BW - 1, 0, -1, 1), (BW - 1, BH - 1, -1, -1)):
+        for i in range(14):
+            for j in range(14 - i):
+                x, y = cx + sx * i, cy + sy * j
+                bp[x, y] = GLINT if i + j < 3 else BRASS if i + j < 12 else LEATHER_DK
+    book = outline(book)
+    bp = book.load()
+    for x in range(4, BW):
+        for y in (BH, BH + 1, BH + 2):
+            if not bp[x, y][3]:
+                bp[x, y] = (16, 20, 28, 120)
+    save(book, "ui/journal-book.png", grade=False)
 
 
 # ---------------------------------------------------------------- fonts
@@ -843,9 +868,12 @@ OUTLINE = (37, 19, 26)  # the one dark edge colour shared by every actor and all
 CHARS = [chr(c) for c in range(32, 127)] + ["\u00b7"]
 
 
-def font(name, ttf, size):
+def font(name, ttf, size, outline=True, bold=False):
     """Bakes a TrueType pixel font into a bitmap font: white letters with
-    a dark one-pixel outline and a drop shadow, ready to tint in game."""
+    a dark one-pixel outline and a drop shadow, ready to tint in game.
+
+    outline=False gives plain letters, for ink on a page; bold=True thickens
+    every stroke by a pixel to the right, the pixel-font way to embolden."""
     f = ImageFont.truetype(str(SRC / "kenney-fonts" / ttf), size)
     asc, desc = f.getmetrics()
     cell_h = asc + desc + 3
@@ -859,11 +887,15 @@ def font(name, ttf, size):
         d.fontmode = "1"
         d.text((1, 1), ch, font=f, fill=255)
         m = np.array(mask) > 0
+        if bold:
+            m = m | np.roll(m, 1, 1)
+            adv += 1
         out = np.zeros((cell_h, w, 4), np.uint8)
         ring = np.zeros_like(m)
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (0, 2), (1, 2), (-1, 2)]:
             ring |= np.roll(np.roll(m, dy, 0), dx, 1)
-        out[ring] = (*OUTLINE, 255)
+        if outline:
+            out[ring] = (*OUTLINE, 255)
         out[m] = (255, 255, 255, 255)
         glyphs.append((ch, Image.fromarray(out), adv))
     cols = 16
@@ -886,6 +918,9 @@ def font(name, ttf, size):
 def fonts():
     font("body", "Kenney Pixel.ttf", 16)
     font("head", "Kenney Mini.ttf", 16)
+    # the journal's printed pages: the same blocky letters, plain ink
+    font("ink", "Kenney Mini.ttf", 16, outline=False)
+    font("ink-bold", "Kenney Mini.ttf", 16, outline=False, bold=True)
 
 
 # ---------------------------------------------------------------- palette
