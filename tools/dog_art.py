@@ -18,7 +18,8 @@ from PIL import Image
 INK = {
     "K": "#33323d",  # black coat
     "W": "#eae2dc",  # white fur
-    "N": "#25131a",  # nose
+    "N": "#3f2939",  # nose: glossy black, apart from the outline
+    "n": "#8b7373",  # the shine on it
     "E": "#704a30",  # eye, warm brown
     "e": "#faffff",  # glint in the eye
     "R": "#d88571",  # bandana
@@ -34,33 +35,37 @@ SHADE = "#b3a697"  # shade under the white fur
 OUTLINE = (37, 19, 26)
 
 HEAD = [
-    "......K....",
-    ".....KPK.K.",
-    "....KKWKKKK",
-    "...KKWKeKKK",
-    "..KKWKKEKKK",
-    "NWWWWKKKKKK",
-    ".WWWWWKKKKK",
+    "........K....",
+    ".......KPK.K.",
+    "......KKWKKKK",
+    ".....KKWKeKKK",
+    ".nWWWWWKKEKKK",
+    "NNWWWWKKKKKKK",
+    ".NWWWWKKKKKK.",
+    "..WWWWKKKKK..",
 ]
 
 # Standing, side on, facing left, at the angler's scale (her head about 60%
 # of his height: pixel games draw pets a little large so they read). About
 # as tall at the shoulder as she is long, as border collies are. A domed
-# skull rising from the stop, a muzzle about two fifths of the head with the
-# blaze running up its bridge, the near ear up (pink inside) and the far one
-# tipped, a bright eye; a deep chest, hocks on the hind legs, the far legs in
-# shade.
-STAND = [r.ljust(24, ".") for r in HEAD] + [
-    "..WWWWKKKKKKKKKKKKKKK...",
-    "...WWRRKKKKKKKKKKKKKKK..",
-    "...WRFRRKKKKKKKKKKKKKK..",
-    "....WRRKKKKKKKKKKKKKKK..",
-    "....WWWKKKKKKKKKKKKKK...",
-    ".....WWWWWKK..KKKKKKK...",
-    "......WW.ww...KKK.KKK...",
-    "......WW.ww...KKW..KW...",
-    "......WW.ww....WW..WW...",
-    ".....WWW.www...ww.WWW...",
+# skull rising from the stop, a longish muzzle ending in a rounded nose,
+# the blaze running up its bridge, the near ear up (pink inside) and the far
+# one tipped, a bright eye; then a neck, narrower than the head and set off
+# from it behind the jaw, down to the shoulders; a deep chest, hocks on the
+# hind legs, the far legs in shade.
+STAND = [r.ljust(26, ".") for r in HEAD] + [
+    "...WWWWKKKK...............",
+    "....WWWKKK................",
+    "....WWWRKKKKKKKKKKKKKKK...",
+    "....WRRFRKKKKKKKKKKKKKKK..",
+    "....WWRRKKKKKKKKKKKKKKKK..",
+    ".....WWWKKKKKKKKKKKKKKKK..",
+    ".....WWWWKKKKKKKKKKKKKKK..",
+    "......WWWWWKK...KKKKKKK...",
+    ".......WW.ww....KKK.KKK...",
+    ".......WW.ww....KKW..KW...",
+    ".......WW.ww.....WW..WW...",
+    "......WWW.www....ww.WWW...",
 ]
 # the tail carried up in a curl, white at the tip: four frames of a slow
 # wag, drawn over the rump at (19, 2)
@@ -74,16 +79,16 @@ TAILS = [
 # Lying down as on the carpet: head up and turned to you, the back dipping
 # behind the shoulders and rising over the hip, the line of the hind thigh,
 # front legs stretched out ahead, hind leg along the floor, tail curled up.
-LIE = [r.ljust(32, ".") for r in HEAD[:5]] + [
-    "NWWWWKKKKKK.......KKKK...KW.....",
-    ".WWWWWKKKKK....KKKKKKKK.KKW.....",
-    "..WWWWKKKKKKKKKKKKKKKKKKK.......",
-    "...WRRKKKKKKKKKKKKKDKKKKK.......",
-    "...WRFRKKKKKKKKKKKDKKKKKKK......",
-    "....WRKKKKKKKKKKKDKKKKKKKK......",
-    "..WWWWWWWWWWKKKKKDKKKKKKWWWW....",
-    "WWWWWWWWWWWW..WWWWWWWWWWWWWWW...",
-    "wwwwwwwwwww...............wwww..",
+LIE = [r.ljust(33, ".") for r in HEAD] + [
+    "...WWWWKKKK.........KKK...KW.....",
+    "....WWWKKK.........KKKKK..KW.....",
+    "....WWRKKKK.....KKKKKKKKK.KKW....",
+    "....WRFRKKKKKKKKKKKKKKKKKKK......",
+    "....WRRKKKKKKKKKKKKKKDKKKKK......",
+    ".....WWKKKKKKKKKKKKKDKKKKKKK.....",
+    "..WWWWWWWWWWKKKKKKDKKKKKKWWWW....",
+    "WWWWWWWWWWWW..WWWWWWWWWWWWWWWW...",
+    "wwwwwwwwwww...............wwwww..",
 ]
 
 
@@ -120,7 +125,7 @@ def paint(rows, tail=None, tail_at=(21, 2)):
 
 
 def frames():
-    stand = [paint(STAND, t, (19, 2)) for t in TAILS]
+    stand = [paint(STAND, t, (20, 5)) for t in TAILS]
     lie = [paint(LIE)]
     return stand, lie
 
