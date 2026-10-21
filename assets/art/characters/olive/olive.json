@@ -1,43 +1,77 @@
 {
- "frameWidth": 50,
- "frameHeight": 39,
+ "frameWidth": 40,
+ "frameHeight": 30,
  "animations": {
-  "lie": {
+  "idle": {
    "frames": [
     0,
     1,
     2,
-    3
+    3,
+    4,
+    5
    ],
-   "fps": 2,
+   "fps": 4,
    "loop": true
   },
-  "blink": {
+  "walk": {
    "frames": [
-    4,
-    5,
-    6
-   ],
-   "fps": 8,
-   "loop": false
-  },
-  "wag": {
-   "frames": [
+    6,
     7,
     8,
     9,
-    10
-   ],
-   "fps": 8,
-   "loop": true
-  },
-  "ear": {
-   "frames": [
+    10,
     11,
     12,
     13
    ],
+   "fps": 10,
+   "loop": true
+  },
+  "run": {
+   "frames": [
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+   ],
+   "fps": 14,
+   "loop": true
+  },
+  "leap": {
+   "frames": [
+    20,
+    21,
+    22,
+    23
+   ],
+   "fps": 8,
+   "loop": false
+  },
+  "swim": {
+   "frames": [
+    24,
+    25,
+    26,
+    27
+   ],
    "fps": 6,
+   "loop": true
+  },
+  "shake": {
+   "frames": [
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35
+   ],
+   "fps": 14,
    "loop": false
   }
  }

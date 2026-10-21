@@ -5,6 +5,7 @@ import { depthTint } from '../environment/Lake.js';
 import { splash, ripple, bubbles } from '../environment/Effects.js';
 import { Wildlife } from '../wildlife/Wildlife.js';
 import { Angler } from '../player/Angler.js';
+import { Olive } from '../characters/olive/Olive.js';
 import { Tackle } from '../fishing/Tackle.js';
 import { ReelFight } from '../fishing/ReelFight.js';
 import { RhythmFight } from '../fishing/RhythmFight.js';
@@ -49,6 +50,7 @@ export class FishingScene extends Phaser.Scene {
     this.world = new World(this);
     this.wildlife = new Wildlife(this, (text) => this.fieldNote(text));
     this.angler = new Angler(this);
+    this.olive = new Olive(this, (text) => this.fieldNote(text));
     this.tackle = new Tackle(this);
     this.hud = new Hud(this);
     this.hud.update(this.save.data);
@@ -341,6 +343,7 @@ export class FishingScene extends Phaser.Scene {
     this.world.update(time, dt);
     this.wildlife.update(time);
     this.angler.update(time);
+    this.olive.update(time, dt);
     this.bag.update(dt);
     this.journal.update(dt);
     const t = this.tackle;

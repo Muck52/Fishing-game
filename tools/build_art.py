@@ -1020,15 +1020,17 @@ def journal():
 
 
 def olive():
-    """Olive, the angler's dog: her own character, traced from her photo and
-    animated in tools/characters/olive.py. Her sheet and its animation table
-    go into the manifest under her name."""
+    """Olive, the angler's dog: her own character, drawn and animated in
+    tools/characters/olive.py. Her sheet and its animation table go into the
+    manifest under her name, with where her paws stand and where the water
+    comes up to when she swims."""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
     import olive as rig
     strip, index = rig.sheet()
     save(strip, "characters/olive/olive.png", key="olive", frame=(rig.FW, rig.FH), frames=strip.width // rig.FW, grade=False)
     manifest["anchors"]["olive"] = index
+    manifest["anchors"]["olive-at"] = {"feet": rig.FEET + 1, "waterline": rig.WATERLINE}
 
 
 # ---------------------------------------------------------------- fonts

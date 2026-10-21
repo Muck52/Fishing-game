@@ -1,15 +1,23 @@
 # Olive
 
-Olive is the angler's dog, and a character of her own: a 40 lb husky /
-Australian cattle dog mix who keeps him company on the dock.
+Olive is the angler's dog, and a character of her own. She's modelled on a
+real dog, a 40 lb husky / Australian cattle dog mix, but drawn as a game
+character: side-on, in the game's palette, and always on the move.
 
 ![Olive's animations](olive-sheet.png)
 
-| Lying (breathing) | Blink | Tail wag | Ear flick |
-| --- | --- | --- | --- |
-| ![](olive-lie.gif) | ![](olive-blink.gif) | ![](olive-wag.gif) | ![](olive-ear.gif) |
+| Idle | Walk | Run | Leap | Swim | Shake |
+| --- | --- | --- | --- | --- | --- |
+| ![](olive-idle.gif) | ![](olive-walk.gif) | ![](olive-run.gif) | ![](olive-leap.gif) | ![](olive-swim.gif) | ![](olive-shake.gif) |
 
-![Her photo, her sprite, and her at game size beside the angler](olive-compare.png)
+## What she does
+
+She keeps the angler company on the dock, standing about with her tail
+wagging and wandering up and down the boards behind him. Every half a
+minute or so she gallops off the end of the walkway, leaps into the lake
+with a splash, dog-paddles over to the far bank, scrambles out and shakes
+herself dry, then runs off round the shore and comes back along the dock
+from the hut. A field note says when she jumps in.
 
 ## Her files
 
@@ -19,7 +27,8 @@ Everything that is Olive lives under her name:
 | --- | --- |
 | Her drawing and animations (source) | `tools/characters/olive.py` |
 | Her sprite sheet and animation table | `assets/art/characters/olive/olive.png`, `olive.json` |
-| In the game's art | the `olive` sheet in `assets/art/manifest.json`, animations `olive-lie`, `olive-blink`, `olive-wag`, `olive-ear` |
+| In the game's art | the `olive` sheet in `assets/art/manifest.json`; animations `olive-idle`, `olive-walk`, `olive-run`, `olive-leap`, `olive-swim`, `olive-shake`; anchors `olive-at` (where her paws stand, where the water comes up to) |
+| Her behaviour in the game | `src/characters/olive/Olive.js` |
 | This sheet and her previews | `docs/characters/` |
 
 Build her on her own with `python3 tools/characters/olive.py`; the full art
@@ -27,61 +36,42 @@ build (`python3 tools/build_art.py`) includes her.
 
 ## How she looks
 
-She's rotoscoped from a photo of her lying on the carpet, so her shape,
-pose and markings are her own rather than a drawn guess:
+- **Coat:** black, with a sheen along her back.
+- **Face:** a white blaze down to a white muzzle, a black nose, warm brown
+  eyes, upright ears pink inside.
+- **Body:** white throat, chest, belly and legs; black thighs; a plumed tail
+  curled over her back with a white tip.
+- **Bandana:** coral with cream flowers.
 
-1. Her outline and her white markings (blaze and muzzle, throat and chest,
-   front legs and belly, hind legs, the tip of her tail) were traced by hand
-   over the photo.
-2. The photo was shrunk to sprite size inside those shapes, and its own light
-   and shade sampled into the game's palette: four shades of black coat (from
-   deep shadow to the sheen along her back) and four of white fur.
-3. Her face (eyes, nose, the line of her mouth), her ears and her bandana
-   were finished by hand, and the game's shared outline drawn around her.
+## How she's built
 
-- **Coat:** black, sheen along her back, shadow under her ribs and thigh.
-- **Face:** a narrow white blaze widening to a white muzzle, a black nose
-  with a shine, warm brown eyes with catchlights.
-- **Ears:** both up, pink inside.
-- **Body:** white throat, chest, belly and front legs; black thigh over white
-  hind legs; a plumed tail curled over her rump with a white tip.
-- **Bandana:** coral with cream flowers, knotted at her throat.
+Her proportions follow a real canid. Her body plan and walk were worked out
+over the CC0 fox already in the game (`assets/source/scratchio-wild-animals`),
+then made stockier for a 40 lb dog: a deeper chest, a tucked belly, thicker
+legs, a shorter, broader head. At 40 x 30 pixels she stands a little over
+half the angler's height, as pets are drawn in pixel games so they read.
 
-## Her size
-
-50 x 39 pixels lying down, beside the 48-pixel angler frame. The photo was
-taken from a little above her, so her stretched hind legs reach down the
-frame as they do in the picture.
-
-## How she moves
-
-Each animation is a small change to the one traced drawing, the way a dog
-lying down really moves, so she always looks like herself.
+Her body and head are one pixel drawing. Her legs are drawn every frame from
+joint positions (shoulder, wrist, paw in front; hip, hock, paw behind), two
+pixels thick, the far pair in shade; the leap's tilted frames are turned on
+the pixel grid.
 
 | Animation | Frames | Speed | What it does |
 | --- | --- | --- | --- |
-| `lie` | 4 | 2 fps | a slow breath: the line of her back rises a pixel from shoulder to hip, her tail tip stirring a beat behind |
-| `blink` | 3 | 8 fps | a quick blink |
-| `wag` | 4 | 8 fps | the white tip of her tail swinging either way |
-| `ear` | 3 | 6 fps | her right ear twitching back at a sound |
+| `idle` | 6 | 4 fps | standing, tail wagging, a blink |
+| `walk` | 8 | 10 fps | a four-beat walk: three paws down at a time, each paw swept back under her then lifted and swung forward, a dip as the weight passes over |
+| `run` | 6 | 14 fps | the rotary gallop: gathered, hind feet land, push off, stretched out in the air, front feet land, front push |
+| `leap` | 4 | by the jump | a crouch, a spring with her nose up, stretched out over the water, nose down to dive |
+| `swim` | 4 | 6 fps | dog-paddling: head and back above water, legs churning below, seen dimmer and bluer through the water, tail floating behind |
+| `shake` | 8 | 14 fps | twisting side to side over planted feet, tail flung the other way, drops flying |
 
-Standing, walking and trotting will be traced the same way, from a side-on
-photo or video of her and Muybridge's public-domain plates of a dog walking
-(*Animal Locomotion*, 1887, plate 704) for the footfall timing.
+In the game she only moves when her walk or gallop advances a frame, by
+that frame's step, so her paws don't slide.
 
 ## Sources
 
+- [Animated wild animals (ScratchIO, CC0)](https://opengameart.org/content/animated-wild-animals): the fox whose build and walk she was worked out over
+- Eadweard Muybridge, *Animal Locomotion* (1887), plates 704 to 707: dogs walking and galloping (public domain)
 - [Australian Cattle Dog (Wikipedia)](https://en.wikipedia.org/wiki/Australian_Cattle_Dog),
-  [UKC standard](https://www.UKCDogs.com/docs/breeds/australian-cattle-dog.pdf),
-  [The Kennel Club](https://thekennelclub.org.uk/services/public/breed/display.aspx?id=5172)
-- [Siberian Husky: UKC standard](https://www.UKCDogs.com/docs/breeds/siberian-husky.pdf),
-  [FCI standard](https://WWW.FCI.BE/Nomenclature/Standards/270g05-en.pdf),
-  [SHCA head](https://shca.org/head)
-- [Australian Cattle Dog x Siberian Husky (Hepper)](https://articles.hepper.com/australian-cattle-siberian-husky/)
-- [Animating Four-Legged Beasts (Game Developer)](https://www.gamedeveloper.com/art/animating-four-legged-beasts),
-  [A quick guide to animating animals](https://www.gamedeveloper.com/art/a-quick-guide-to-animating-animals),
-  [Polycount quadruped walk feedback](https://polycount.com/discussion/190834/feedback)
-- [The 12 principles of animation in video games](https://www.gamedeveloper.com/production/the-12-principles-of-animation-in-video-games)
-- Dog sprite packs for reference: [OpenGameArt dog sprites](https://opengameart.org/content/dog-sprites),
-  [dog 3](https://opengameart.org/content/dog-3), [pixel wolf](https://opengameart.org/content/pixel-wolf),
-  [dog animation, 4 dogs](https://nvph-studio.itch.io/dog-animation-4-different-dogs)
+  [Siberian Husky: UKC standard](https://www.UKCDogs.com/docs/breeds/siberian-husky.pdf)
+- [Animating Four-Legged Beasts (Game Developer)](https://www.gamedeveloper.com/art/animating-four-legged-beasts)
