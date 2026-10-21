@@ -362,7 +362,23 @@ def angler():
     fish = [no_line(f) for f in cut(load(f"{cf}/Fisherman_fish.png"), 48)]
     hook = cut(load(f"{cf}/Fisherman_hook.png"), 48)
     hurt = cut(load(f"{cf}/Fisherman_hurt.png"), 48)
-    frames = [flip(f) for f in idle + fish + hook[3:] + hurt[1:]]
+    walk = cut(load(f"{cf}/Fisherman_walk.png"), 48)
+    turned = [flip(f) for f in idle + fish + hook[3:] + hurt[1:]]
+    # The fishing pose with the rod cut away (everything in front of his
+    # hands), so the game can draw a live rod that bends with the fight.
+    GRIP_X = 21
+    body = []
+    grips = []
+    for f in turned[4:8]:
+        b = f.copy()
+        bp = b.load()
+        for y in range(48):
+            for x in range(GRIP_X):
+                bp[x, y] = (0, 0, 0, 0)
+        ys = [y for y in range(20, 34) if f.getpixel((GRIP_X - 1, y))[3]]
+        grips.append({"x": GRIP_X, "y": round(sum(ys) / len(ys)) if ys else 27})
+        body.append(b)
+    frames = turned + body + [flip(f) for f in walk]
     save(strip(frames), "characters/angler.png", frame=(48, 48), frames=len(frames), actor=True)
     # rod tips of the fishing frames, in the turned (left-facing) frame
     tips = []
@@ -376,7 +392,7 @@ def angler():
                         best = (x, y)
                     break
         tips.append({"x": best[0], "y": best[1]})
-    manifest["anchors"]["angler"] = {"idle": [0, 3], "fish": [4, 7], "land": [8, 10], "hurt": 11, "tips": tips}
+    manifest["anchors"]["angler"] = {"idle": [0, 3], "fish": [4, 7], "land": [8, 10], "hurt": 11, "body": [12, 15], "walk": [16, 21], "tips": tips, "grips": grips}
     save(load(f"{cf}/Icons_16.png"), "ui/bucket.png")
 
 

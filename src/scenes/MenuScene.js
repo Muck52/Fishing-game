@@ -17,7 +17,7 @@ export class MenuScene extends Phaser.Scene {
   create() {
     this.world = new World(this);
     this.wildlife = new Wildlife(this);
-    new Angler(this);
+    this.angler = new Angler(this);
     const save = new SaveManager().data;
     const ui = (o) => o.setDepth(DEPTH.UI);
 
@@ -49,5 +49,6 @@ export class MenuScene extends Phaser.Scene {
     const dt = Math.min(delta, 50) / 1000;
     this.world.update(time, dt);
     this.wildlife.update(time);
+    this.angler.update(time);
   }
 }

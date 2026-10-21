@@ -1,4 +1,4 @@
-import { W, DEPTH, label } from '../core/constants.js';
+import { W, DEPTH, INK, label } from '../core/constants.js';
 import { pill } from './Panels.js';
 
 const Y = 46;
@@ -10,16 +10,20 @@ export class TensionMeter {
   constructor(scene) {
     const frame = pill(scene, 0, 0, LEN + 10, 14);
     this.fill = scene.add.graphics();
-    const name = label(scene, -LEN / 2 - 9, 0, 'TENSION').setOrigin(1, 0.5);
+    this.name = label(scene, -LEN / 2 - 9, 0, 'TENSION').setOrigin(1, 0.5);
     this.distance = label(scene, LEN / 2 + 10, 0, '').setOrigin(0, 0.5);
-    this.box = scene.add.container(W / 2 + 18, Y, [frame, this.fill, name, this.distance]).setDepth(DEPTH.UI).setVisible(false);
+    this.box = scene.add.container(W / 2 + 18, Y, [frame, this.fill, this.name, this.distance]).setDepth(DEPTH.UI).setVisible(false);
   }
 
   show(on) {
     this.box.setVisible(on);
   }
 
-  update(tension, distance) {
+  // In the rhythm fight the label doubles as the beat cue: wait while the
+  // fish tugs, reel in the moment after, steer when it bolts for cover.
+  update(tension, distance, phase = null) {
+    const cue = { tell: ['WAIT', INK.red], pull: ['WAIT', INK.red], leap: ['WAIT', INK.red], window: ['REEL!', INK.green], dash: ['STEER', INK.gold] }[phase];
+    this.name.setText(cue ? cue[0] : 'TENSION').setTint(cue ? cue[1] : INK.cream);
     const color = tension < 60 ? 0x8ad06a : tension < 85 ? 0xf0c040 : 0xe84a3a;
     const w = Math.round((LEN * tension) / 100);
     this.fill.clear().fillStyle(0x25131a, 0.6).fillRect(-LEN / 2, -4, LEN, 8);

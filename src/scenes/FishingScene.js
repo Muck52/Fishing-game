@@ -1,4 +1,4 @@
-import { W, SURFACE_Y, BED_Y, DECK_Y, ANGLER_X, DEPTH, STATE, INK, clamp, lerp, label } from '../core/constants.js';
+import { W, SURFACE_Y, BED_Y, DECK_Y, ANGLER_X, HUT_X, DEPTH, STATE, INK, clamp, lerp, label } from '../core/constants.js';
 import { ART } from '../core/Assets.js';
 import { World } from '../environment/World.js';
 import { depthTint } from '../environment/Lake.js';
@@ -7,6 +7,7 @@ import { Wildlife } from '../wildlife/Wildlife.js';
 import { Angler } from '../player/Angler.js';
 import { Tackle } from '../fishing/Tackle.js';
 import { ReelFight } from '../fishing/ReelFight.js';
+import { RhythmFight } from '../fishing/RhythmFight.js';
 import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
 import { Striker, strikeOf } from '../fish/Strike.js';
 import { FISH } from '../../data/fish/fish.js';
@@ -16,6 +17,18 @@ import { CatchPopup } from '../ui/CatchPopup.js';
 import { SaveManager } from '../save/SaveManager.js';
 
 const MIN_SWIPE = 70; // px of upward drag needed to count as a cast
+const STEER = 24; // px of drag that counts as a steering swipe in a fight
+// Reeling is rhythm tugs; ?reel=hold in the address brings back the old
+// hold-to-reel fight for comparison.
+const HOLD_REEL = new URLSearchParams(window.location.search).get('reel') === 'hold';
+// Where each kind of cover is, for a fish bolting toward it.
+const COVER = {
+  weeds: (f) => ({ x: 36, y: clamp(f.y, SURFACE_Y + 60, BED_Y - 40) }),
+  posts: (f) => ({ x: HUT_X + 31, y: f.y }),
+  bottom: (f) => ({ x: f.x, y: BED_Y - 12 }),
+};
+const COVER_NAME = { weeds: 'the weeds', posts: 'the posts', bottom: 'the bottom' };
+const ARROW = { left: '<<', right: '>>', up: '^^' };
 const R = (a, b) => Phaser.Math.Between(a, b);
 
 export class FishingScene extends Phaser.Scene {
@@ -159,6 +172,7 @@ export class FishingScene extends Phaser.Scene {
     this.state = STATE.BITE;
     this.biteUntil = this.time.now + 1100 - this.fish.strength * 350;
     this.striker.strike();
+    this.angler.bite();
     this.tackle.shout(true);
     // the float plunges for a hard taker; a soft taker barely stirs it
     const d = this.striker.dip;
@@ -178,14 +192,16 @@ export class FishingScene extends Phaser.Scene {
     this.tweens.killTweensOf(this.note);
     this.note.setAlpha(0);
     this.weight = rollWeight(this.fish);
-    this.fight = new ReelFight(this.fish, 40 + this.castPower * 60);
+    const start = 40 + this.castPower * 60;
+    this.fight = HOLD_REEL ? new ReelFight(this.fish, start) : new RhythmFight(this.fish, start);
     this.far = { x: this.tackle.x, y: this.tackle.hookY };
+    this.off = { x: 0, y: 0 }; // where the fight throws the fish, off its line toward the pier
     this.meter.show(true);
-    this.angler.reel(false);
+    this.angler.fight();
     this.striker.hooked();
     this.tackle.shake = 0;
     this.fishSprite.setFlipX(true);
-    this.setHint('Hold to reel!\nLet go when the line pulls tight', 2200);
+    this.setHint(HOLD_REEL ? 'Hold to reel!\nLet go when the line pulls tight' : 'Tap just after\neach tug!', 2400);
   }
 
   lose(message, snapped = false) {
@@ -194,6 +210,7 @@ export class FishingScene extends Phaser.Scene {
     this.meter.show(false);
     this.fleeFish();
     if (snapped) this.angler.hurt();
+    else this.angler.idle();
     this.setHint(message);
     this.time.delayedCall(1700, () => this.resetToIdle());
   }
@@ -237,7 +254,9 @@ export class FishingScene extends Phaser.Scene {
 
   onDown(pointer) {
     this.downAt = { x: pointer.x, y: pointer.y };
-    if (this.state === STATE.BITE) {
+    if (this.state === STATE.REELING && !HOLD_REEL) {
+      this.fight.tap();
+    } else if (this.state === STATE.BITE) {
       this.hook();
     } else if (this.state === STATE.WAITING) {
       if (this.time.now < this.nibbleUntil) this.lose('Too early! You spooked it.');
@@ -249,6 +268,14 @@ export class FishingScene extends Phaser.Scene {
   }
 
   onUp(pointer) {
+    if (this.state === STATE.REELING && !HOLD_REEL && this.downAt) {
+      // a drag steers the fish's head away from cover
+      const dx = pointer.x - this.downAt.x;
+      const dy = this.downAt.y - pointer.y;
+      if (Math.max(Math.abs(dx), dy) > STEER) this.fight.swipe(Math.abs(dx) > dy ? (dx > 0 ? 'right' : 'left') : 'up');
+      this.downAt = null;
+      return;
+    }
     if (this.state !== STATE.IDLE || !this.downAt) return;
     const dy = this.downAt.y - pointer.y;
     if (dy > MIN_SWIPE) this.cast(clamp(dy / 650, 0.15, 1));
@@ -262,6 +289,7 @@ export class FishingScene extends Phaser.Scene {
     const dt = Math.min(delta, 50) / 1000;
     this.world.update(time, dt);
     this.wildlife.update(time);
+    this.angler.update(time);
     const t = this.tackle;
 
     if (this.state === STATE.WAITING) {
@@ -290,29 +318,111 @@ export class FishingScene extends Phaser.Scene {
     }
   }
 
-  updateFight(time, dt) {
-    const reeling = this.input.activePointer.isDown;
-    const result = this.fight.update(dt, reeling);
-    const f = this.fight;
-    this.angler.reel(reeling);
+  // A word that pops up over the float and floats away: how that tap went.
+  pop(text, color = INK.cream) {
+    const p = label(this, this.tackle.x, SURFACE_Y - 16, text, { font: 'head', color }).setDepth(DEPTH.UI);
+    this.tweens.add({ targets: p, y: p.y - 14, alpha: 0, duration: 700, ease: 'Quad.easeOut', onComplete: () => p.destroy() });
+  }
 
-    // the fish is dragged from where it bit toward the foot of the pier,
-    // fighting up and down and running back out when it surges
+  // What the fight just did, shown on the lake, the rod and the meter.
+  onFightEvent(e) {
+    const s = this.fishSprite;
+    const away = -1; // the fish fights away from the pier, out to the left
+    if (e.kind === 'tell') {
+      this.angler.shudder = 1;
+    } else if (e.kind === 'tug') {
+      // a lunge away from the pier, line peeling off
+      this.tweens.killTweensOf(this.off);
+      this.tweens.chain({ targets: this.off, tweens: [
+        { x: away * (6 + this.fish.strength * 10), duration: 140, ease: 'Quad.easeOut' },
+        { x: 0, duration: 450, ease: 'Sine.easeInOut' },
+      ] });
+      bubbles(this, s.x, s.y, 1);
+      try { navigator.vibrate?.(25); } catch (err) { /* no vibration */ }
+    } else if (e.kind === 'window') {
+      this.angler.shudder = 0;
+    } else if (e.kind === 'perfect' || e.kind === 'good') {
+      this.angler.reel();
+      this.pop(e.kind === 'perfect' ? 'Nice!' : 'Good', e.kind === 'perfect' ? INK.gold : INK.green);
+    } else if (e.kind === 'wind') {
+      this.angler.reel();
+    } else if (e.kind === 'bad') {
+      this.pop(e.leap ? 'Let it jump!' : 'Too soon!', INK.red);
+      this.cameras.main.shake(80, 0.004);
+    } else if (e.kind === 'missed') {
+      this.angler.shudder = 0;
+    } else if (e.kind === 'leap') {
+      // it clears the water, shaking its head, and drops back in
+      const x0 = s.x;
+      this.leaping = true;
+      splash(this, x0, 0.6);
+      this.setHint('It jumped!\nDon\'t reel', 900);
+      this.tweens.addCounter({ from: 0, to: 1, duration: 900, ease: 'Linear',
+        onUpdate: (tw) => {
+          const k = tw.getValue();
+          this.leapY = -(s.y - SURFACE_Y + 6) * Math.min(1, k * 3) - Math.sin(Math.PI * k) * 30;
+          s.setFrame(Math.floor(k * 18) % 6);
+        },
+        onComplete: () => { this.leaping = false; this.leapY = 0; splash(this, s.x, 0.8); } });
+    } else if (e.kind === 'dash') {
+      // it bolts for cover: swipe the other way to turn its head
+      this.cover = COVER[e.cover](s);
+      this.setHint(`${ARROW[e.need]} SWIPE ${ARROW[e.need]}\nIt's heading for ${COVER_NAME[e.cover]}!`, 1500);
+      this.tweens.killTweensOf(this.off);
+      const base = this.fightBase();
+      this.tweens.add({ targets: this.off, x: this.cover.x - base.x, y: this.cover.y - base.y, duration: 1500, ease: 'Sine.easeIn' });
+    } else if (e.kind === 'turned') {
+      this.tweens.killTweensOf(this.off);
+      this.tweens.add({ targets: this.off, x: 0, y: 0, duration: 400, ease: 'Sine.easeOut' });
+      this.setHint('');
+      this.pop('Turned it!', INK.gold);
+    } else if (e.kind === 'snag') {
+      this.setHint(`Snagged in ${COVER_NAME[e.cover]}!`, 1200);
+      this.cameras.main.shake(150, 0.006);
+      this.time.delayedCall(1200, () => this.off && this.tweens.add({ targets: this.off, x: 0, y: 0, duration: 600, ease: 'Sine.easeInOut' }));
+    }
+  }
+
+  // Where the fish is on its way in: from where it bit to under the pier,
+  // by how much line is out.
+  fightBase() {
+    const f = this.fight;
     const k = clamp(f.distance / f.startDistance, 0, 1.3);
     const near = { x: ANGLER_X - 75, y: SURFACE_Y + 35 };
+    return { x: lerp(near.x, this.far.x, k), y: lerp(near.y, this.far.y, k) };
+  }
+
+  updateFight(time, dt) {
+    const f = this.fight;
+    let result;
+    if (HOLD_REEL) {
+      const reeling = this.input.activePointer.isDown;
+      result = f.update(dt, reeling);
+      if (reeling && Math.random() < 0.1) this.angler.reel();
+    } else {
+      result = f.update(dt);
+      for (const e of f.events.splice(0)) this.onFightEvent(e);
+    }
+
+    // the fish: on its way in, thrown about by the fight
     const s = this.fishSprite;
-    const wob = Math.sin(time / 230) * 13 * f.strength + (f.surging ? (Math.random() - 0.5) * 8 : 0);
-    s.x = Math.round(clamp(lerp(near.x, this.far.x, k) + wob, 20, W - 30));
-    s.y = Math.round(clamp(lerp(near.y, this.far.y, k) + Math.cos(time / 310) * 10 * f.strength, SURFACE_Y + 25, BED_Y - 15));
-    s.anims.timeScale = 1 + f.pull * 2;
-    s.setTint(depthTint(s.y));
-    if (f.surging && Math.random() < 0.06) bubbles(this, s.x, s.y, 1);
+    const base = this.fightBase();
+    const wob = Math.sin(time / 230) * 5 * f.strength;
+    s.x = Math.round(clamp(base.x + this.off.x + wob, 20, W - 30));
+    s.y = Math.round(clamp(base.y + this.off.y + Math.cos(time / 310) * 4 * f.strength, SURFACE_Y + 20, BED_Y - 12));
+    if (this.leaping) s.y = Math.round(s.y + this.leapY);
+    else s.anims.timeScale = 1 + f.pull * 2.5;
+    s.setTint(this.leaping ? 0xffffff : depthTint(s.y));
+
+    // the angler leans into it: the rod bends toward the fish with the pull
+    this.angler.toward = this.mouth();
+    this.angler.bend = clamp(0.25 + f.pull * 0.55 + f.tension / 250, 0, 1);
 
     // the float is towed along the surface just ahead of the fish
     this.tackle.x = this.mouth().x + 15;
-    this.tackle.dip = f.tension / 16;
+    this.tackle.dip = this.leaping ? 0 : f.tension / 16 + f.pull * 3;
 
-    this.meter.update(f.tension, f.distance);
+    this.meter.update(f.tension, f.distance, HOLD_REEL ? null : f.phase);
     if (result === 'caught') this.land();
     else if (result === 'snapped') {
       this.cameras.main.shake(250, 0.01);

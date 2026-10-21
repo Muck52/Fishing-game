@@ -23,6 +23,8 @@ const ANIMS = [
   ['angler-fish', 'angler', range(4, 7), 4, -1],
   ['angler-reel', 'angler', range(4, 7), 12, -1],
   ['angler-land', 'angler', range(8, 10), 9, 0],
+  ['angler-body', 'angler', range(12, 15), 4, -1],
+  ['angler-step', 'angler', [16, 17, 18, 17, 16], 8, 0],
   ['deer-walk', 'deer-walk', range(0, 7), 8, -1],
   ['deer-idle', 'deer-idle', range(0, 9), 5, -1],
   ['fox-walk', 'fox-walk', range(0, 7), 10, -1],

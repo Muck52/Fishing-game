@@ -125,6 +125,28 @@ fast its tail beats (a hurrying fish beats faster). Nothing is rotated.
 Add `?fish=walleye` (any species id) to the address to make that species
 bite every time while tuning.
 
+## Reeling in: rhythm tugs
+
+`src/fishing/RhythmFight.js`. A hooked fish pulls in tugs, each species to
+its own beat (`TUGS`): the rod tip quivers (the tell), the fish tugs, and
+then there is a short window to reel. Tap just after each tug; the first
+moment of the window counts as perfect. Tapping into a tug strains the line
+(crappie's paper mouths strain faster), and a tug you let go takes line. The
+meter says WAIT, REEL! or STEER.
+
+- **Leaps** (bass, rainbow, muskie, sturgeon): don't reel; "let it jump".
+- **Runs for cover:** some fish bolt for the weeds, the hut's posts or the
+  bottom. Swipe away from it (weeds: right, posts: left, bottom: up) to turn
+  its head, or the line snags and it takes line.
+- `?reel=hold` brings back the old hold-to-reel fight for comparison.
+
+The angler acts it out: idle he glances back at the hut, shifts his feet
+and breathes; waiting, he jigs the bait and leans in to peer at the water;
+on a bite the tip is yanked down; fighting, he leans back with the rod bent
+toward the fish, which pumps up as the reel's handle spins on every good
+turn. The rod is a pixel line drawn from his hands each frame, so it bends
+without breaking the one-pixel grid.
+
 ## How each piece fits
 
 | Piece | Source pack | Size on grid | Outline | Motion |
@@ -135,7 +157,7 @@ bite every time while tuning.
 | Hut, posts, barrel, cattails | CraftPix fishing | 1x | shared | cattails sway; hut windows lit at night |
 | Rowboat and oars | CraftPix skiff, made double-ended; oars drawn in the build | 1x | shared | rides the swell and rocks through 4 baked tilt frames, sending tiny ripples off each end |
 | Tiny ripples | drawn in the build | 22 x 3 | none | spread and fade in 5 frames, all over the surface |
-| Angler | CraftPix fishing (turned, line erased) | 48 x 48 frames | shared | idle, fish, reel, land |
+| Angler | CraftPix fishing (turned, line erased; rod cut away for the live-rod body) | 48 x 48 frames | shared | idle fidgets, waiting jigs, bite, fight, land; the rod is drawn live so it bends |
 | 17 fish species | painted by `tools/fish_art.py` | 17–44 px swimming, 1x; drawn again at about 3.4x for the card | shared | 6-frame head-to-tail swim wave; depth tint |
 | Minnows | ansimuz underwater, redrawn small | 13 px long, 1x | shared | 4-frame swim, school |
 | Deer, fox, hare, bear | ScratchIO animals | 1x | shared | foot-locked walk, hop and idle cycles; deer drinks, hare nibbles, bear stands planted |
