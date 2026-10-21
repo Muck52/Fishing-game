@@ -241,7 +241,7 @@ you, taller, so its top and bottom edges slope out from the spine (a
 trapezoid) with faint lines of writing converging the same way; bowing up
 out of the gutter; darker toward the spine, casting a soft shadow on the
 facing page; the gutter the darkest line in the book. The leather cover
-overhangs the pages, stitched round the edge with brass corner caps, and
+overhangs the pages, stitched round the edge, and
 the edges of the pages beneath show along the right and bottom. You're
 well into the book, so the lifted half is thick with turned pages: a deep
 block of page edges along its free edge and its top and bottom, deeper
@@ -252,8 +252,11 @@ each page's edge is a shade of its own, darker deeper into the block, with
 a thin shadow where the top page overhangs the rest, and the page tips
 along the top and bottom staggered as real pages are,
 and round them the lifted cover: a thick board whose stitched inside face
-shows, then its own edge turned toward you, darker, with a worn highlight
-and brass on its corners. The whole book is centred on the screen, as much
+shows, then its own edge turned toward you, darker. It's a well-used book, not a new one: the corners are knocked round and
+soft, the soft leather rolls over the boards' edges (a shaded roll at the
+very edge, a padded swell catching the light just inside it), the edges are
+frayed with little nicks and rubbed pale, paler still at the corners where
+hands hold it, and a few stitches have worn through. The whole book is centred on the screen, as much
 room to its left as to its right (the build records where the drawing
 starts and ends, and the page positions, in `anchors.journal`). A red satin ribbon is tucked in behind
 the book, only its V-cut tail hanging out below the cover; a ripple runs

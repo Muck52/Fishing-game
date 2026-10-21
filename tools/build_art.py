@@ -944,20 +944,63 @@ def journal():
     for y in range(PY0 - 9, PY1 + 14):
         px[SP, y] = OUTLINE + (255,)
         px[SP + 1, y] = LEATHER_DK
-    # brass caps on the lifted board's outer corners
-    for (top, sy) in ((True, 1), (False, -1)):
-        x0 = OUTER - T - C
-        cy = edge_y(OUTER, top) + (-(7 + C) if top else 7 + C)
-        for i in range(10):
-            for j in range(10 - i):
-                x, y = x0 + i, cy + sy * j
-                if 0 <= x < IW and 0 <= y < IH:
-                    px[x, y] = GLINT if i + j < 3 else BRASS if i + j < 8 else LEATHER_DK
-    # brass caps on the right board's outer corners
-    for (cy, sy) in ((PY0 - 9, 1), (PY1 + 13, -1)):
-        for i in range(12):
-            for j in range(12 - i):
-                px[PX1 + 11 - i, cy + sy * j] = GLINT if i + j < 3 else BRASS if i + j < 10 else LEATHER_DK
+    # A well-used cover: the corners knocked round and soft, the edges
+    # frayed with little nicks, the leather rubbed paler along its edges and
+    # paler still at the corners where hands hold it, and a few stitches
+    # worn through.
+    a = np.array(im)
+    leathers = {LEATHER[:3], LEATHER_DK[:3], LEATHER_MID[:3], WORN[:3], LEATHER_LT[:3], STITCH[:3]}
+    is_leather = np.zeros(a.shape[:2], bool)
+    for c in leathers:
+        is_leather |= (a[..., :3] == c).all(-1) & (a[..., 3] > 0)
+    solid = a[..., 3] > 0
+    # round the corners: a cover pixel with too little cover around it is a
+    # corner tip, worn away
+    R = 7
+    pad = np.pad(solid, R)
+    near = np.zeros(solid.shape, np.int32)
+    total = 0
+    for dy in range(-R, R + 1):
+        for dx in range(-R, R + 1):
+            if dx * dx + dy * dy <= R * R:
+                near += pad[R + dy:R + dy + solid.shape[0], R + dx:R + dx + solid.shape[1]]
+                total += 1
+    worn_off = is_leather & (near < total * 0.5)
+    a[worn_off] = 0
+    solid = a[..., 3] > 0
+    # how far each pixel is from the cover's edge, in pixels
+    dist = np.where(solid, 99, 0)
+    outside = ~solid
+    for d in range(1, 5):
+        grown = outside.copy()
+        grown[1:] |= outside[:-1]
+        grown[:-1] |= outside[1:]
+        grown[:, 1:] |= outside[:, :-1]
+        grown[:, :-1] |= outside[:, 1:]
+        dist[(dist == 99) & grown] = d
+        outside = grown
+    corner = near < total * 0.62  # close to a corner
+    hh, ww = solid.shape
+    for y in range(hh):
+        for x in range(ww):
+            if not is_leather[y, x] or not solid[y, x]:
+                continue
+            n = hash01(x, y, 31)
+            d = dist[y, x]
+            if d == 1 and n < 0.07:
+                a[y, x] = 0  # a nick out of the edge
+            elif d == 1:
+                # the soft leather rolled over the board's edge, in shadow,
+                # rubbed through here and there
+                a[y, x] = WORN if n < (0.4 if corner[y, x] else 0.18) else LEATHER_DK
+            elif d <= 3 and tuple(a[y, x, :3]) != STITCH[:3]:
+                # the padded swell just inside it, catching the light
+                a[y, x] = LEATHER_LT if n < (0.3 if corner[y, x] else 0.12) else WORN if n < 0.75 else LEATHER
+            elif d <= 5 and corner[y, x] and n < 0.35:
+                a[y, x] = WORN  # corners rubbed pale by thumbs
+            elif tuple(a[y, x, :3]) == STITCH[:3] and hash01(x // 3, y // 3, 32) < 0.2:
+                a[y, x] = LEATHER if n > 0.3 else LEATHER_DK  # a stitch worn through
+    im = Image.fromarray(a).copy()
     im = outline(im)
     px = im.load()
     # a soft shadow under the book
