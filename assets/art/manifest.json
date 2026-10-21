@@ -48,9 +48,7 @@
   "firefly": "assets/art/effects/firefly.png",
   "ripple-map": "assets/art/effects/ripple-map.png",
   "board": "assets/art/ui/board.png",
-  "book-top": "assets/art/ui/book-top.png",
-  "book-mid": "assets/art/ui/book-mid.png",
-  "book-bottom": "assets/art/ui/book-bottom.png"
+  "journal-held": "assets/art/ui/journal-held.png"
  },
  "sheets": {
   "falls": {
@@ -400,6 +398,10 @@
   "ink-bold": {
    "png": "assets/art/fonts/ink-bold.png",
    "xml": "assets/art/fonts/ink-bold.xml"
+  },
+  "ink-small": {
+   "png": "assets/art/fonts/ink-small.png",
+   "xml": "assets/art/fonts/ink-small.xml"
   }
  },
  "anchors": {

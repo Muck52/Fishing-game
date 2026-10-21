@@ -791,86 +791,160 @@ def journal():
 
     save(strip([icon(i) for i in range(4)]), "ui/journal.png", frame=(24, 24), frames=4, grade=False)
 
-    # The book lying fully open: two pages side by side with the gutter down
-    # the middle, the leather boards showing round them (stitched, scuffed,
-    # brass at the corners) and the edges of the pages beneath stacked along
-    # the outer sides and the bottom. It comes in three pieces so it can be
-    # any height: a top, a middle that repeats, and a bottom.
-    BW = 352
-    MID_X = BW / 2 - 0.5
+    # The book as you'd hold it to read: the right-hand page lying flat and
+    # facing you, the left half of the book lifted toward you on its spine
+    # by your hand. Drawn the way perspective works: swung up about the
+    # spine, the left page is foreshortened to a sliver of its width; its
+    # free edge, nearer to you, looks taller, so its top and bottom edges
+    # slope out from the spine (a trapezoid); it bows up out of the gutter
+    # rather than standing flat; it darkens toward the spine and casts a
+    # soft shadow on the page beside it; the gutter is the darkest line in
+    # the book. The cover board overhangs the pages, and the page edges
+    # show the book's thickness. The thumb holds the page from the front
+    # with the fingertips curled round the cover behind.
     LEATHER_MID = hexc("#833f4c")
     BASE, AGED, DEEP, EDGE2 = hexc("#f0ecd0"), hexc("#ebd9a1"), hexc("#e7cd8d"), hexc("#daab76")
-    SHADOW = (16, 20, 28, 120)
+    SKIN, SKIN_DK, SKIN_LT, NAIL = hexc("#daab76"), hexc("#b77357"), hexc("#e7cd8d"), hexc("#f0ecd0")
+    FLANNEL, FLANNEL_DK, FLANNEL_LT = hexc("#90453b"), hexc("#543426"), hexc("#c25f62")
+    IW, IH = 360, 444
+    PX0, PX1, PY0, PY1 = 60, 296, 30, 405  # the right page's paper
+    SP = 57  # the spine, at the gutter
+    OUTER = 24  # the lifted page's free edge
+    RISE = 18  # how much taller the near edge looks
+    im = Image.new("RGBA", (IW, IH))
+    px = im.load()
 
-    def pixel(x, y, top_d, bot_d, seed):
-        """The colour at column x of a row top_d rows below the top of the
-        book and bot_d rows above its bottom (None when far from either)."""
-        n = hash01(x, y, seed)
-        side = min(x, BW - 1 - x)
-        edge = min(side, top_d if top_d is not None else 99, bot_d if bot_d is not None else 99)
-        if edge < 2:
-            return LEATHER_DK
-        if edge < 8:
-            # the boards: grained leather with stitching round them
-            if (side == 4 and y % 6 < 3 and top_d is None and bot_d is None) or (side == 4 and (top_d or 99) > 5 and (bot_d or 99) > 5 and y % 6 < 3):
-                return STITCH
-            if top_d == 4 and 6 < side and x % 6 < 3:
-                return STITCH
-            if bot_d is not None and bot_d == 5 and 6 < side and x % 6 < 3:
-                return STITCH
-            if hash01(x // 7, y // 7, 4) > 0.9 and n > 0.35:
-                return WORN
-            return LEATHER_DK if n < 0.14 else LEATHER_MID if n > 0.97 else LEATHER
-        # the page block: stacked edges along the outer sides and the bottom
-        if side < 12 or (bot_d is not None and bot_d < 12):
-            k = side - 8 if side < 12 else bot_d - 8
-            return EDGE2 if k % 2 else AGED
-        if top_d is not None and top_d < 9:
-            return AGED if top_d == 8 else LEATHER
-        # the pages
-        g = abs(x - MID_X)
-        c = BASE if n > 0.025 else AGED
-        d = min(side - 12, (top_d - 9) if top_d is not None else 99, (bot_d - 12) if bot_d is not None else 99)
-        if d < 2 or (d < 6 and n < 0.35) or (d < 12 and n < 0.06):
-            c = AGED
-        if g < 1:
-            c = EDGE2
-        elif g < 3 or (g < 7 and n < 0.6):
-            c = DEEP  # the pages curving down into the gutter
-        elif g < 14 and n < 0.3:
-            c = AGED
-        return c
+    def leather(x, y):
+        n = hash01(x, y, 21)
+        if hash01(x // 7, y // 7, 4) > 0.9 and n > 0.35:
+            return WORN
+        return LEATHER_DK if n < 0.14 else LEATHER_MID if n > 0.97 else LEATHER
 
-    def brass(im, top):
-        px = im.load()
-        for (cx, sx) in ((0, 1), (BW - 1, -1)):
-            for i in range(12):
-                for j in range(12 - i):
-                    x = cx + sx * i
-                    y = j if top else im.height - 5 - j
-                    px[x, y] = GLINT if i + j < 3 else BRASS if i + j < 10 else LEATHER_DK
-
-    TOP_H, MID_H, BOT_H = 24, 64, 28
-    top = Image.new("RGBA", (BW, TOP_H))
-    for y in range(TOP_H):
-        for x in range(BW):
-            top.putpixel((x, y), pixel(x, y, y, None, 11))
-    brass(top, True)
-    mid = Image.new("RGBA", (BW, MID_H))
-    for y in range(MID_H):
-        for x in range(BW):
-            mid.putpixel((x, y), pixel(x, y, None, None, 11))
-    bot = Image.new("RGBA", (BW, BOT_H + 4))
-    for y in range(BOT_H):
-        for x in range(BW):
-            bot.putpixel((x, y), pixel(x, y + 1000, None, BOT_H - 1 - y, 11))
-    for y in range(BOT_H, BOT_H + 3):
-        for x in range(4, BW):
-            bot.putpixel((x, y), SHADOW)
-    brass(bot, False)
-    save(top, "ui/book-top.png", grade=False)
-    save(mid, "ui/book-mid.png", grade=False)
-    save(bot, "ui/book-bottom.png", grade=False)
+    # the right board, overhanging the page on three sides, stitched
+    for y in range(PY0 - 9, PY1 + 14):
+        for x in range(SP, PX1 + 12):
+            px[x, y] = leather(x, y)
+    for x in range(SP + 4, PX1 + 8):
+        if x % 6 < 3:
+            px[x, PY0 - 5] = STITCH
+            px[x, PY1 + 9] = STITCH
+    for y in range(PY0 - 4, PY1 + 9):
+        if y % 6 < 3:
+            px[PX1 + 7, y] = STITCH
+    # its page block: the edges of the pages beneath along the right and
+    # bottom, then the page
+    for k in range(4):
+        for y in range(PY0 + k, PY1 + 1 + k):
+            px[PX1 + k, y] = EDGE2 if k % 2 else AGED
+        for x in range(SP + 2, PX1 + k):
+            px[x, PY1 + k] = EDGE2 if k % 2 else AGED
+    for y in range(PY0, PY1):
+        for x in range(SP + 2, PX1):
+            n = hash01(x, y, 11)
+            d = min(PX1 - 1 - x, y - PY0, PY1 - 1 - y)
+            c = BASE if n > 0.025 else AGED
+            if d < 2 or (d < 6 and n < 0.3) or (d < 12 and n < 0.06):
+                c = AGED
+            g = x - SP
+            # the shadow of the lifted page, and the page curving into the gutter
+            if g < 5 or (g < 10 and n < 0.7) or (g < 16 and n < 0.35):
+                c = DEEP
+            elif g < 24 and n < 0.15:
+                c = AGED
+            px[x, y] = c
+    # the lifted half: its top and bottom edges run from the spine out to the
+    # nearer, taller free edge, bowing as they leave the gutter
+    def edge_y(x, top):
+        t = (SP - x) / (SP - OUTER)
+        bow = t ** 0.7
+        return round((PY0 - RISE * bow) if top else (PY1 + RISE * bow))
+    for x in range(OUTER - 4, SP):
+        t = (SP - x) / (SP - OUTER)
+        y0, y1 = edge_y(max(x, OUTER), True), edge_y(max(x, OUTER), False)
+        for y in range(y0 - 6, y1 + 7):
+            if x < OUTER or y < y0 or y > y1:
+                # the cover board behind, overhanging the page
+                if x >= OUTER - 4 and y0 - 6 <= y <= y1 + 6 and (x < OUTER or y < y0 - 1 or y > y1 + 1):
+                    px[x, y] = leather(x, y)
+                elif y in (y0 - 1, y1 + 1):
+                    px[x, y] = EDGE2  # the page block's edge
+                continue
+            n = hash01(x, y, 13)
+            # darker toward the spine where it curves and turns from the light
+            c = BASE if t > 0.55 and n > 0.04 else AGED if t > 0.25 or n > 0.5 else DEEP
+            if t < 0.12:
+                c = DEEP if n > 0.2 else EDGE2
+            px[x, y] = c
+    # faint lines of writing on the lifted page, squeezed by the foreshortening
+    # and converging with its edges
+    for j in range(1, 26):
+        f = j / 26
+        for x in range(OUTER + 3, SP - 6):
+            if hash01(x, j, 2) < 0.25:
+                continue
+            y0, y1 = edge_y(x, True), edge_y(x, False)
+            y = round(y0 + (y1 - y0) * (0.08 + 0.84 * f))
+            if (x + j) % 7 < 5:
+                px[x, y] = hexc("#d3c7a8") if px[x, y] == BASE else hexc("#b3a697")
+    # the gutter: the darkest line in the book
+    for y in range(PY0 - 9, PY1 + 14):
+        px[SP, y] = OUTLINE + (255,)
+        px[SP + 1, y] = LEATHER_DK
+    # brass caps on the right board's outer corners
+    for (cy, sy) in ((PY0 - 9, 1), (PY1 + 13, -1)):
+        for i in range(12):
+            for j in range(12 - i):
+                px[PX1 + 11 - i, cy + sy * j] = GLINT if i + j < 3 else BRASS if i + j < 10 else LEATHER_DK
+    im = outline(im)
+    # the hand, on its own layer with its own outline: the heel of the hand
+    # and the wrist beside the cover's edge (the fingers are behind it), a
+    # flannel cuff running off the screen, and the thumb lying across the
+    # front of the page, nail at the tip
+    hand = Image.new("RGBA", (40, 50))
+    hp = hand.load()
+    def disc(cx, cy, r, c):
+        for y in range(int(cy - r), int(cy + r) + 1):
+            for x in range(int(cx - r), int(cx + r) + 1):
+                if (x - cx) ** 2 + (y - cy) ** 2 <= r * r and 0 <= x < 40 and 0 <= y < 50:
+                    hp[x, y] = c
+    for y in range(4, 34):
+        for x in range(0, 22):
+            if ((x - 9) / 12) ** 2 + ((y - 19) / 14) ** 2 <= 1:
+                hp[x, y] = SKIN
+    for y in range(28, 38):
+        for x in range(0, 13):
+            hp[x, y] = SKIN
+    for i in range(25):
+        t = i / 24
+        disc(14 + 20 * t, 19 - 6 * t, 3.4 - 0.6 * t, SKIN)
+    # light from the upper left, shadow under the thumb and down the right
+    for y in range(50):
+        for x in range(40):
+            if hp[x, y][3]:
+                up = y == 0 or not hp[x, y - 1][3]
+                down = y == 49 or not hp[x, y + 1][3]
+                if down or (x + 1 < 40 and not hp[x + 1, y][3] and y > 20):
+                    hp[x, y] = SKIN_DK
+                elif up and x < 30:
+                    hp[x, y] = SKIN_LT
+    for (x, y) in ((31, 13), (32, 13), (32, 12), (33, 12), (31, 12)):
+        hp[x, y] = NAIL
+    for (x, y) in ((16, 22), (17, 22), (18, 21), (12, 26), (13, 27)):
+        hp[x, y] = SKIN_DK  # creases at the thumb's root
+    # the flannel cuff
+    for y in range(36, 50):
+        for x in range(0, 16 - max(0, (y - 44))):
+            plaid = (x // 4 + y // 4) % 3 == 0
+            hp[x, y] = FLANNEL_DK if y < 38 else FLANNEL_LT if plaid else FLANNEL_DK if (y // 3) % 3 == 0 else FLANNEL
+    hand = outline(hand)
+    im.alpha_composite(hand, (OUTER - 22, 272))
+    px = im.load()
+    # a soft shadow under the book
+    for x in range(SP, PX1 + 14):
+        for y in range(PY1 + 15, PY1 + 18):
+            if not px[x, y][3]:
+                px[x, y] = (16, 20, 28, 110)
+    save(im, "ui/journal-held.png", grade=False)
 
 
 # ---------------------------------------------------------------- fonts
@@ -931,6 +1005,7 @@ def fonts():
     # the journal's printed pages: the same blocky letters, plain ink
     font("ink", "Kenney Mini.ttf", 16, outline=False)
     font("ink-bold", "Kenney Mini.ttf", 16, outline=False, bold=True)
+    font("ink-small", "Kenney Pixel.ttf", 16, outline=False)  # small print, for the contents
 
 
 # ---------------------------------------------------------------- palette

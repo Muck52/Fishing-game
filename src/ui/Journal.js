@@ -1,27 +1,25 @@
-import { W, H, DEPTH, INK, label, pin } from '../core/constants.js';
+import { W, H, DEPTH, INK, label, pin, lerp } from '../core/constants.js';
 import { pill } from './Panels.js';
 import { FISH, RARITY } from '../../data/fish/fish.js';
 import { JOURNAL } from '../../data/fish/journal.js';
 import { Swimmer } from '../fish/Swim.js';
 import { Flopper } from '../fish/Flop.js';
 
-// The book lying open: two pages either side of the gutter, in the
-// proportions of a real open book. A 6 x 9 in page opens to a 12 x 9 in
-// spread, 4:3 (an A5 journal is about 1.41:1, a Moleskine 1.24:1), so the
-// spread is three quarters as tall as it is wide. The art's middle repeats
-// to fit.
-const BW = 352;
-const BH = Math.round((BW * 3) / 4 / 2) * 2;
-const TOP = -BH / 2;
-const PAGE_TOP = TOP + 9;
-const PAGE_BOT = TOP + BH - 13;
-const LP = { x0: -164, x1: -2 }; // the left page
-const RP = { x0: 1, x1: 163 }; // the right page
-const PAD = 8;
-const FOOT = PAGE_BOT - 11;
+// The book as you hold it to read (journal-held.png): the left half lifted
+// toward you on its spine, the right-hand page flat, facing you and centred
+// on the screen, with everything to read on it. Positions are in the
+// image's own pixels.
+const IH = 444;
+const SPINE = 58;
+const PAGE = { x0: 59, x1: 296, y0: 30, y1: 405 }; // the right page's paper
+const HELD = { x: 24, rise: 18 }; // the lifted page's free edge, and how much taller it looks
+const X0 = PAGE.x0 + 14; // the writing, clear of the gutter's shadow
+const X1 = PAGE.x1 - 12;
+const TW = X1 - X0;
+const CX = Math.round((X0 + X1) / 2);
+const FOOT = PAGE.y1 - 13;
 const LINE = 14; // a line of ink text, line spacing included
-const ROW = 36; // a line in the contents
-const TURN_MS = 420;
+const TURN_MS = 480;
 
 // Ink on the page, in plain blocky letters (the 'ink' fonts have no dark
 // outline): brown for the text, red for the headings in bold, a soft grey
@@ -34,26 +32,20 @@ const STAMP = { common: 0x6e5e50, uncommon: 0x407e55, rare: 0x254e66, legendary:
 const PAPER = 0xf0ecd0;
 const WATER = [0x2c5c78, 0x275571, 0x1e4762, 0x1b3f5b, 0x173953, 0x14324c];
 
-const mid = (p) => (p.x0 + p.x1) / 2;
-
-// The field journal: a worn leather notebook in the corner that opens flat
-// on a spread for every fish, after a contents page. A caught fish has its
-// photo taped in, swimming the way it does in the wild (tap it and it flops
-// like a fish out of water), with notes on where it lives, what it eats,
-// how big it grows and something worth knowing. One not yet caught is a
-// dark shape with a question mark. Pages turn with a sheet sweeping over
-// the gutter, right to left going forward and back again going back.
+// The field journal: a worn leather notebook in the corner that opens to a
+// contents page, then a page for every fish. A caught fish has its photo
+// taped in, swimming the way it does in the wild (tap it and it flops like
+// a fish out of water), with notes on where it lives, what it eats, how big
+// it grows and something worth knowing. One not yet caught is a dark shape
+// with a question mark. Turning forward, the page lifts off, sweeps over the
+// spine and settles onto the held-up half; going back, the reverse.
 export class Journal {
   constructor(scene, save, canOpen = () => true) {
     this.scene = scene;
     this.save = save;
     this.canOpen = canOpen;
     this.isOpen = false;
-    // the contents fill the first few spreads; then a spread for each fish
-    this.perPage = Math.floor((FOOT - 14 - (PAGE_TOP + 34)) / ROW);
-    this.contentSpreads = Math.ceil(FISH.length / (this.perPage * 2));
-    this.last = this.contentSpreads + FISH.length - 1;
-    this.page = 0;
+    this.page = 0; // 0 is the contents; fish i is on page i + 1
 
     const bx = W - 62;
     const by = H - 26;
@@ -65,10 +57,8 @@ export class Journal {
     });
 
     const dim = scene.add.rectangle(W / 2, H / 2, W, H, 0x10141c, 0.55);
-    const top = scene.add.image(0, TOP, 'book-top').setOrigin(0.5, 0);
-    const body = scene.add.tileSprite(0, TOP + 24, BW, BH - 24 - 28, 'book-mid').setOrigin(0.5, 0);
-    const bottom = scene.add.image(0, TOP + BH - 28, 'book-bottom').setOrigin(0.5, 0);
-    this.hit = scene.add.rectangle(0, 0, BW, BH, 0x000000, 0).setInteractive();
+    const art = scene.add.image(0, 0, 'journal-held').setOrigin(0);
+    this.hit = scene.add.rectangle(0, 0, W, IH, 0x000000, 0).setOrigin(0).setInteractive();
     this.hit.on('pointerdown', (p, x, y, e) => {
       e.stopPropagation();
       this.drag = { x: p.x, y: p.y };
@@ -76,45 +66,16 @@ export class Journal {
     scene.input.on('pointerup', (p) => this.release(p));
     this.pages = scene.add.container(0, 0);
     this.sheet = scene.add.graphics(); // the page being turned
-    this.ribbon = scene.add.graphics(); // the red ribbon bookmark in the gutter
-    this.book = scene.add.container(W / 2, this.homeY(), [top, body, bottom, this.hit, this.pages, this.sheet, this.ribbon]);
+    this.ribbon = scene.add.graphics(); // the red ribbon bookmark
+    this.book = scene.add.container(0, this.homeY(), [art, this.hit, this.pages, this.ribbon, this.sheet]);
     this.root = scene.add.container(0, 0, [dim, this.book]).setDepth(DEPTH.UI + 6).setVisible(false);
   }
 
   homeY() {
-    return Math.round(H / 2 + 12); // a little below the middle, clear of the hints
+    return Math.round(H / 2 + 8 - IH / 2); // a little below the middle, clear of the hints
   }
 
-  // ---- building a spread ----------------------------------------------------
-
-  // Builds the two pages for page n: { left, right, hits, swim, sprite }.
-  spread(n) {
-    const s = this.scene;
-    const sp = { left: s.add.container(0, 0), right: s.add.container(0, 0), hits: [], swim: null, sprite: null };
-    this.pages.add([sp.left, sp.right]);
-    const fish = n - this.contentSpreads;
-    if (fish < 0) this.contents(sp, n);
-    else this.fishPages(sp, FISH[fish]);
-    // turning: an arrow in each outer corner, and a way back to the contents
-    const l = this.writer(sp.left);
-    const r = this.writer(sp.right);
-    if (n > 0) {
-      l(LP.x0 + 14, FOOT, '<', { font: 'ink-bold', size: 2, color: RED });
-      sp.hits.push({ x0: LP.x0, x1: LP.x0 + 46, y0: FOOT - 18, y1: FOOT + 14, go: () => this.turnTo(n - 1) });
-    }
-    if (fish >= 0) {
-      l(mid(LP), FOOT, 'Contents', { color: PENCIL });
-      sp.hits.push({ x0: mid(LP) - 40, x1: mid(LP) + 40, y0: FOOT - 12, y1: FOOT + 12, go: () => this.turnTo(0) });
-      r(mid(RP), FOOT, `${fish + 1} / ${FISH.length}`, { font: 'ink-bold', color: PENCIL });
-    }
-    if (n < this.last) {
-      r(RP.x1 - 14, FOOT, '>', { font: 'ink-bold', size: 2, color: RED });
-      sp.hits.push({ x0: RP.x1 - 46, x1: RP.x1, y0: FOOT - 18, y1: FOOT + 14, go: () => this.turnTo(n + 1) });
-    }
-    pin(sp.left);
-    pin(sp.right);
-    return sp;
-  }
+  // ---- writing on the page ----------------------------------------------------
 
   writer(c) {
     return (x, y, text, o = {}) => {
@@ -124,73 +85,98 @@ export class Journal {
     };
   }
 
+  // A line that must fit across the page: a size smaller, then a pixel
+  // tighter, until it does.
+  fit(t, width, sizes = [32, 16]) {
+    for (const size of sizes) {
+      t.setFontSize(size).setLetterSpacing(0);
+      if (t.getTextBounds(true).local.width <= width) return t;
+      t.setLetterSpacing(-1);
+      if (t.getTextBounds(true).local.width <= width) return t;
+    }
+    return t;
+  }
+
   // A heading in bold red and a note under it, wrapped to the page; returns
   // how far down the page it reached.
-  note(c, p, y, head, body) {
+  note(c, y, head, body) {
     const t = this.writer(c);
-    t(p.x0 + PAD, y, head, { font: 'ink-bold', color: RED }).setOrigin(0, 0.5);
-    const b = t(p.x0 + PAD, y + 9, body, { color: PEN, width: p.x1 - p.x0 - PAD * 2, align: 0 }).setOrigin(0, 0);
-    b.setLineSpacing(LINE - 22).setLetterSpacing(-1); // set a pixel tighter to fit the small page
-    return y + 9 + b.getTextBounds(true).lines.lengths.length * LINE + 13;
+    t(X0, y, head, { font: 'ink-bold', color: RED }).setOrigin(0, 0.5);
+    // (the letters sit low in their line, so the body starts close under
+    // its heading and leaves a clear gap before the next one)
+    const b = t(X0, y + 3, body, { color: PEN, width: TW, align: 0 }).setOrigin(0, 0);
+    b.setLineSpacing(LINE - 22).setLetterSpacing(-1);
+    return y + 3 + b.getTextBounds(true).lines.lengths.length * LINE + 16;
   }
 
-  // The contents: every fish in the book's order, its picture, name and
-  // page, over as many spreads as it takes. Tap one to go straight to it.
-  contents(sp, n) {
+  // Builds page n: { c, hits, swim, sprite }.
+  build(n) {
+    const pg = { c: this.scene.add.container(0, 0), hits: [], swim: null, sprite: null };
+    this.pages.add(pg.c);
+    if (n === 0) this.contents(pg);
+    else this.fishPage(pg, FISH[n - 1]);
+    // the foot of the page: arrows in the corners, the page number between
+    const t = this.writer(pg.c);
+    if (n > 0) {
+      t(X0 + 6, FOOT, '<', { font: 'ink-bold', size: 2, color: RED });
+      pg.hits.push({ x0: PAGE.x0, x1: X0 + 40, y0: FOOT - 18, y1: FOOT + 14, go: () => this.turnTo(n - 1) });
+      t(CX - 40, FOOT, 'Contents', { color: PENCIL });
+      pg.hits.push({ x0: CX - 74, x1: CX + 4, y0: FOOT - 12, y1: FOOT + 12, go: () => this.turnTo(0) });
+      t(CX + 50, FOOT, `${n} / ${FISH.length}`, { font: 'ink-bold', color: PENCIL });
+    }
+    if (n < FISH.length) {
+      t(X1 - 6, FOOT, '>', { font: 'ink-bold', size: 2, color: RED });
+      pg.hits.push({ x0: X1 - 40, x1: PAGE.x1, y0: FOOT - 18, y1: FOOT + 14, go: () => this.turnTo(n + 1) });
+    }
+    pin(pg.c);
+    return pg;
+  }
+
+  // The contents on a single page: every fish in the book's order, two
+  // columns of nine, each with its name in small print, its picture (a
+  // silhouette until caught) and its page. Tap one to go straight to it.
+  contents(pg) {
     const s = this.scene;
     const species = this.save.data.species;
-    const per = this.perPage;
-    const head = this.writer(sp.left)(mid(LP), PAGE_TOP + 16, 'Contents', { font: 'ink-bold', size: 2, color: RED });
-    if (head.getTextBounds(true).local.width > LP.x1 - LP.x0 - 16) head.setFontSize(16);
-    this.writer(sp.right)(mid(RP), PAGE_TOP + 16, n === 0 ? 'tap a fish' : '', { color: PENCIL });
-    const rowsTop = PAGE_TOP + 34;
-    for (let k = 0; k < per * 2; k++) {
-      const i = n * per * 2 + k;
-      const f = FISH[i];
-      if (!f) break;
-      const p = k < per ? LP : RP;
-      const c = k < per ? sp.left : sp.right;
-      const y = rowsTop + (k % per) * ROW + ROW / 2;
+    const t = this.writer(pg.c);
+    t(CX, PAGE.y0 + 18, 'Contents', { font: 'ink-bold', size: 2, color: RED });
+    t(CX, PAGE.y0 + 36, 'tap a fish to find it', { font: 'ink-small', color: PENCIL });
+    const rows = Math.ceil(FISH.length / 2);
+    const top = PAGE.y0 + 48;
+    const rowH = Math.floor((FOOT - 18 - top) / rows);
+    const colW = Math.floor((TW - 8) / 2);
+    FISH.forEach((f, i) => {
+      const x = X0 + (i < rows ? 0 : colW + 8);
+      const y = top + (i % rows) * rowH;
       const known = !!species[f.id];
-      // the name across the page, then the fish and its page under it
-      const w = this.writer(c);
-      const name = w(p.x0 + PAD, y - 9, known ? f.name : '???', { color: known ? PEN : PENCIL }).setOrigin(0, 0.5);
-      if (name.getTextBounds(true).local.width > p.x1 - p.x0 - PAD * 2) name.setLetterSpacing(-1); // a long name set a little tighter
-      const img = s.add.image(p.x0 + PAD + 23, y + 7, `fish-${f.id}`, 0);
+      this.fit(t(x, y + 6, known ? f.name : '???', { font: 'ink-small', color: known ? PEN : PENCIL }).setOrigin(0, 0.5), colW, [16]);
+      const img = s.add.image(x + 23, y + rowH - 11, `fish-${f.id}`, 0);
       if (!known) img.setTintFill(0x342a24);
-      c.add(img);
-      w(p.x1 - PAD, y + 7, `page ${i + 1}`, { color: PENCIL }).setOrigin(1, 0.5);
-      // a dotted rule under each entry
+      pg.c.add(img);
+      t(x + colW, y + rowH - 11, `p.${i + 1}`, { font: 'ink-small', color: PENCIL }).setOrigin(1, 0.5);
       const g = s.add.graphics();
-      for (let x = p.x0 + PAD; x < p.x1 - PAD; x += 3) g.fillStyle(0xe7cd8d, 1).fillRect(x, y + ROW / 2 - 1, 1, 1);
-      c.add(g);
-      sp.hits.push({ x0: p.x0, x1: p.x1, y0: y - ROW / 2, y1: y + ROW / 2, go: () => this.turnTo(this.contentSpreads + i) });
-    }
+      for (let dx = 0; dx < colW; dx += 3) g.fillStyle(0xe7cd8d, 1).fillRect(x + dx, y + rowH - 1, 1, 1);
+      pg.c.add(g);
+      pg.hits.push({ x0: x - 4, x1: x + colW + 4, y0: y, y1: y + rowH, go: () => this.turnTo(i + 1) });
+    });
   }
 
-  // A fish's spread: its name, photo and record on the left, notes on the
-  // right.
-  fishPages(sp, fish) {
+  // A fish's page: its name, the photo, its record, then the notes.
+  fishPage(pg, fish) {
     const s = this.scene;
     const rec = this.save.data.species[fish.id];
     const known = !!rec;
     const facts = JOURNAL[fish.id];
-    const t = this.writer(sp.left);
-    const cx = mid(LP);
-    const inner = LP.x1 - LP.x0 - 16;
+    const t = this.writer(pg.c);
 
-    const title = t(cx, PAGE_TOP + 16, known ? fish.name : '???', { font: 'ink-bold', size: 2, color: RED });
-    if (title.getTextBounds(true).local.width > inner) title.setFontSize(16);
-    if (known) {
-      const latin = t(cx, PAGE_TOP + 33, fish.latin, { color: PENCIL });
-      if (latin.getTextBounds(true).local.width > inner) latin.setLetterSpacing(-1);
-      if (latin.getTextBounds(true).local.width > inner) latin.setText(fish.latin.split(' ')[0][0] + '. ' + fish.latin.split(' ')[1]); // abbreviate the genus, as naturalists do
-    }
+    // the name fills the header and nothing more
+    this.fit(t(CX, PAGE.y0 + 18, known ? fish.name : '???', { font: 'ink-bold', size: 2, color: RED }), TW);
+    if (known) this.fit(t(CX, PAGE.y0 + 38, fish.latin, { color: PENCIL }), TW, [16]);
 
-    // the photo, taped in
-    const photo = { x: Math.round(cx - 68), y: PAGE_TOP + 48, w: 136, h: 58 };
+    // the photo, taped in below the header
+    const photo = { x: CX - 92, y: PAGE.y0 + 56, w: 184, h: 54 };
     const g = s.add.graphics();
-    sp.left.add(g);
+    pg.c.add(g);
     const f = { x: photo.x - 5, y: photo.y - 5, w: photo.w + 10, h: photo.h + 20 };
     g.fillStyle(0x10141c, 0.22).fillRect(f.x + 2, f.y + 2, f.w, f.h);
     g.fillStyle(0xb3a697, 1).fillRect(f.x - 1, f.y - 1, f.w + 2, f.h + 2);
@@ -201,53 +187,53 @@ export class Journal {
       if (!i) return;
       for (let x = i % 2; x < photo.w; x += 2) g.fillStyle(col, 1).fillRect(photo.x + x, photo.y + Math.round(i * band) - 1, 1, 1);
     });
-    for (let y = 0; y < photo.h * 0.7; y += 2) g.fillStyle(0xb2d0d0, 0.14).fillRect(photo.x + 24 + Math.floor(y / 3), photo.y + y, 3, 1);
+    for (let y = 0; y < photo.h * 0.7; y += 2) g.fillStyle(0xb2d0d0, 0.14).fillRect(photo.x + 30 + Math.floor(y / 3), photo.y + y, 3, 1);
     for (let x = 0; x < photo.w; x++) if (x % 3) g.fillStyle(0xb0ecf0, 0.7).fillRect(photo.x + x, photo.y, 1, 1);
     g.fillStyle(0xa9805f, 1).fillRect(photo.x, photo.y + photo.h - 5, photo.w, 5);
-    for (const [wx, wh, col] of [[8, 16, 0x407e55], [14, 10, 0x51642b], [118, 18, 0x407e55], [124, 11, 0x51642b]]) {
+    for (const [wx, wh, col] of [[8, 18, 0x407e55], [14, 11, 0x51642b], [164, 20, 0x407e55], [170, 12, 0x51642b]]) {
       for (let j = 0; j < wh; j++) g.fillStyle(col, 1).fillRect(photo.x + wx + (Math.floor(j / 4) % 2), photo.y + photo.h - 5 - j, 2, 1);
     }
-    for (const tx of [f.x - 8, f.x + f.w - 22]) {
-      g.fillStyle(0xf7ec9b, 0.7).fillRect(tx, f.y - 5, 30, 10);
-      g.fillStyle(0xe7cd8d, 0.7).fillRect(tx, f.y + 4, 30, 1);
+    for (const tx of [f.x - 8, f.x + f.w - 24]) {
+      g.fillStyle(0xf7ec9b, 0.7).fillRect(tx, f.y - 4, 32, 9);
+      g.fillStyle(0xe7cd8d, 0.7).fillRect(tx, f.y + 4, 32, 1);
     }
-    sp.bubbles = s.add.container(0, 0);
-    sp.left.add(sp.bubbles);
-
+    pg.bubbles = s.add.container(0, 0);
+    pg.c.add(pg.bubbles);
     const fishImg = s.add.sprite(0, 0, `fish-${fish.id}`, 0).setScale(2);
-    sp.left.add(fishImg);
+    pg.c.add(fishImg);
     if (known) {
       fishImg.play(`swim-${fish.id}`);
-      sp.sprite = fishImg;
-      sp.swim = new Swimmer(fishImg, fish.id, photo, (x, y) => this.silt(sp, photo, x, y));
+      pg.sprite = fishImg;
+      pg.swim = new Swimmer(fishImg, fish.id, photo, (x, y) => this.silt(pg, photo, x, y));
     } else {
       fishImg.setPosition(photo.x + photo.w / 2, photo.y + photo.h / 2).setTintFill(0x25131a).setAlpha(0.85);
       t(photo.x + photo.w / 2, photo.y + photo.h / 2, '?', { font: 'head', size: 2, color: INK.cream });
     }
+    // the photo's caption: how rare it is, and a nudge to tap it
     const cap = photo.y + photo.h + 9;
-    const rarity = t(photo.x, cap, RARITY[fish.rarity].label.toUpperCase(), { font: 'ink-bold', color: STAMP[fish.rarity] }).setOrigin(0, 0.5);
+    t(photo.x, cap, RARITY[fish.rarity].label.toUpperCase(), { font: 'ink-bold', color: STAMP[fish.rarity] }).setOrigin(0, 0.5);
+    if (known) t(photo.x + photo.w, cap, 'tap it!', { color: PENCIL }).setOrigin(1, 0.5);
+
+    let y = cap + 22;
     if (known) {
-      const tap = t(photo.x + photo.w, cap, 'tap it!', { color: PENCIL }).setOrigin(1, 0.5);
-      if (tap.getTextBounds(true).local.width + rarity.getTextBounds(true).local.width + 6 > photo.w) tap.setText('');
-      this.note(sp.left, LP, cap + 20, 'Did you know?', facts.fact);
-      let y = PAGE_TOP + 16;
-      y = this.note(sp.right, RP, y, 'Lives', facts.habitat);
-      y = this.note(sp.right, RP, y, 'Eats', facts.eats);
-      this.note(sp.right, RP, y, 'Size', facts.size);
-      // your own record, pencilled in at the foot of the page
-      const r = this.writer(sp.right);
-      r(RP.x0 + PAD, FOOT - 40, `Caught: ${rec.count}`, { color: PENCIL }).setOrigin(0, 0.5);
-      r(RP.x0 + PAD, FOOT - 26, `Best: ${rec.best.toFixed(1)} lb`, { color: PENCIL }).setOrigin(0, 0.5);
+      this.fit(t(CX, y, `Caught ${rec.count}   Best ${rec.best.toFixed(1)} lb`, { color: PENCIL }), TW, [16]);
+      y += 21;
+      y = this.note(pg.c, y, 'Lives', facts.habitat);
+      y = this.note(pg.c, y, 'Eats', facts.eats);
+      // the size is short: heading and figure on one line
+      t(X0, y, 'Size', { font: 'ink-bold', color: RED }).setOrigin(0, 0.5);
+      t(X0 + 48, y, facts.size, { color: PEN }).setOrigin(0, 0.5).setLetterSpacing(-1);
+      this.note(pg.c, y + 20, 'Did you know?', facts.fact);
     } else {
-      const y = this.note(sp.right, RP, PAGE_TOP + 16, 'Not caught yet', 'Catch one to fill in these pages.');
-      this.note(sp.right, RP, y, 'A clue', facts.habitat);
+      y = this.note(pg.c, y, 'Not caught yet', 'Catch one to fill in this page.');
+      this.note(pg.c, y, 'A clue', facts.habitat);
     }
   }
 
   // Silt and bubbles stirred up by a bottom-feeder in the photo.
-  silt(sp, photo, x, y) {
+  silt(pg, photo, x, y) {
     const b = pin(this.scene.add.sprite(x, y, 'bubble').play('bubble-pop'));
-    sp.bubbles.add(b);
+    pg.bubbles.add(b);
     this.scene.tweens.add({ targets: b, y: photo.y + 4, x: x + Phaser.Math.Between(-6, 6), duration: 1600, ease: 'Sine.easeIn', onComplete: () => b.destroy() });
   }
 
@@ -261,15 +247,15 @@ export class Journal {
     if (Math.abs(dx) > 40) return this.turnTo(this.page + (dx < 0 ? 1 : -1));
     const x = p.x - this.book.x;
     const y = p.y - this.book.y;
-    const cur = this.cur;
     // the ribbon marks the contents
-    if (x > -6 && x < 5 && y > PAGE_BOT - 30) return this.turnTo(0);
+    if (x >= SPINE + 3 && x <= SPINE + 12 && y > PAGE.y1 - 20) return this.turnTo(0);
+    const cur = this.cur;
     for (const h of cur.hits) if (x >= h.x0 && x <= h.x1 && y >= h.y0 && y <= h.y1) return h.go();
     const s = cur.sprite;
     if (s && !this.flop && Math.abs(x - s.x) < s.displayWidth / 2 + 6 && Math.abs(y - s.y) < s.displayHeight / 2 + 6) {
       // a fish out of water, right there in the photo
       s.anims.stop();
-      this.flop = new Flopper(this.scene, s, FISH[this.page - this.contentSpreads].id, cur.left);
+      this.flop = new Flopper(this.scene, s, FISH[this.page - 1].id, cur.c);
       this.flop.bout();
     }
   }
@@ -277,64 +263,92 @@ export class Journal {
   // ---- turning pages --------------------------------------------------------
 
   turnTo(n) {
-    if (n < 0 || n > this.last || n === this.page || this.turn) return;
+    if (n < 0 || n > FISH.length || n === this.page || this.turn) return;
     const dir = n > this.page ? 1 : -1;
     this.endFlop();
     const old = this.cur;
-    const next = this.spread(n);
+    const next = this.build(n);
     this.page = n;
-    // going forward the right-hand page lifts and sweeps over to the left:
-    // the new right page is under it from the start, and the new left page
-    // lands with it. Going back it's the mirror image.
     if (dir > 0) {
-      old.right.destroy();
-      next.left.setVisible(false);
+      // the page lifts away, uncovering the next one beneath it
+      old.c.destroy();
     } else {
-      old.left.destroy();
-      next.right.setVisible(false);
+      // the page comes back over from the held-up side and covers this one
+      next.c.setVisible(false);
     }
     this.turn = { dir, old, next, t: 0 };
+  }
+
+  // The turning sheet, in the same perspective as the held page. Over the
+  // flat page it is drawn as the page swinging up about the spine: narrower
+  // as it rises, its free edge nearer so taller, and darker as it turns from
+  // the light. Past upright it joins the held-up half, settling to its shape.
+  drawSheet(k) {
+    const g = this.sheet.clear();
+    const C = Phaser.Display.Color;
+    let outer;
+    let rise;
+    let shadeK;
+    if (k < 0.6) {
+      const a = (k / 0.6) * (Math.PI / 2); // 0 flat .. 90 degrees upright
+      outer = SPINE + (PAGE.x1 - SPINE) * Math.cos(a);
+      rise = HELD.rise * 1.6 * Math.sin(a);
+      shadeK = Math.sin(a);
+      // its shadow on the page beneath
+      g.fillStyle(0x10141c, 0.18 * (1 - Math.cos(a))).fillRect(Math.round(outer), PAGE.y0, 8, PAGE.y1 - PAGE.y0);
+    } else {
+      const b = (k - 0.6) / 0.4; // upright .. down onto the held-up half
+      outer = SPINE - (SPINE - HELD.x) * b;
+      rise = lerp(HELD.rise * 1.6, HELD.rise, b);
+      shadeK = 1 - b * 0.5;
+    }
+    outer = Math.round(outer);
+    rise = Math.round(rise);
+    const shade = C.Interpolate.ColorWithColor(C.ValueToColor(PAPER), C.ValueToColor(0xdaab76), 100, Math.round(shadeK * 100));
+    const side = outer >= SPINE ? 1 : -1;
+    const pts = [
+      { x: SPINE, y: PAGE.y0 },
+      { x: outer, y: PAGE.y0 - rise },
+      { x: outer, y: PAGE.y1 + rise },
+      { x: SPINE, y: PAGE.y1 },
+    ];
+    const rim = [
+      { x: SPINE, y: PAGE.y0 - 1 },
+      { x: outer + side, y: PAGE.y0 - rise - 1 },
+      { x: outer + side, y: PAGE.y1 + rise + 1 },
+      { x: SPINE, y: PAGE.y1 + 1 },
+    ];
+    g.fillStyle(0x25131a, 1).fillPoints(rim, true);
+    g.fillStyle(C.GetColor(shade.r, shade.g, shade.b), 1).fillPoints(pts, true);
+    // faint lines of writing, converging with its edges
+    const x0 = Math.min(SPINE, outer);
+    const x1 = Math.max(SPINE, outer);
+    for (let j = 1; j < 24; j++) {
+      const f = 0.06 + (0.88 * j) / 24;
+      for (let x = x0 + 3; x < x1 - 3; x += 2) {
+        const t = (x - SPINE) / (outer - SPINE || 1);
+        const yTop = PAGE.y0 - rise * t;
+        const yBot = PAGE.y1 + rise * t;
+        if ((x + j) % 9 < 6) g.fillStyle(0xb3a697, 0.5).fillRect(x, Math.round(yTop + (yBot - yTop) * f), 1, 1);
+      }
+    }
   }
 
   stepTurn(dt) {
     const tr = this.turn;
     tr.t = Math.min(1, tr.t + (dt * 1000) / TURN_MS);
-    const k = Phaser.Math.Easing.Sine.InOut(tr.t);
-    const g = this.sheet.clear();
+    const e = Phaser.Math.Easing.Sine.InOut(tr.t);
+    // forward the sheet goes flat page -> held side; back, the other way
+    this.drawSheet(tr.dir > 0 ? e : 1 - e);
     if (tr.t >= 1) {
-      if (tr.dir > 0) {
-        tr.old.left.destroy();
-        tr.next.left.setVisible(true);
-      } else {
-        tr.old.right.destroy();
-        tr.next.right.setVisible(true);
+      this.sheet.clear();
+      if (tr.dir < 0) {
+        tr.old.c.destroy();
+        tr.next.c.setVisible(true);
       }
       this.cur = tr.next;
       this.turn = null;
-      return;
     }
-    // the sheet: over its first page, narrowing toward the gutter as it
-    // lifts, then widening out over the other page as it comes down; it
-    // rises a little and darkens as it stands on edge
-    const first = k < 0.5;
-    const span = first ? 1 - k / 0.5 : (k - 0.5) / 0.5;
-    const onRight = (tr.dir > 0) === first;
-    const page = onRight ? RP : LP;
-    const w = Math.max(1, Math.round((page.x1 - page.x0) * span));
-    const x0 = onRight ? page.x0 : page.x1 - w;
-    const lift = Math.round(5 * (1 - span));
-    const y0 = PAGE_TOP - lift;
-    const y1 = PAGE_BOT + lift;
-    const C = Phaser.Display.Color;
-    const shade = C.Interpolate.ColorWithColor(C.ValueToColor(PAPER), C.ValueToColor(0xdaab76), 100, Math.round((1 - span) * 100));
-    // its shadow falling on the page beneath
-    g.fillStyle(0x10141c, 0.08 + 0.14 * (1 - span)).fillRect(onRight ? x0 + w + 1 : x0 - 7, PAGE_TOP, 6, PAGE_BOT - PAGE_TOP);
-    g.fillStyle(0x25131a, 1).fillRect(x0 - 1, y0 - 1, w + 2, y1 - y0 + 2);
-    g.fillStyle(C.GetColor(shade.r, shade.g, shade.b), 1).fillRect(x0, y0, w, y1 - y0);
-    // faint lines of writing showing through, and the curl at its free edge
-    for (let y = y0 + 22; y < y1 - 24; y += 9) g.fillStyle(0xb3a697, 0.45).fillRect(x0 + Math.round(w * 0.12), y, Math.round(w * 0.72), 1);
-    const curl = Math.min(3, w);
-    g.fillStyle(0xe7cd8d, 1).fillRect(onRight ? x0 + w - curl : x0, y0, curl, y1 - y0);
   }
 
   endFlop() {
@@ -360,7 +374,7 @@ export class Journal {
     this.sheet.clear();
     this.turn = null;
     this.flop = null;
-    this.cur = this.spread(this.page);
+    this.cur = this.build(this.page);
     this.icon.play('book-open');
     this.icon.once('animationcomplete', () => this.isOpen && this.icon.play('book-read'));
     this.root.setVisible(true);
@@ -383,16 +397,18 @@ export class Journal {
     this.scene.tweens.add({ targets: this.book, y: this.homeY() + 24, alpha: 0, duration: 160, ease: 'Quad.easeIn', onComplete: () => !this.isOpen && this.root.setVisible(false) });
   }
 
-  // The ribbon: satin red with a lit edge and a shaded one lying down the
-  // gutter, a V cut in its end, the loose tail stirring a pixel now and then.
+  // The ribbon: satin red with a lit edge and a shaded one, lying down the
+  // page beside the gutter and hanging out past the cover, a V cut in its
+  // end, the loose tail stirring a pixel now and then.
   drawRibbon(time) {
     const g = this.ribbon.clear();
-    const x = -4;
-    const y0 = TOP + 2;
-    const y1 = TOP + BH + 14;
+    const x = SPINE + 4;
+    const y0 = PAGE.y0 - 8;
+    const y1 = PAGE.y1 + 30;
     const sway = Math.floor(time / 900) % 3 === 2 ? 1 : 0;
+    g.fillStyle(0x10141c, 0.14).fillRect(x + 8, y0 + 8, 2, PAGE.y1 - y0 - 8); // its shadow on the page
     for (let y = y0; y < y1; y++) {
-      const dx = y > TOP + BH - 6 ? sway : 0;
+      const dx = y > PAGE.y1 + 14 ? sway : 0;
       const cut = Math.max(0, 4 - (y1 - 1 - y));
       const row = (c, a, b) => {
         for (let i = a; i <= b; i++) if (Math.abs(i - 3) >= cut) g.fillStyle(c, 1).fillRect(x + i + dx, y, 1, 1);
@@ -414,7 +430,7 @@ export class Journal {
       if (this.flop.mode === 'rest') {
         // done flopping: back to swimming
         this.endFlop();
-        this.cur.sprite.play(`swim-${FISH[this.page - this.contentSpreads].id}`);
+        this.cur.sprite.play(`swim-${FISH[this.page - 1].id}`);
       }
     } else this.cur?.swim?.update(dt);
   }

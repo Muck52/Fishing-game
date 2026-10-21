@@ -232,29 +232,35 @@ patches and rubbed corners, a fish pressed into the cover, a strap with a
 brass clasp. It swings open (and a page corner lifts now and then) while
 the journal is open, and shuts when it closes.
 
-Open, it lies flat as a whole book in the proportions of a real one: a
-6 x 9 in page opens to a 12 x 9 in spread, 4:3 (an A5 journal is about
-1.41:1, a Moleskine-style notebook 1.24:1), so the spread is three quarters
-as tall as it is wide. Two pages sit either side of the gutter (each aged
-toward its edges and curving down into the spine) on grained, scuffed
-leather boards stitched round the edge with brass corner caps, the edges of
-the pages beneath stacked along both outer sides and the bottom
-(`book-top`, a repeating `book-mid` and `book-bottom`). A red satin ribbon
-bookmark lies down the gutter and hangs out past the cover, V-cut at its
-end, its tail stirring now and then; tap it to go to the contents. The
-same ribbon trails from the closed journal on the button.
+Open, it's held as you'd hold a book to read (`journal-held.png`): the
+right-hand page flat, facing you and centred on the screen, with everything
+to read on it, and the left half lifted toward you on its spine by your
+hand. It's drawn the way perspective works for a page swung up about the
+spine: foreshortened to a sliver of its width; its free edge, nearer to
+you, taller, so its top and bottom edges slope out from the spine (a
+trapezoid) with faint lines of writing converging the same way; bowing up
+out of the gutter; darker toward the spine, casting a soft shadow on the
+facing page; the gutter the darkest line in the book. The leather cover
+overhangs the pages, stitched round the edge with brass corner caps, and
+the edges of the pages beneath show along the right and bottom. The thumb
+lies across the front of the lifted page, with the heel of the hand and a
+flannel cuff beside the cover's edge. A red satin ribbon lies down the page
+beside the gutter and hangs out past the cover, V-cut at its end; tap it to
+go to the contents. The same ribbon trails from the closed journal on the
+button.
 
-The first spreads are the contents: every fish in the book's order with its
-name, its picture (a silhouette until caught) and its page. Tap one to go
-straight there; from any page the arrows go to the next or previous fish
-in the same order. Pages turn with a sheet that lifts off the right-hand
-page, narrows as it stands on edge over the gutter (rising and darkening)
-and lays down over the left; going back, it runs the other way.
+The first page is the contents: all seventeen fish in two columns in the
+book's order, each with its name in small print (`ink-small`), its picture
+(a silhouette until caught) and its page. Tap one to go straight there;
+from any page the arrows go to the next or previous fish in the same order.
+Turning forward, the page swings up off the right side, standing on edge
+over the spine (narrowing, its near edge growing taller, darkening), and
+settles onto the held-up half; going back, it comes down the other way.
 
-Each fish has a spread: name, photo and a fact on the left; where it
-lives, what it eats, its size and your record on the right. Body text is
-set a pixel tighter to suit the small page. On it:
-- the name as a bold red heading and the Latin name in grey;
+Each fish has one page: its name fitted to the header (a size smaller, or
+set a pixel tighter, if it's long), the Latin name, the photo, your record
+and the notes. On it:
+
 - a photo taped in at both corners: a window onto the lake (its own water
   colours, light shafts, sand and weed) with the fish swimming in it at 2x,
   the way that species swims (`src/fish/Swim.js`): sunfish hover and
@@ -265,8 +271,8 @@ set a pixel tighter to suit the small page. On it:
   the bottom and stop to root up silt, and the burbot creeps along like an
   eel. Tap it and it flops like a fish out of water, then swims on;
 - how many you've caught and the best weight;
-- notes in brown ink under bold red headings: where it lives, what it eats, how big it grows,
-  and something worth knowing (`data/fish/journal.js`).
+- notes in brown ink under bold red headings: where it lives, what it eats,
+  its size and something worth knowing (`data/fish/journal.js`).
 
 A fish not yet caught is a dark silhouette with a question mark, with only
 a clue to where it lives. Swipe or tap the arrows to turn the page.
@@ -289,7 +295,7 @@ a clue to where it lives. Swipe or tap the arrows to turn the page.
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
 | Backpack (inventory button and icon) | drawn in the build (`backpack()`) in palette colours | 24 x 24, 1x | shared | closed; opens in 3 frames when the inventory opens, then a slow rummage loop; shuts again when it closes; a little hop now and then |
-| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; open book 352 x 264 (4:3), 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
+| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; held book 360 x 444, its right page 237 x 375, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
 | Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |
 
 ## Changing the art
