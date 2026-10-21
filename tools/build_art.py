@@ -340,17 +340,55 @@ def wildlife():
     save(load("spring-spring-eagle/eagle_flap.png"), "characters/eagle.png", frame=(41, 21), frames=7, actor=True)
     duck = cut(load("duck-16x16/duck_spritesheet.png"), 16, 16, vertical=True)
     save(strip(duck), "characters/duck.png", frame=(16, 16), frames=4, actor=True)
-    dart = load("ansimuz-underwater/fish-dart.png")
-    save(dart, "characters/minnow.png", frame=(39, 20), frames=4, actor=True)
+    # minnows: a third of their pack size, smaller than any catchable fish
+    darts = [shrink(f.crop(f.getbbox()), 11) for f in cut(load("ansimuz-underwater/fish-dart.png"), 39)]
+    fw, fh = max(d.width for d in darts), max(d.height for d in darts)
+    padded = []
+    for d in darts:
+        p = Image.new("RGBA", (fw, fh))
+        p.alpha_composite(d, (0, fh - d.height))
+        padded.append(p)
+    save(strip(padded), "characters/minnow.png", frame=(fw, fh), frames=4, actor=True)
 
 
 # ---------------------------------------------------------------- fish
+# How long each species swims on screen, in pixels, nose to tail. The angler
+# stands about 34 pixels tall; fish are drawn a little larger than life
+# beside him so their markings still read, smallest to largest.
+FISH_LENGTH = {"bluegill": 16, "perch": 19, "bass": 24, "trout": 24, "catfish": 28, "pike": 34, "golden": 40}
+
+
+def shrink(img, length):
+    """Redraws a sprite smaller on the pixel grid: each new pixel takes the
+    average of the pixels it covers, edges are cut clean, and a fresh
+    one-pixel outline goes round the result."""
+    w, h = img.size
+    nw, nh = length, max(3, round(h * length / w))
+    a = np.array(img).astype(np.float64)
+    a[..., :3] *= a[..., 3:] / 255  # premultiply so the old outline doesn't bleed in
+    small = np.array(Image.fromarray(a.astype(np.uint8)).resize((nw, nh), Image.Resampling.BOX)).astype(np.float64)
+    alpha = small[..., 3]
+    out = np.zeros((nh + 2, nw + 2, 4), np.uint8)
+    solid = alpha > 110
+    rgb = np.where(alpha[..., None] > 0, small[..., :3] * 255 / np.maximum(alpha[..., None], 1), 0)
+    inner = out[1:-1, 1:-1]
+    inner[solid, :3] = np.clip(rgb[solid] * 1.08, 0, 255)  # a touch brighter, as the outline darkens it
+    inner[solid, 3] = 255
+    body = out[..., 3] > 0
+    ring = np.zeros_like(body)
+    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        ring |= np.roll(np.roll(body, dy, 0), dx, 1)
+    out[ring & ~body] = (*OUTLINE, 255)
+    return Image.fromarray(out)
+
+
 def fish():
     """Swim frames for each species: the rear of the body sways side to side."""
     info = {}
     for path in sorted((SRC / "baked-fish").glob("*.png")):
-        img = Image.open(path).convert("RGBA")
-        img = img.crop(img.getbbox())
+        card = Image.open(path).convert("RGBA")
+        card = card.crop(card.getbbox())
+        img = shrink(card, FISH_LENGTH[path.stem])
         w, h = img.size
         frames = []
         for f in range(4):
@@ -359,13 +397,13 @@ def fish():
             dp = out.load()
             for x in range(w):
                 t = max(0, (x / w - 0.45) / 0.55)  # 0 at mid-body, 1 at the tail tip
-                dy = round(math.sin(f / 4 * math.pi * 2) * 2 * t * t)
+                dy = round(math.sin(f / 4 * math.pi * 2) * 1.4 * t * t)
                 for y in range(h):
                     if sp[x, y][3]:
                         dp[x, y + 2 + dy] = sp[x, y]
             frames.append(out)
         save(strip(frames), f"fish/{path.stem}.png", key=f"fish-{path.stem}", frame=(w, h + 4), frames=4, actor=True)
-        save(img, f"fish/{path.stem}-card.png", key=f"card-{path.stem}", actor=True)
+        save(card, f"fish/{path.stem}-card.png", key=f"card-{path.stem}", actor=True)
         info[path.stem] = {"w": w, "h": h}
     manifest["anchors"]["fish"] = info
 

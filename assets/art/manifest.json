@@ -200,50 +200,50 @@
   },
   "minnow": {
    "url": "assets/art/characters/minnow.png",
-   "frameWidth": 39,
-   "frameHeight": 20,
+   "frameWidth": 13,
+   "frameHeight": 7,
    "frames": 4
   },
   "fish-bass": {
    "url": "assets/art/fish/bass.png",
-   "frameWidth": 63,
-   "frameHeight": 39,
+   "frameWidth": 26,
+   "frameHeight": 19,
    "frames": 4
   },
   "fish-bluegill": {
    "url": "assets/art/fish/bluegill.png",
-   "frameWidth": 43,
-   "frameHeight": 38,
+   "frameWidth": 18,
+   "frameHeight": 19,
    "frames": 4
   },
   "fish-catfish": {
    "url": "assets/art/fish/catfish.png",
-   "frameWidth": 75,
-   "frameHeight": 27,
+   "frameWidth": 30,
+   "frameHeight": 15,
    "frames": 4
   },
   "fish-golden": {
    "url": "assets/art/fish/golden.png",
-   "frameWidth": 96,
-   "frameHeight": 33,
+   "frameWidth": 42,
+   "frameHeight": 18,
    "frames": 4
   },
   "fish-perch": {
    "url": "assets/art/fish/perch.png",
-   "frameWidth": 51,
-   "frameHeight": 31,
+   "frameWidth": 21,
+   "frameHeight": 16,
    "frames": 4
   },
   "fish-pike": {
    "url": "assets/art/fish/pike.png",
-   "frameWidth": 87,
-   "frameHeight": 28,
+   "frameWidth": 36,
+   "frameHeight": 15,
    "frames": 4
   },
   "fish-trout": {
    "url": "assets/art/fish/trout.png",
-   "frameWidth": 63,
-   "frameHeight": 34,
+   "frameWidth": 26,
+   "frameHeight": 17,
    "frames": 4
   },
   "splash": {
@@ -410,110 +410,110 @@
   },
   "fish": {
    "bass": {
-    "w": 63,
-    "h": 35
+    "w": 26,
+    "h": 15
    },
    "bluegill": {
-    "w": 43,
-    "h": 34
+    "w": 18,
+    "h": 15
    },
    "catfish": {
-    "w": 75,
-    "h": 23
+    "w": 30,
+    "h": 11
    },
    "golden": {
-    "w": 96,
-    "h": 29
+    "w": 42,
+    "h": 14
    },
    "perch": {
-    "w": 51,
-    "h": 27
+    "w": 21,
+    "h": 12
    },
    "pike": {
-    "w": 87,
-    "h": 24
+    "w": 36,
+    "h": 11
    },
    "trout": {
-    "w": 63,
-    "h": 30
+    "w": 26,
+    "h": 13
    }
   }
  },
  "palette": [
-  "#020102",
+  "#000000",
   "#25131a",
-  "#131f39",
+  "#102035",
   "#0e2238",
   "#0e2436",
   "#0f243a",
+  "#2a1e20",
   "#10273f",
-  "#2c2322",
+  "#1b2631",
+  "#112941",
   "#122d45",
   "#163235",
   "#14324c",
-  "#3d2828",
+  "#3d252c",
   "#17354e",
   "#173953",
   "#1b3a4f",
   "#33323d",
-  "#204032",
+  "#1a3c55",
   "#1b3f5b",
-  "#1d463d",
-  "#1e4662",
-  "#3c3e44",
-  "#473d33",
+  "#1d463c",
+  "#324432",
+  "#1e4762",
+  "#463e35",
   "#3d452e",
-  "#214c5d",
   "#3c424e",
+  "#264b62",
   "#234d69",
-  "#3c4844",
-  "#2b5362",
+  "#2a5263",
+  "#3e4a58",
   "#275571",
+  "#843b32",
   "#2c5c78",
-  "#8a3930",
-  "#305e6e",
+  "#2e5d72",
   "#833f4c",
+  "#54585b",
   "#51642b",
-  "#565875",
-  "#635a50",
-  "#71573a",
-  "#536f3e",
+  "#55690e",
+  "#70553b",
+  "#635b54",
+  "#546e55",
   "#a04f45",
   "#985252",
-  "#407f54",
+  "#407e56",
   "#4f738b",
-  "#9e5c39",
-  "#6b7e58",
-  "#8a7358",
+  "#9a5b3a",
+  "#6c7e55",
   "#e84a3a",
+  "#887366",
   "#c25f62",
-  "#938357",
+  "#918358",
   "#b77357",
   "#ae7764",
-  "#80a78c",
+  "#7fa693",
   "#d88571",
-  "#bd9852",
-  "#a69f9d",
+  "#b3a494",
   "#8ad06a",
   "#daab76",
-  "#d1b386",
   "#b2d0d0",
   "#e7cd8d",
-  "#c8d6be",
   "#ffd84a",
+  "#cfddc6",
   "#ebd9a1",
-  "#e4dab5",
+  "#b0ebeb",
   "#b0ecf0",
-  "#bae9f0",
+  "#f0e1af",
   "#eae2dc",
-  "#ececaa",
   "#d3f0ee",
   "#f7ec9b",
   "#dafafa",
   "#f6f2d9",
   "#e5f6f6",
-  "#f9eef3",
   "#fff4d6",
+  "#ffeffa",
   "#ebfafa",
   "#ffffff"
  ]

@@ -40,15 +40,20 @@ we borrow is the thinking behind them.
 4. **Light from above and behind.** Sun shafts slant down into the water,
    the surface twinkles, and depth darkens and cools everything. Glows are
    dithered (`glow`, `firefly`, `light-streak`), never blurred.
-5. **Distance is darker and bluer.** The background rock shelf, the posts
+5. **Things are to scale.** The angler is about 34 pixels tall, and
+   everything is sized against him. Fish swim at 18 (bluegill) to 42
+   (sturgeon) pixels long, a little larger than life so their markings
+   read; minnows are 13. Shrinking is done in the build (`shrink()`), which
+   averages the painting down and redraws the outline, never in the game.
+6. **Distance is darker and bluer.** The background rock shelf, the posts
    below the waterline and deep fish are pushed toward the water's colour.
-6. **Motion is slow and stepped.** Ambient loops run at 3–8 frames a second;
+7. **Motion is slow and stepped.** Ambient loops run at 3–8 frames a second;
    floating UI moves in whole-pixel steps (`ease: 'Stepped'`). Fast motion is
    saved for the moments that matter: the bite, the splash, the landing.
-7. **Lettering is part of the art.** Two CC0 Kenney fonts are baked into
+8. **Lettering is part of the art.** Two CC0 Kenney fonts are baked into
    bitmap fonts at their native 16px with the same outline as the sprites
    (`fonts()` in the build). Text is tinted, never resized off the grid.
-8. **The hour sets the mood.** `src/environment/Daylight.js` multiplies the
+9. **The hour sets the mood.** `src/environment/Daylight.js` multiplies the
    scene by a colour for the time on the phone: rose at dawn, clear by day,
    gold then mauve at dusk, deep blue at night. After dark the hut window
    glows, its light lies on the water and fireflies come out over the reeds.
@@ -63,8 +68,8 @@ we borrow is the thinking behind them.
 | Weeds, sand, clam | Reactorcore aquatic | 1x | none | 4-frame sway |
 | Hut, posts, boat, barrel, cattails | CraftPix fishing | 1x | shared | boat bobs 1px; cattails sway |
 | Angler | CraftPix fishing (turned, line erased) | 48 x 48 frames | shared | idle, fish, reel, land |
-| Fish species | the game's own field-guide paintings | 1x (card 2x) | shared | 4-frame tail swish; depth tint |
-| Minnows | ansimuz underwater | 1x | shared | 4-frame swim, school |
+| Fish species | the game's own field-guide paintings, redrawn small | 18–42 px long, 1x; full painting on the card | shared | 4-frame tail swish; depth tint |
+| Minnows | ansimuz underwater, redrawn small | 13 px long, 1x | shared | 4-frame swim, school |
 | Deer, fox, hare, bear | ScratchIO animals | 1x | shared | walk and idle cycles |
 | Gulls, ducks, eagle | MoikMellah, aroachi, Spring Spring | 1x | shared | flap cycles |
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
