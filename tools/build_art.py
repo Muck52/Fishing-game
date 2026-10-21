@@ -791,76 +791,86 @@ def journal():
 
     save(strip([icon(i) for i in range(4)]), "ui/journal.png", frame=(24, 24), frames=4, grade=False)
 
-    # The open book, seen as its right-hand page: a leather-bound cover with
-    # stitching round the edge, scuffs and brass corner caps, and inside it
-    # the aged page, shadowed toward the spine on the left, with the edges
-    # of the pages beneath stacked along the right and bottom.
-    BW, BH = 344, 548
-    SPINE = 22
-    book = Image.new("RGBA", (BW, BH + 4))
-    bp = book.load()
+    # The book lying fully open: two pages side by side with the gutter down
+    # the middle, the leather boards showing round them (stitched, scuffed,
+    # brass at the corners) and the edges of the pages beneath stacked along
+    # the outer sides and the bottom. It comes in three pieces so it can be
+    # any height: a top, a middle that repeats, and a bottom.
+    BW = 352
+    MID_X = BW / 2 - 0.5
     LEATHER_MID = hexc("#833f4c")
-    for y in range(BH):
-        for x in range(BW):
-            n = hash01(x, y, 21)
-            c = LEATHER_DK if n < 0.14 else LEATHER_MID if n > 0.97 else LEATHER  # the grain
+    BASE, AGED, DEEP, EDGE2 = hexc("#f0ecd0"), hexc("#ebd9a1"), hexc("#e7cd8d"), hexc("#daab76")
+    SHADOW = (16, 20, 28, 120)
+
+    def pixel(x, y, top_d, bot_d, seed):
+        """The colour at column x of a row top_d rows below the top of the
+        book and bot_d rows above its bottom (None when far from either)."""
+        n = hash01(x, y, seed)
+        side = min(x, BW - 1 - x)
+        edge = min(side, top_d if top_d is not None else 99, bot_d if bot_d is not None else 99)
+        if edge < 2:
+            return LEATHER_DK
+        if edge < 8:
+            # the boards: grained leather with stitching round them
+            if (side == 4 and y % 6 < 3 and top_d is None and bot_d is None) or (side == 4 and (top_d or 99) > 5 and (bot_d or 99) > 5 and y % 6 < 3):
+                return STITCH
+            if top_d == 4 and 6 < side and x % 6 < 3:
+                return STITCH
+            if bot_d is not None and bot_d == 5 and 6 < side and x % 6 < 3:
+                return STITCH
             if hash01(x // 7, y // 7, 4) > 0.9 and n > 0.35:
-                c = WORN  # scuffed, rubbed patches
-            if min(x, y, BW - 1 - x, BH - 1 - y) < 2:
-                c = LEATHER_DK
-            bp[x, y] = c
-    # the spine: a rounded leather ridge with raised bands across it
-    for y in range(2, BH - 2):
-        for x in range(0, SPINE):
-            c = LEATHER_DK if x < 2 or x >= SPINE - 2 else LEATHER_LT if x < 6 else LEATHER
-            if (y - 20) % 64 in (0, 1, 2, 3):
-                c = LEATHER_LT if (y - 20) % 64 < 2 else LEATHER_DK
-            bp[x, y] = c
-    # stitching: a dashed thread round the cover's edge
-    for i in range(SPINE + 4, BW - 8):
-        if i % 6 < 3:
-            bp[i, 7] = STITCH
-            bp[i, BH - 8] = STITCH
-    for j in range(8, BH - 8):
-        if j % 6 < 3:
-            bp[BW - 8, j] = STITCH
-            bp[SPINE + 3, j] = STITCH
-    # the page block: edges of the pages beneath stacked along the right and
-    # bottom, then the page itself
-    PX0, PY0, PX1, PY1 = SPINE + 6, 16, BW - 18, BH - 20
-    for k in range(5, 0, -1):
-        for x in range(PX0, PX1 + k):
-            bp[x, PY1 + k - 1] = PAPER_DK if k % 2 else hexc("#daab76")
-        for y in range(PY0 + k, PY1 + k):
-            bp[PX1 + k - 1, y] = PAPER_DK if k % 2 else hexc("#daab76")
-    BASE, AGED, DEEP = hexc("#f0ecd0"), hexc("#ebd9a1"), hexc("#e7cd8d")
-    for y in range(PY0, PY1):
-        for x in range(PX0, PX1):
-            n = hash01(x, y, 11)
-            gx = x - PX0
-            d = min(PX1 - 1 - x, y - PY0, PY1 - 1 - y)
-            c = BASE if n > 0.025 else AGED
-            if d < 2 or (d < 7 and n < 0.35) or (d < 14 and n < 0.07):
-                c = AGED  # yellowed toward the edges
-            # the page curving down into the gutter
-            if gx < 4 or (gx < 9 and n < 0.65):
-                c = DEEP
-            elif gx < 16 and n < 0.35:
-                c = AGED
-            bp[x, y] = c
-    # brass caps on the outer corners
-    for (cx, cy, sx, sy) in ((BW - 1, 0, -1, 1), (BW - 1, BH - 1, -1, -1)):
-        for i in range(14):
-            for j in range(14 - i):
-                x, y = cx + sx * i, cy + sy * j
-                bp[x, y] = GLINT if i + j < 3 else BRASS if i + j < 12 else LEATHER_DK
-    book = outline(book)
-    bp = book.load()
-    for x in range(4, BW):
-        for y in (BH, BH + 1, BH + 2):
-            if not bp[x, y][3]:
-                bp[x, y] = (16, 20, 28, 120)
-    save(book, "ui/journal-book.png", grade=False)
+                return WORN
+            return LEATHER_DK if n < 0.14 else LEATHER_MID if n > 0.97 else LEATHER
+        # the page block: stacked edges along the outer sides and the bottom
+        if side < 12 or (bot_d is not None and bot_d < 12):
+            k = side - 8 if side < 12 else bot_d - 8
+            return EDGE2 if k % 2 else AGED
+        if top_d is not None and top_d < 9:
+            return AGED if top_d == 8 else LEATHER
+        # the pages
+        g = abs(x - MID_X)
+        c = BASE if n > 0.025 else AGED
+        d = min(side - 12, (top_d - 9) if top_d is not None else 99, (bot_d - 12) if bot_d is not None else 99)
+        if d < 2 or (d < 6 and n < 0.35) or (d < 12 and n < 0.06):
+            c = AGED
+        if g < 1:
+            c = EDGE2
+        elif g < 3 or (g < 7 and n < 0.6):
+            c = DEEP  # the pages curving down into the gutter
+        elif g < 14 and n < 0.3:
+            c = AGED
+        return c
+
+    def brass(im, top):
+        px = im.load()
+        for (cx, sx) in ((0, 1), (BW - 1, -1)):
+            for i in range(12):
+                for j in range(12 - i):
+                    x = cx + sx * i
+                    y = j if top else im.height - 5 - j
+                    px[x, y] = GLINT if i + j < 3 else BRASS if i + j < 10 else LEATHER_DK
+
+    TOP_H, MID_H, BOT_H = 24, 64, 28
+    top = Image.new("RGBA", (BW, TOP_H))
+    for y in range(TOP_H):
+        for x in range(BW):
+            top.putpixel((x, y), pixel(x, y, y, None, 11))
+    brass(top, True)
+    mid = Image.new("RGBA", (BW, MID_H))
+    for y in range(MID_H):
+        for x in range(BW):
+            mid.putpixel((x, y), pixel(x, y, None, None, 11))
+    bot = Image.new("RGBA", (BW, BOT_H + 4))
+    for y in range(BOT_H):
+        for x in range(BW):
+            bot.putpixel((x, y), pixel(x, y + 1000, None, BOT_H - 1 - y, 11))
+    for y in range(BOT_H, BOT_H + 3):
+        for x in range(4, BW):
+            bot.putpixel((x, y), SHADOW)
+    brass(bot, False)
+    save(top, "ui/book-top.png", grade=False)
+    save(mid, "ui/book-mid.png", grade=False)
+    save(bot, "ui/book-bottom.png", grade=False)
 
 
 # ---------------------------------------------------------------- fonts

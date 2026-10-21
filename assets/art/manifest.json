@@ -48,7 +48,9 @@
   "firefly": "assets/art/effects/firefly.png",
   "ripple-map": "assets/art/effects/ripple-map.png",
   "board": "assets/art/ui/board.png",
-  "journal-book": "assets/art/ui/journal-book.png"
+  "book-top": "assets/art/ui/book-top.png",
+  "book-mid": "assets/art/ui/book-mid.png",
+  "book-bottom": "assets/art/ui/book-bottom.png"
  },
  "sheets": {
   "falls": {

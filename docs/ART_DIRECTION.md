@@ -232,15 +232,25 @@ patches and rubbed corners, a fish pressed into the cover, a strap with a
 brass clasp. It swings open (and a page corner lifts now and then) while
 the journal is open, and shuts when it closes.
 
-Open, it's a leather-bound book (`journal-book.png`): a grained, scuffed
-leather cover stitched round the edge with brass corner caps, a ridged spine
-down the left, and the page itself, aged toward its edges and curving into
-the gutter, with the edges of the pages beneath stacked along the right and
-bottom. A red satin ribbon bookmark lies in the gutter and hangs out past
-the cover, V-cut at its end, its tail stirring now and then; the same
-ribbon trails from the closed journal on the button. Each fish has one
-page. On it:
+Open, it lies flat as a whole book, about three quarters of the screen
+tall: two pages either side of the gutter (each aged toward its edges and
+curving down into the spine) on grained, scuffed leather boards stitched
+round the edge with brass corner caps, the edges of the pages beneath
+stacked along both outer sides and the bottom (`book-top`, a repeating
+`book-mid` and `book-bottom`, so it fits any phone). A red satin ribbon
+bookmark lies down the gutter and hangs out past the cover, V-cut at its
+end, its tail stirring now and then; tap it to go to the contents. The
+same ribbon trails from the closed journal on the button.
 
+The first spread is the contents: every fish in the book's order with its
+picture (a silhouette until caught), its name and its page. Tap one to go
+straight there; from any page the arrows go to the next or previous fish
+in the same order. Pages turn with a sheet that lifts off the right-hand
+page, narrows as it stands on edge over the gutter (rising and darkening)
+and lays down over the left; going back, it runs the other way.
+
+Each fish has a spread: name, photo, record and a fact on the left, notes
+on the right. On it:
 - the name as a bold red heading and the Latin name in grey;
 - a photo taped in at both corners: a window onto the lake (its own water
   colours, light shafts, sand and weed) with the fish swimming in it at 2x,
@@ -276,7 +286,7 @@ a clue to where it lives. Swipe or tap the arrows to turn the page.
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
 | Backpack (inventory button and icon) | drawn in the build (`backpack()`) in palette colours | 24 x 24, 1x | shared | closed; opens in 3 frames when the inventory opens, then a slow rummage loop; shuts again when it closes; a little hop now and then |
-| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; book 344 x 548, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
+| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; open book 352 wide, 3/4 of the screen tall, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
 | Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |
 
 ## Changing the art
