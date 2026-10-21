@@ -135,6 +135,15 @@ catch meter beside it; let it out and the meter drains. Full, it's caught;
 empty, it slips the hook. The bar is a little sluggish while the fish is in
 it, which helps you hold it there.
 
+The bar is dressed to belong to the scene: a small board in the same wood
+as the counters and the journal (tan rim, plank seams, plum-brown outline),
+with a window onto the lake in the lake's own colours, from the shimmering
+surface down to sand and swaying weed, bubbles rising through it. The net is
+see-through so the water shows behind it, the fish icon takes its back and
+belly colours from the hooked fish's own sprite, the catch meter is a gauge
+carved into the board, and the reel at its foot is brass. Hints sit on the
+same wooden plaques as the counters.
+
 Each species moves in its own way (`MOVES`): bluegill and bass wander,
 perch, trout, pike and muskie dart, walleye glide smoothly, carp, catfish
 and drum sink toward the bottom, crappie float up. `difficulty` sets how far

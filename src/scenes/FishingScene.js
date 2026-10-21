@@ -13,6 +13,7 @@ import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
 import { Striker, strikeOf } from '../fish/Strike.js';
 import { FISH } from '../../data/fish/fish.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
+import { pill } from '../ui/Panels.js';
 import { FishBar } from '../ui/FishBar.js';
 import { Hud } from '../ui/Hud.js';
 import { CatchPopup } from '../ui/CatchPopup.js';
@@ -52,6 +53,8 @@ export class FishingScene extends Phaser.Scene {
     this.meter = new TensionMeter(this);
     this.bar = new FishBar(this);
     this.popup = new CatchPopup(this);
+    // hints sit on a little wooden plaque, like the counters
+    this.plaque = pill(this, W / 2, 165, 40, 20).setDepth(DEPTH.UI).setVisible(false);
     this.hint = label(this, W / 2, 165, '', { font: 'head', size: 2 }).setDepth(DEPTH.UI);
     this.note = label(this, W / 2, 95, '', { width: W - 40 }).setDepth(DEPTH.UI).setAlpha(0);
     this.fishSprite = null;
@@ -64,10 +67,13 @@ export class FishingScene extends Phaser.Scene {
   // ---- messages ------------------------------------------------------------
 
   setHint(text, fadeAfter = 0) {
-    this.tweens.killTweensOf(this.hint);
+    const both = [this.hint, this.plaque];
+    this.tweens.killTweensOf(both);
     this.hint.setText(text).setAlpha(1).setFontSize(text.length > 12 ? 16 : 32).setTint(text === 'TAP!' ? INK.gold : INK.cream);
+    const b = this.hint.getTextBounds(true).global;
+    this.plaque.setVisible(!!text).setAlpha(1).setSize(Math.ceil(b.width / 2) * 2 + 16, Math.ceil(b.height / 2) * 2 + 8);
     if (text === 'TAP!') this.tweens.add({ targets: this.hint, alpha: 0.4, duration: 90, yoyo: true, repeat: 3 });
-    if (fadeAfter) this.tweens.add({ targets: this.hint, alpha: 0, delay: fadeAfter, duration: 400 });
+    if (fadeAfter) this.tweens.add({ targets: both, alpha: 0, delay: fadeAfter, duration: 400 });
   }
 
   // Quiet captions about the wildlife, held back while a fish is on.
@@ -202,7 +208,7 @@ export class FishingScene extends Phaser.Scene {
     this.fight = BAR ? new BarFight(this.fish, start) : HOLD_REEL ? new ReelFight(this.fish, start) : new RhythmFight(this.fish, start);
     this.far = { x: this.tackle.x, y: this.tackle.hookY };
     this.off = { x: 0, y: 0 }; // where the fight throws the fish, off its line toward the pier
-    if (BAR) this.bar.show(true);
+    if (BAR) this.bar.show(true, this.fishSprite);
     else this.meter.show(true);
     this.angler.fight();
     this.striker.hooked();
