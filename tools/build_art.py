@@ -672,6 +672,172 @@ def backpack():
     save(strip([frame(i) for i in range(4)]), "ui/backpack.png", frame=(24, 24), frames=4, grade=False)
 
 
+def journal():
+    """The field journal: its button picture, a worn leather notebook that
+    opens, and the notebook page every fish gets. Drawn in palette colours
+    straight onto the grid (the palette pass leaves them alone)."""
+    hexc = lambda h: tuple(int(h[i:i + 2], 16) for i in (1, 3, 5)) + (255,)
+    LEATHER, LEATHER_LT, LEATHER_DK = hexc("#704a30"), hexc("#a9805f"), hexc("#543426")
+    WORN, STITCH, BRASS, GLINT = hexc("#ae7764"), hexc("#f2d797"), hexc("#c79a49"), hexc("#ffd84a")
+    PAPER, PAPER_DK, RULE, RIBBON = hexc("#f5f2db"), hexc("#ebd9a1"), hexc("#b2d0d0"), hexc("#c25f62")
+    INKY = hexc("#6e5e50")
+    edge = OUTLINE + (255,)
+
+    def outline(im):
+        a = np.array(im)
+        solid = a[..., 3] > 0
+        pad = np.pad(solid, 1)
+        ring = ~solid & (pad[:-2, 1:-1] | pad[2:, 1:-1] | pad[1:-1, :-2] | pad[1:-1, 2:])
+        a[ring] = edge
+        return Image.fromarray(a).copy()
+
+    def icon(stage):
+        im = Image.new("RGBA", (24, 24))
+        px = im.load()
+
+        def put(x, y, c):
+            if 0 <= x < 24 and 0 <= y < 24:
+                px[x, y] = c
+
+        if stage == 0:
+            # closed: the page block showing at the edge, then the cover
+            for y in range(4, 22):
+                put(20, y, PAPER if y % 2 else PAPER_DK)
+            for x in range(5, 21):
+                put(x, 21, PAPER_DK)
+            for y in range(3, 21):
+                for x in range(4, 20):
+                    c = LEATHER
+                    if x <= 6:
+                        c = LEATHER_DK  # the spine
+                    elif y == 3 or x == 7:
+                        c = LEATHER_LT
+                    elif y == 20 or x == 19:
+                        c = LEATHER_DK
+                    put(x, y, c)
+            for y in range(5, 20, 3):
+                put(5, y, STITCH)  # stitching down the spine
+            # worn, scuffed patches and rubbed corners
+            for (x, y) in ((9, 5), (10, 5), (16, 17), (17, 17), (17, 16), (12, 18), (18, 4), (19, 4), (19, 20), (18, 20)):
+                put(x, y, WORN)
+            # a little fish pressed into the cover
+            for (x, y) in ((10, 8), (11, 7), (12, 7), (13, 7), (11, 9), (12, 9), (13, 9), (14, 8), (15, 7), (15, 9), (11, 8), (12, 8), (13, 8)):
+                put(x, y, LEATHER_LT)
+            put(11, 8, LEATHER_DK)
+            # the strap and brass clasp
+            for x in range(14, 22):
+                put(x, 12, LEATHER_DK)
+                put(x, 13, LEATHER_DK)
+            put(18, 11, BRASS)
+            put(19, 11, BRASS)
+            put(18, 12, GLINT)
+            put(19, 12, BRASS)
+            put(18, 13, BRASS)
+            put(19, 13, BRASS)
+        elif stage == 1:
+            # the cover swinging open: the page block, and the cover seen
+            # edge-on as it turns toward you
+            for y in range(4, 21):
+                for x in range(8, 21):
+                    put(x, y, PAPER_DK if x == 20 or y == 20 else PAPER)
+            for y in range(6, 19, 3):
+                for x in range(10, 19):
+                    put(x, y, RULE)
+            for y in range(2, 23):
+                for x in range(3, 8):
+                    put(x, y, LEATHER_DK if x == 3 else LEATHER_LT if x == 7 else LEATHER)
+            put(5, 6, WORN)
+            put(4, 17, WORN)
+            for x in range(0, 3):
+                put(x, 12, LEATHER_DK)  # the strap hanging loose
+            put(0, 13, BRASS)
+        else:
+            # open flat: two pages, a gutter, the cover peeking round them
+            for y in range(6, 21):
+                for x in range(1, 23):
+                    put(x, y, LEATHER)
+            for y in range(5, 20):
+                for x in range(2, 22):
+                    put(x, y, PAPER_DK if x in (11, 12) else PAPER)
+            for y in range(8, 19, 2):
+                for x in range(3, 10):
+                    if (x + y) % 5:
+                        put(x, y, RULE)
+                for x in range(14, 21):
+                    if (x * 3 + y) % 7:
+                        put(x, y, RULE)
+            # a fish sketched on the left page
+            for (x, y) in ((4, 11), (5, 10), (6, 10), (7, 10), (5, 12), (6, 12), (7, 12), (8, 11), (9, 10), (9, 12)):
+                put(x, y, INKY)
+            # the ribbon bookmark
+            for y in range(19, 23):
+                put(12, y, RIBBON)
+            put(11, 22, RIBBON)
+            if stage == 3:
+                # a page lifting at the corner
+                for (x, y) in ((19, 4), (20, 4), (21, 4), (20, 3), (21, 3)):
+                    put(x, y, PAPER)
+                for (x, y) in ((20, 5), (21, 5)):
+                    put(x, y, PAPER_DK)
+        return outline(im)
+
+    save(strip([icon(i) for i in range(4)]), "ui/journal.png", frame=(24, 24), frames=4, grade=False)
+
+    # A notebook page, worn and handled: cream paper aging toward its edges,
+    # blue rules and a red margin, a spiral binding across the top, a coffee
+    # ring and a few scuffs.
+    PW, PH = 320, 520
+    page = Image.new("RGBA", (PW, PH + 4))
+    pp = page.load()
+    for y in range(PH):
+        for x in range(PW):
+            d = min(x, y, PW - 1 - x, PH - 1 - y)
+            n = hash01(x, y, 7)
+            c = PAPER
+            if d < 3 or (d < 8 and n < 0.35) or (d < 14 and n < 0.08):
+                c = PAPER_DK  # yellowed edges
+            elif n < 0.03:
+                c = PAPER_DK  # paper grain
+            pp[x, y] = c
+        if y > 100 and (y - 100) % 14 == 0:
+            for x in range(4, PW - 4):
+                if hash01(x, y, 3) > 0.06:
+                    pp[x, y] = RULE
+    for y in range(18, PH - 4):
+        pp[30, y] = hexc("#c25f62") if hash01(30, y, 5) > 0.05 else PAPER
+    # the coffee ring
+    cx, cy, r = 262, 452, 20
+    for t in range(0, 360, 2):
+        for dr in (0, 1):
+            x = round(cx + (r + dr) * math.cos(math.radians(t)))
+            y = round(cy + (r + dr) * math.sin(math.radians(t)) * 0.85)
+            if hash01(t, dr, 9) > 0.25 and 0 <= x < PW:
+                pp[x, y] = hexc("#e7cd8d")
+    # a dog-eared bottom corner
+    for i in range(10):
+        for j in range(10 - i):
+            pp[PW - 1 - j, PH - 1 - i] = (0, 0, 0, 0)
+    for i in range(10):
+        pp[PW - 10 + i, PH - 1 - i] = hexc("#daab76")
+    # the spiral binding: punched holes and wire rings over the top edge
+    for hx in range(22, PW - 16, 18):
+        for (x, y) in ((hx, 9), (hx + 1, 9), (hx, 10), (hx + 1, 10)):
+            pp[x, y] = INKY
+    page = outline(page)
+    pp = page.load()
+    for hx in range(22, PW - 16, 18):
+        for y in range(0, 10):
+            pp[hx, y] = hexc("#b3a697")
+            pp[hx + 1, y] = hexc("#dde0cd") if y < 7 else hexc("#b3a697")
+        pp[hx - 1, 1] = hexc("#b3a697")
+    # a soft shadow under the page
+    for x in range(4, PW):
+        for y in (PH, PH + 1, PH + 2):
+            if not pp[x, y][3]:
+                pp[x, y] = (16, 20, 28, 110)
+    save(page, "ui/journal-page.png", grade=False)
+
+
 # ---------------------------------------------------------------- fonts
 OUTLINE = (37, 19, 26)  # the one dark edge colour shared by every actor and all lettering
 CHARS = [chr(c) for c in range(32, 127)] + ["\u00b7"]
@@ -768,7 +934,7 @@ def palette_pass():
 
 
 if __name__ == "__main__":
-    for step in (backdrop, lake, pier, angler, wildlife, fish, effects, ui, backpack, fonts, palette_pass):
+    for step in (backdrop, lake, pier, angler, wildlife, fish, effects, ui, backpack, journal, fonts, palette_pass):
         step()
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1) + "\n")
     print(f"{len(manifest['images'])} images, {len(manifest['sheets'])} sheets")

@@ -46,6 +46,7 @@ export class Flopper {
     this.s = sprite;
     this.p = FLOPS[id] || FLOPS.perch;
     this.holder = holder; // the container it sits in, for the water drops
+    this.unit = sprite.scaleX || 1; // moves are in the art's own pixels
     this.home = { x: sprite.x, y: sprite.y };
     this.flipped = sprite.flipX;
     this.slide = 0; // writhing fish creep along
@@ -137,15 +138,15 @@ export class Flopper {
       }
     }
     s.setFrame(frame);
-    s.x = this.home.x + x + this.slide;
-    s.y = this.home.y + y;
+    s.x = this.home.x + (x + this.slide) * this.unit;
+    s.y = this.home.y + y * this.unit;
   }
 
   // Water flicked off as it slaps down.
   drops() {
     const sc = this.scene;
     for (let i = 0; i < 2; i++) {
-      const d = pin(sc.add.image(this.s.x + R(-8, 8), this.s.y + 3, 'drop'));
+      const d = pin(sc.add.image(this.s.x + R(-8, 8) * this.unit, this.s.y + 3 * this.unit, 'drop'));
       this.holder.add(d);
       sc.tweens.add({
         targets: d,

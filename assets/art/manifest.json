@@ -47,7 +47,8 @@
   "mist": "assets/art/effects/mist.png",
   "firefly": "assets/art/effects/firefly.png",
   "ripple-map": "assets/art/effects/ripple-map.png",
-  "board": "assets/art/ui/board.png"
+  "board": "assets/art/ui/board.png",
+  "journal-page": "assets/art/ui/journal-page.png"
  },
  "sheets": {
   "falls": {
@@ -370,6 +371,12 @@
   },
   "backpack": {
    "url": "assets/art/ui/backpack.png",
+   "frameWidth": 24,
+   "frameHeight": 24,
+   "frames": 4
+  },
+  "journal": {
+   "url": "assets/art/ui/journal.png",
    "frameWidth": 24,
    "frameHeight": 24,
    "frames": 4

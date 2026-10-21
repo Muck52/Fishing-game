@@ -47,6 +47,9 @@ const ANIMS = [
   ['bag-open', 'backpack', [0, 1, 2], 12, 0],
   ['bag-close', 'backpack', [2, 1, 0], 12, 0],
   ['bag-rummage', 'backpack', [2, 3], 3, -1],
+  ['book-open', 'journal', [0, 1, 2], 12, 0],
+  ['book-close', 'journal', [2, 1, 0], 12, 0],
+  ['book-read', 'journal', [2, 2, 2, 3], 3, -1],
 ];
 
 export function makeAnims(scene, fishIds) {

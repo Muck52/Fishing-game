@@ -220,6 +220,35 @@ between bouts it lies still with its gills pumping.
 | Northern pike | lies dead still, then explodes into a thrashing fit | The bag opens
 while you're on the dock with the rod up, and a tap outside closes it.
 
+## The field journal
+
+`src/ui/Journal.js`. Its button, beside the backpack, is a worn leather
+notebook drawn in the build (`journal()`): a stitched spine, scuffed
+patches and rubbed corners, a fish pressed into the cover, a strap with a
+brass clasp. It swings open (and a page corner lifts now and then) while
+the journal is open, and shuts when it closes.
+
+Each fish has one page of a spiral notebook (`journal-page.png`: cream
+paper yellowing at the edges, blue rules, a red margin, punched holes and
+wire rings, a coffee ring and a dog-eared corner). On it:
+
+- the name in red pen and the Latin name in pencil;
+- a photo taped in at both corners: a window onto the lake (its own water
+  colours, light shafts, sand and weed) with the fish swimming in it at 2x,
+  the way that species swims (`src/fish/Swim.js`): sunfish hover and
+  scull, perch shuffle in place, white bass and rainbows cruise end to end
+  (the rainbow rising now and then), smallmouth pause and dart, largemouth,
+  pike and muskie lie still then lunge, brook trout hold against the
+  current and dart up for insects, carp, catfish, drum and sturgeon cruise
+  the bottom and stop to root up silt, and the burbot creeps along like an
+  eel. Tap it and it flops like a fish out of water, then swims on;
+- how many you've caught and the best weight;
+- notes in brown ink: where it lives, what it eats, how big it grows, and
+  something worth knowing (`data/fish/journal.js`).
+
+A fish not yet caught is a dark silhouette with a question mark, with only
+a clue to where it lives. Swipe or tap the arrows to turn the page.
+
 ## How each piece fits
 
 | Piece | Source pack | Size on grid | Outline | Motion |
@@ -238,6 +267,7 @@ while you're on the dock with the rod up, and a tap outside closes it.
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
 | Backpack (inventory button and icon) | drawn in the build (`backpack()`) in palette colours | 24 x 24, 1x | shared | closed; opens in 3 frames when the inventory opens, then a slow rummage loop; shuts again when it closes; a little hop now and then |
+| Journal (button icon and pages) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; page 320 x 520, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
 | Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |
 
 ## Changing the art
