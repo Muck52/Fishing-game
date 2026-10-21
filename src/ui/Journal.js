@@ -74,10 +74,10 @@ export class Journal {
     this.pages = scene.add.container(0, 0);
     this.sheet = scene.add.graphics(); // the page being turned
     this.glint = scene.add.graphics(); // a page edge catching the light as it joins or leaves the stack
-    this.ribbon = scene.add.graphics(); // the red ribbon bookmark
+    this.ribbon = scene.add.graphics(); // the red ribbon bookmark, behind the book
     // centred: as much room to its left as to its right
     const left = Math.round(W / 2 - (a.x0 + a.x1 + 1) / 2);
-    this.book = scene.add.container(left, this.homeY(), [art, this.hit, this.pages, this.ribbon, this.sheet, this.glint]);
+    this.book = scene.add.container(left, this.homeY(), [this.ribbon, art, this.hit, this.pages, this.sheet, this.glint]);
     this.root = scene.add.container(0, 0, [dim, this.book]).setDepth(DEPTH.UI + 6).setVisible(false);
   }
 
@@ -268,8 +268,8 @@ export class Journal {
     if (Math.abs(dx) > 40) return this.turnTo(this.page + (dx < 0 ? 1 : -1));
     const x = p.x - this.book.x;
     const y = p.y - this.book.y;
-    // the ribbon marks the contents
-    if (x >= SPINE + 3 && x <= SPINE + 12 && y > PAGE.y1 - 20) return this.turnTo(0);
+    // the ribbon's tail marks the contents
+    if (x >= SPINE && x <= SPINE + 14 && y > PAGE.y1 + 12) return this.turnTo(0);
     const cur = this.cur;
     for (const h of cur.hits) if (x >= h.x0 && x <= h.x1 && y >= h.y0 && y <= h.y1) return h.go();
     const s = cur.sprite;
@@ -449,26 +449,27 @@ export class Journal {
     this.scene.tweens.add({ targets: this.book, y: this.homeY() + 24, alpha: 0, duration: 160, ease: 'Quad.easeIn', onComplete: () => !this.isOpen && this.root.setVisible(false) });
   }
 
-  // The ribbon: satin red with a lit edge and a shaded one, lying down the
-  // page beside the gutter and hanging out past the cover, a V cut in its
-  // end, the loose tail stirring a pixel now and then.
+  // The ribbon: satin red with a lit edge and a shaded one, tucked in
+  // behind the book so only its tail hangs out below the cover, a V cut in
+  // its end. A ripple runs down the tail in the breeze, swinging wider
+  // toward the loose end.
   drawRibbon(time) {
     const g = this.ribbon.clear();
     const x = SPINE + 4;
-    const y0 = PAGE.y0 - 8;
-    const y1 = PAGE.y1 + 30;
-    const sway = Math.floor(time / 900) % 3 === 2 ? 1 : 0;
-    g.fillStyle(0x10141c, 0.14).fillRect(x + 8, y0 + 8, 2, PAGE.y1 - y0 - 8); // its shadow on the page
+    const below = PAGE.y1 + 13; // the cover's bottom edge
+    const y0 = below - 12;
+    const y1 = below + 28;
     for (let y = y0; y < y1; y++) {
-      const dx = y > PAGE.y1 + 14 ? sway : 0;
+      const free = Math.max(0, y - below);
+      const dx = Math.round(Math.sin(time / 260 - free * 0.35) * Math.min(1.6, free / 8));
       const cut = Math.max(0, 4 - (y1 - 1 - y));
       const row = (c, a, b) => {
         for (let i = a; i <= b; i++) if (Math.abs(i - 3) >= cut) g.fillStyle(c, 1).fillRect(x + i + dx, y, 1, 1);
       };
       row(0x25131a, -1, 7);
       row(0xc25f62, 0, 6);
-      row(0xd88571, 1, 1);
-      row(0xa04f45, 5, 5);
+      row(dx > 0 ? 0xa04f45 : 0xd88571, 1, 1); // the satin catching the light as it turns
+      row(dx < 0 ? 0xd88571 : 0xa04f45, 5, 5);
       if (cut) g.fillStyle(0x25131a, 1).fillRect(x + 3 - cut + dx, y, 1, 1).fillRect(x + 3 + cut + dx, y, 1, 1);
     }
   }

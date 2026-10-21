@@ -255,9 +255,10 @@ and round them the lifted cover: a thick board whose stitched inside face
 shows, then its own edge turned toward you, darker, with a worn highlight
 and brass on its corners. The whole book is centred on the screen, as much
 room to its left as to its right (the build records where the drawing
-starts and ends, and the page positions, in `anchors.journal`). A red satin ribbon lies down the page
-beside the gutter and hangs out past the cover, V-cut at its end; tap it to
-go to the contents. The same ribbon trails from the closed journal on the
+starts and ends, and the page positions, in `anchors.journal`). A red satin ribbon is tucked in behind
+the book, only its V-cut tail hanging out below the cover; a ripple runs
+down it in the breeze, swinging wider toward the loose end, its edges
+catching the light as it turns. Tap it to go to the contents. The same ribbon trails from the closed journal on the
 button.
 
 The first page is the contents: all seventeen fish in two columns in the
