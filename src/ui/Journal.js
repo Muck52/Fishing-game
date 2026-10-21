@@ -23,7 +23,7 @@ function adopt(a) {
   CX = Math.round((X0 + X1) / 2);
   FOOT = PAGE.y1 - 13;
 }
-const LINE = 14; // a line of ink text, line spacing included
+const LINE = 13; // a line of ink text, line spacing included
 const TURN_MS = 480;
 
 // Ink on the page, in plain blocky letters (the 'ink' fonts have no dark
@@ -110,7 +110,7 @@ export class Journal {
   // A fish's name, filling the same box on every page: the same height,
   // stretched by a whole number across (so its pixels stay square-edged),
   // and the room left over shared out between the letters.
-  title(t, box = TW - 16) {
+  title(t, box = TW) {
     const w = t.getTextBounds(true).local.width;
     let sx = 1;
     while (sx < 3 && w * (sx + 1) <= box) sx++;
@@ -125,9 +125,9 @@ export class Journal {
     t(X0, y, head, { font: 'ink-bold', color: RED }).setOrigin(0, 0.5);
     // (the letters sit low in their line, so the body starts close under
     // its heading and leaves a clear gap before the next one)
-    const b = t(X0, y + 3, body, { color: PEN, width: TW, align: 0 }).setOrigin(0, 0);
-    b.setLineSpacing(LINE - 22).setLetterSpacing(-1);
-    return y + 3 + b.getTextBounds(true).lines.lengths.length * LINE + 16;
+    const b = t(X0, y + 4, body, { color: PEN, width: TW, align: 0 }).setOrigin(0, 0);
+    b.setLineSpacing(LINE - this.scene.cache.bitmapFont.get('ink').data.lineHeight);
+    return y + 4 + b.getTextBounds(true).lines.lengths.length * LINE + 14;
   }
 
   // Builds page n: { c, hits, swim, sprite }.
@@ -242,8 +242,8 @@ export class Journal {
       y = this.note(pg.c, y, 'Lives', facts.habitat);
       y = this.note(pg.c, y, 'Eats', facts.eats);
       // the size is short: heading and figure on one line
-      t(X0, y, 'Size', { font: 'ink-bold', color: RED }).setOrigin(0, 0.5);
-      t(X0 + 48, y, facts.size, { color: PEN }).setOrigin(0, 0.5).setLetterSpacing(-1);
+      const head = t(X0, y, 'Size', { font: 'ink-bold', color: RED }).setOrigin(0, 0.5);
+      t(X0 + head.getTextBounds(true).local.width + 6, y, facts.size, { color: PEN }).setOrigin(0, 0.5);
       this.note(pg.c, y + 20, 'Did you know?', facts.fact);
     } else {
       y = this.note(pg.c, y, 'Not caught yet', 'Catch one to fill in this page.');

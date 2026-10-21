@@ -16,7 +16,7 @@ Every image in the game is compiled from the packs below by
 | [Animated birds 32x32](https://opengameart.org/content/animated-birds-32x32) | MoikMellah | CC0 | gulls and sparrows |
 | [A bald eagle](https://opengameart.org/content/a-bald-eagle) | Spring Spring | CC0 | the eagle |
 | [16x16 duck](https://opengameart.org/content/16x16-duck) | aroachifoundonmypillow | CC0 | ducks |
-| [Kenney Fonts](https://kenney.nl/assets/kenney-fonts) | Kenney | CC0 | all lettering (Kenney Pixel, Kenney Mini), baked to bitmap fonts |
+| [monogram](https://datagoblin.itch.io/monogram) | datagoblin | CC0 | all lettering, baked to bitmap fonts (outlined, plain ink, and bold) |
 | [Pixel art lake assets](https://opengameart.org/content/pixel-art-lake-assets) | Amberfall Studio | CC0 | drifting branch, ripples |
 
 The seventeen species of fish are painted by the game's own build

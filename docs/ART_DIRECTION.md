@@ -64,13 +64,15 @@ we borrow is the thinking behind them.
    near the top; when the fish is in (or gone) it drifts back up. The
    interface and the time-of-day grade stay pinned to the screen.
 
-8. **Lettering is part of the art.** Two CC0 Kenney fonts are baked into
-   bitmap fonts at their native 16px with the same outline as the sprites
-   (`fonts()` in the build). Text is tinted, never resized off the grid.
-   Printed pages (the journal) use the blocky Kenney Mini letters as plain
-   ink with no outline (`ink`), and a bold cut of the same letters for
-   headings (`ink-bold`, every stroke a pixel wider), so text reads cleanly
-   on paper.
+8. **Lettering is part of the art, and it's all one hand.** Every word in
+   the game is set in Monogram (datagoblin, CC0), a small, friendly pixel
+   font with a bit of handwriting in it, baked at its native 16px
+   (`fonts()` in the build). Over the scene it wears the same dark outline
+   as the sprites (`body`, and `head` for headings); on paper, in the
+   journal, it's plain ink (`ink`), so it reads like print. Bold is the
+   same letters with every stroke a pixel wider (`head`, `ink-bold`).
+   Text is tinted, never resized off the grid; titles are 2x.
+
 9. **The hour sets the mood.** `src/environment/Daylight.js` multiplies the
    scene by a colour for the time on the phone: rose at dawn, clear by day,
    gold then mauve at dusk, deep blue at night. After dark the hut's
@@ -265,7 +267,7 @@ catching the light as it turns. Tap it to go to the contents. The same ribbon tr
 button.
 
 The first page is the contents: all seventeen fish in two columns in the
-book's order, each with its name in small print (`ink-small`), its picture
+book's order, each with its name in the journal's ink, its picture
 (a silhouette until caught) and its page. Tap one to go straight there;
 from any page the arrows go to the next or previous fish in the same order.
 Turning forward, the page swings up off the right side, standing on edge
@@ -316,7 +318,7 @@ a clue to where it lives. Swipe or tap the arrows to turn the page.
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
 | Backpack (inventory button and icon) | drawn in the build (`backpack()`) in palette colours | 24 x 24, 1x | shared | closed; opens in 3 frames when the inventory opens, then a slow rummage loop; shuts again when it closes; a little hop now and then |
 | Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; held book 360 x 464, its right page 237 x 375, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
-| Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |
+| Lettering | Monogram by datagoblin | 16px glyphs, 1x or 2x; outlined over the scene, plain ink on paper | shared | stepped bobbing |
 
 ## Changing the art
 

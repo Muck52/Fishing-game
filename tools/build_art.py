@@ -1030,7 +1030,7 @@ def font(name, ttf, size, outline=True, bold=False):
 
     outline=False gives plain letters, for ink on a page; bold=True thickens
     every stroke by a pixel to the right, the pixel-font way to embolden."""
-    f = ImageFont.truetype(str(SRC / "kenney-fonts" / ttf), size)
+    f = ImageFont.truetype(str(SRC / ttf), size)
     asc, desc = f.getmetrics()
     cell_h = asc + desc + 3
     glyphs = []
@@ -1043,6 +1043,13 @@ def font(name, ttf, size, outline=True, bold=False):
         d.fontmode = "1"
         d.text((1, 1), ch, font=f, fill=255)
         m = np.array(mask) > 0
+        if ch == "\u00b7":
+            # a middle dot, set at the middle of the small letters
+            m[:] = False
+            cx = max(1, adv // 2)
+            cy = 1 + asc - max(2, asc * 3 // 10)
+            m[cy:cy + 2, cx:cx + 2] = True
+            adv = max(adv, 4)
         if bold:
             m = m | np.roll(m, 1, 1)
             adv += 1
@@ -1072,12 +1079,16 @@ def font(name, ttf, size, outline=True, bold=False):
 
 
 def fonts():
-    font("body", "Kenney Pixel.ttf", 16)
-    font("head", "Kenney Mini.ttf", 16)
-    # the journal's printed pages: the same blocky letters, plain ink
-    font("ink", "Kenney Mini.ttf", 16, outline=False)
-    font("ink-bold", "Kenney Mini.ttf", 16, outline=False, bold=True)
-    font("ink-small", "Kenney Pixel.ttf", 16, outline=False)  # small print, for the contents
+    """One family for every word in the game: Monogram by datagoblin (CC0),
+    a small, friendly pixel hand drawn at its native 16px. Over the scene it
+    wears the shared outline; on paper it's plain ink. Bold is the same
+    letters with every stroke a pixel wider."""
+    MONO = "monogram/monogram-extended.ttf"
+    font("body", MONO, 16)
+    font("head", MONO, 16, bold=True)
+    font("ink", MONO, 16, outline=False)
+    font("ink-bold", MONO, 16, outline=False, bold=True)
+    font("ink-small", MONO, 16, outline=False)
 
 
 # ---------------------------------------------------------------- palette

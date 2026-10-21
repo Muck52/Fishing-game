@@ -27,7 +27,7 @@ export class MenuScene extends Phaser.Scene {
 
     const cy = Math.round(H / 2 + 60);
     ui(board(this, W / 2, cy, 260, 104));
-    ui(label(this, W / 2, cy, 'Swipe up to cast\nTap when the float goes under\nHold to reel, ease off\nwhen the line pulls tight'));
+    ui(label(this, W / 2, cy, 'Swipe up to cast\nTap when the float goes under\nHold to raise the bar\nand keep the fish inside it'));
 
     if (save.totalCatches > 0) {
       const found = Object.keys(save.species).length;

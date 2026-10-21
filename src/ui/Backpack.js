@@ -4,7 +4,7 @@ import { FISH } from '../../data/fish/fish.js';
 import { Flopper, FLOPS } from '../fish/Flop.js';
 
 const BW = 276; // the panel
-const BH = 262;
+const BH = 278;
 const COLS = 5;
 const ROWS = 4;
 const SW = 48; // a slot: wide enough for the sturgeon
@@ -58,10 +58,10 @@ export class Backpack {
     const title = label(scene, 0, -BH / 2 + 22, 'Backpack', { font: 'head', size: 2, color: INK.gold });
     this.slots = scene.add.graphics();
     this.items = scene.add.container(0, 0);
-    const infoY = GRID_Y + ROWS * (SH + GAP) + 38;
-    const inlay = scene.add.rectangle(0, infoY, BW - 36, 64, 0x2a160e, 0.45);
-    this.name = label(scene, 0, infoY - 20, '', { font: 'head', color: INK.gold });
-    this.info = label(scene, 0, infoY + 8, '', { color: INK.soft, width: BW - 48 });
+    const infoY = GRID_Y + ROWS * (SH + GAP) + 47;
+    const inlay = scene.add.rectangle(0, infoY, BW - 36, 84, 0x2a160e, 0.45);
+    this.name = label(scene, 0, infoY - 32, '', { font: 'head', color: INK.gold });
+    this.info = label(scene, 0, infoY - 23, '', { color: INK.soft, width: BW - 48 }).setOrigin(0.5, 0).setLineSpacing(-3);
     this.card = scene.add.container(W / 2, H / 2 - 10, [this.panel, title, this.slots, this.items, inlay, this.name, this.info]);
     this.root = scene.add.container(0, 0, [dim, this.card]).setDepth(DEPTH.UI + 5).setVisible(false);
   }
