@@ -245,7 +245,12 @@ overhangs the pages, stitched round the edge with brass corner caps, and
 the edges of the pages beneath show along the right and bottom. You're
 well into the book, so the lifted half is thick with turned pages: a deep
 block of page edges along its free edge and its top and bottom, deeper
-toward the free edge (it's nearer), a few pages standing proud of the rest. A red satin ribbon lies down the page
+toward the free edge (it's nearer), a few pages standing proud of the rest,
+and round them the lifted cover: a thick board whose stitched inside face
+shows, then its own edge turned toward you, darker, with a worn highlight
+and brass on its corners. The whole book is centred on the screen, as much
+room to its left as to its right (the build records where the drawing
+starts and ends, and the page positions, in `anchors.journal`). A red satin ribbon lies down the page
 beside the gutter and hangs out past the cover, V-cut at its end; tap it to
 go to the contents. The same ribbon trails from the closed journal on the
 button.
@@ -296,7 +301,7 @@ a clue to where it lives. Swipe or tap the arrows to turn the page.
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
 | Backpack (inventory button and icon) | drawn in the build (`backpack()`) in palette colours | 24 x 24, 1x | shared | closed; opens in 3 frames when the inventory opens, then a slow rummage loop; shuts again when it closes; a little hop now and then |
-| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; held book 360 x 444, its right page 237 x 375, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
+| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; held book 360 x 464, its right page 237 x 375, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
 | Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |
 
 ## Changing the art

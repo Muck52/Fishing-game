@@ -807,8 +807,8 @@ def journal():
     # board behind them.
     LEATHER_MID = hexc("#833f4c")
     BASE, AGED, DEEP, EDGE2 = hexc("#f0ecd0"), hexc("#ebd9a1"), hexc("#e7cd8d"), hexc("#daab76")
-    IW, IH = 360, 444
-    PX0, PX1, PY0, PY1 = 60, 296, 30, 405  # the right page's paper
+    IW, IH = 360, 464
+    PX0, PX1, PY0, PY1 = 60, 296, 42, 417  # the right page's paper
     SP = 57  # the spine, at the gutter
     OUTER = 24  # the lifted page's free edge
     RISE = 18  # how much taller the near edge looks
@@ -860,12 +860,13 @@ def journal():
         bow = t ** 0.7
         return round((PY0 - RISE * bow) if top else (PY1 + RISE * bow))
     T = 10  # the turned pages' thickness at the free edge
-    for x in range(OUTER - T - 4, SP):
+    C = 9  # the cover board round them: its inside face, then its thick edge
+    for x in range(OUTER - T - C, SP):
         xe = max(x, OUTER)
         t = (SP - xe) / (SP - OUTER)
         y0, y1 = edge_y(xe, True), edge_y(xe, False)
         band = round(1 + 6 * t)  # the page block seen along the top and bottom
-        for y in range(y0 - band - 4, y1 + band + 5):
+        for y in range(y0 - band - C, y1 + band + C + 1):
             if x >= OUTER and y0 <= y <= y1:
                 n = hash01(x, y, 13)
                 # darker toward the spine where it curves and turns from the light
@@ -886,8 +887,18 @@ def journal():
                 k = (y0 - y) if y < y0 else (y - y1)
                 px[x, y] = (AGED, EDGE2, BASE)[k % 3] if hash01(x, y, 6) > 0.06 else DEEP
                 continue
-            # the cover board behind the pages
-            px[x, y] = leather(x, y)
+            # the cover board behind the pages: its inside face, stitched,
+            # then the board's own thickness turned toward you, darker, with
+            # a worn highlight along its outer corner
+            d = min(x - (OUTER - T - C), y - (y0 - band - C), (y1 + band + C) - y)
+            if d < 1:
+                px[x, y] = LEATHER_LT
+            elif d < 5:
+                px[x, y] = LEATHER_DK if hash01(x, y, 3) > 0.2 else LEATHER
+            elif d == 6 and (x + y) % 6 < 3:
+                px[x, y] = STITCH
+            else:
+                px[x, y] = leather(x, y)
     # faint lines of writing on the lifted page, squeezed by the foreshortening
     # and converging with its edges
     for j in range(1, 26):
@@ -903,6 +914,15 @@ def journal():
     for y in range(PY0 - 9, PY1 + 14):
         px[SP, y] = OUTLINE + (255,)
         px[SP + 1, y] = LEATHER_DK
+    # brass caps on the lifted board's outer corners
+    for (top, sy) in ((True, 1), (False, -1)):
+        x0 = OUTER - T - C
+        cy = edge_y(OUTER, top) + (-(7 + C) if top else 7 + C)
+        for i in range(10):
+            for j in range(10 - i):
+                x, y = x0 + i, cy + sy * j
+                if 0 <= x < IW and 0 <= y < IH:
+                    px[x, y] = GLINT if i + j < 3 else BRASS if i + j < 8 else LEATHER_DK
     # brass caps on the right board's outer corners
     for (cy, sy) in ((PY0 - 9, 1), (PY1 + 13, -1)):
         for i in range(12):
@@ -916,6 +936,14 @@ def journal():
             if not px[x, y][3]:
                 px[x, y] = (16, 20, 28, 110)
     save(im, "ui/journal-held.png", grade=False)
+    # where the book's drawing starts and ends across the image, so the game
+    # can centre it on the screen
+    cols = [x for x in range(IW) if any(im.getpixel((x, y))[3] > 200 for y in range(IH))]
+    manifest["anchors"]["journal"] = {
+        "x0": cols[0], "x1": cols[-1], "h": IH, "spine": SP + 1,
+        "page": {"x0": PX0 - 1, "x1": PX1, "y0": PY0, "y1": PY1},
+        "held": {"x": OUTER, "rise": RISE},
+    }
 
 
 # ---------------------------------------------------------------- fonts

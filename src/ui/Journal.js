@@ -1,4 +1,5 @@
 import { W, H, DEPTH, INK, label, pin, lerp } from '../core/constants.js';
+import { ART } from '../core/Assets.js';
 import { pill } from './Panels.js';
 import { FISH, RARITY } from '../../data/fish/fish.js';
 import { JOURNAL } from '../../data/fish/journal.js';
@@ -6,18 +7,22 @@ import { Swimmer } from '../fish/Swim.js';
 import { Flopper } from '../fish/Flop.js';
 
 // The book as you hold it to read (journal-held.png): the left half lifted
-// toward you on its spine, the right-hand page flat, facing you and centred
-// on the screen, with everything to read on it. Positions are in the
-// image's own pixels.
-const IH = 444;
-const SPINE = 58;
-const PAGE = { x0: 59, x1: 296, y0: 30, y1: 405 }; // the right page's paper
-const HELD = { x: 24, rise: 18 }; // the lifted page's free edge, and how much taller it looks
-const X0 = PAGE.x0 + 14; // the writing, clear of the gutter's shadow
-const X1 = PAGE.x1 - 12;
-const TW = X1 - X0;
-const CX = Math.round((X0 + X1) / 2);
-const FOOT = PAGE.y1 - 13;
+// toward you on its spine, the right-hand page flat and facing you, with
+// everything to read on it; the whole book centred on the screen. Positions
+// are in the image's own pixels, read from the build's notes on the art
+// (anchors.journal in the manifest) once it has loaded.
+let IH, SPINE, PAGE, HELD, X0, X1, TW, CX, FOOT;
+function adopt(a) {
+  IH = a.h;
+  SPINE = a.spine;
+  PAGE = a.page; // the right page's paper
+  HELD = a.held; // the lifted page's free edge, and how much taller it looks
+  X0 = PAGE.x0 + 14; // the writing, clear of the gutter's shadow
+  X1 = PAGE.x1 - 12;
+  TW = X1 - X0;
+  CX = Math.round((X0 + X1) / 2);
+  FOOT = PAGE.y1 - 13;
+}
 const LINE = 14; // a line of ink text, line spacing included
 const TURN_MS = 480;
 
@@ -46,6 +51,8 @@ export class Journal {
     this.canOpen = canOpen;
     this.isOpen = false;
     this.page = 0; // 0 is the contents; fish i is on page i + 1
+    const a = ART.anchors.journal;
+    adopt(a);
 
     const bx = W - 62;
     const by = H - 26;
@@ -58,7 +65,7 @@ export class Journal {
 
     const dim = scene.add.rectangle(W / 2, H / 2, W, H, 0x10141c, 0.55);
     const art = scene.add.image(0, 0, 'journal-held').setOrigin(0);
-    this.hit = scene.add.rectangle(0, 0, W, IH, 0x000000, 0).setOrigin(0).setInteractive();
+    this.hit = scene.add.rectangle(a.x0, 0, a.x1 - a.x0 + 1, IH, 0x000000, 0).setOrigin(0).setInteractive();
     this.hit.on('pointerdown', (p, x, y, e) => {
       e.stopPropagation();
       this.drag = { x: p.x, y: p.y };
@@ -67,7 +74,9 @@ export class Journal {
     this.pages = scene.add.container(0, 0);
     this.sheet = scene.add.graphics(); // the page being turned
     this.ribbon = scene.add.graphics(); // the red ribbon bookmark
-    this.book = scene.add.container(0, this.homeY(), [art, this.hit, this.pages, this.ribbon, this.sheet]);
+    // centred: as much room to its left as to its right
+    const left = Math.round(W / 2 - (a.x0 + a.x1 + 1) / 2);
+    this.book = scene.add.container(left, this.homeY(), [art, this.hit, this.pages, this.ribbon, this.sheet]);
     this.root = scene.add.container(0, 0, [dim, this.book]).setDepth(DEPTH.UI + 6).setVisible(false);
   }
 
