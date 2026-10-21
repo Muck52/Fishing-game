@@ -21,6 +21,7 @@ INK = {
     "N": "#3f2939",  # nose: glossy black, apart from the outline
     "n": "#8b7373",  # the shine on it
     "E": "#a36443",  # eye: a warm amber-brown iris that shows against her black face
+    "a": "#daab76",  # the light catching the top of the iris
     "p": "#25131a",  # the pupil
     "e": "#faffff",  # the catchlight in her eye
     "R": "#d88571",  # bandana
@@ -36,13 +37,13 @@ SHADE = "#b3a697"  # shade under the white fur
 OUTLINE = (37, 19, 26)
 
 HEAD = [
-    "....K.K..",
-    "...KPKKK.",
-    "...KWKKKK",
-    ".KKWeEKKK",
-    "nWWWEpKKK",
-    "NWWWWKKKK",
-    ".WWWKKKK.",
+    "....K.K...",
+    "...KPKKK..",
+    "...KWKKKK.",
+    ".KKWKeaKK.",
+    "nWWWKEpKK.",
+    "NWWWWKKKK.",
+    ".WWWKKKK..",
 ]
 
 # Proportions after the breed standards of her parents. A cattle dog is a
