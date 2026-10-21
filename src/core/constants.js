@@ -11,8 +11,8 @@ export const H = Math.round(rawH / PX) * PX;
 export const AW = W / PX;
 export const AH = H / PX;
 
-// Far shoreline where the lake begins. It sits a little below a third of the
-// way down, as if the camera stands low on the shore at the base of the dock.
+// Far shoreline where the lake begins. It sits a little under halfway down
+// the screen, as if the camera stands low on the shore at the base of the dock.
 export const WATER_Y = Math.round((H * 0.44) / PX) * PX;
 export const HORIZON = WATER_Y / PX;
 export const DOCK_Y = H - 180; // far edge of the dock
