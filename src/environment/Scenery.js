@@ -4,6 +4,7 @@ import { Wind } from './Wind.js';
 import { Waves } from './Waves.js';
 import { Sun } from './Sun.js';
 import { Reeds } from './Reeds.js';
+import { Lighting } from './Lighting.js';
 
 const layer = (scene, key, y, depth) => scene.add.image(0, y, key).setOrigin(0).setScale(PX).setDepth(depth);
 
@@ -11,6 +12,7 @@ const layer = (scene, key, y, depth) => scene.add.image(0, y, key).setOrigin(0).
 export class Scenery {
   constructor(scene) {
     this.scene = scene;
+    this.lighting = new Lighting(scene);
     layer(scene, 'sky', 0, DEPTH.SKY);
     layer(scene, 'mountains', 0, DEPTH.MOUNTAINS);
     layer(scene, 'forest', 0, DEPTH.FOREST);
@@ -131,6 +133,7 @@ export class Scenery {
     this.wind.update(dt);
     const w = this.wind.strength;
     this.sun.update(time, dt, this.clouds);
+    this.lighting.update(this.sun.dim);
     this.waves.update(time, dt);
     this.reeds.update();
     this.falls.tilePositionY -= 40 * dt;
