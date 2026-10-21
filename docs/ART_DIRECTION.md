@@ -262,8 +262,9 @@ on the right. On it:
   the bottom and stop to root up silt, and the burbot creeps along like an
   eel. Tap it and it flops like a fish out of water, then swims on;
 - how many you've caught and the best weight;
-- notes in brown ink under bold red headings: where it lives, what it eats, how big it grows, and
-  something worth knowing (`data/fish/journal.js`).
+- notes in brown ink under bold red headings: where it lives, what it eats, how big it grows,
+  something worth knowing (`data/fish/journal.js`) and how it behaves out
+  of the water.
 
 A fish not yet caught is a dark silhouette with a question mark, with only
 a clue to where it lives. Swipe or tap the arrows to turn the page.
