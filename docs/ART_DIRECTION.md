@@ -41,10 +41,9 @@ we borrow is the thinking behind them.
    the surface twinkles, and depth darkens and cools everything. Glows are
    pixel sprites (`firefly`, `hut-lights`), never blurred.
 5. **Things are to scale.** The angler is about 34 pixels tall, and
-   everything is sized against him. Fish swim at 18 (bluegill) to 42
+   everything is sized against him. Fish swim at 17 (sunfish) to 44
    (sturgeon) pixels long, a little larger than life so their markings
-   read; minnows are 13. Shrinking is done in the build (`shrink()`), which
-   averages the painting down and redraws the outline, never in the game.
+   read; minnows are 13. Nothing is shrunk in the game.
 6. **Distance is darker and bluer.** The background rock shelf, the posts
    below the waterline and deep fish are pushed toward the water's colour.
 7. **Motion is slow and stepped.** Ambient loops run at 3–8 frames a second;
@@ -68,6 +67,34 @@ we borrow is the thinking behind them.
    light sits exactly on the art) and fireflies come out over the reeds.
    The interface sits above the grade so it always reads the same.
 
+## The fish
+
+Loon Lake holds seventeen species found in the upper Midwest: bluegill,
+pumpkinseed, yellow perch, black crappie, white bass, common carp,
+smallmouth and largemouth bass, brook and rainbow trout, channel catfish,
+freshwater drum, walleye, burbot, northern pike, muskellunge and lake
+sturgeon. All are painted by `tools/fish_art.py`, which draws each one
+straight onto the grid at two sizes, never shrinking a bigger picture:
+
+- **Silhouette first.** Each species has its own body plan: depth and where
+  it peaks, a humped or level back, blunt or pointed head, tail shape
+  (forked, square, rounded or the sturgeon's shark-like tail), fin layout
+  (spiny and soft dorsals, sails, adipose fins) and barbels. A sunfish, a
+  perch, a pike and a sturgeon are told apart by outline alone.
+- **Countershading.** Dark back, lit flank, pale belly, with a short
+  dithered seam on the card and a clean step on the swimming sprite; a lit
+  rim along the back and a shaded one under the belly.
+- **Fins** are darker than the body and a little see-through; the dorsal
+  and tail can differ from the lower fins (a perch's orange belly fins, a
+  brook trout's white-edged ones). Card fins show their rays.
+- **Head detail:** a gill-cover arc, a mouth sized to the species (the
+  largemouth's runs past its eye), and a ringed eye with a glint on the
+  card (red for smallmouth, glassy for walleye).
+- **One signature at swimming size.** The card carries every marking; the
+  small sprite keeps only the one or two you'd know it by (`SIGNATURE`):
+  the bluegill's dark ear, the perch's bars, the rainbow's pink band, the
+  walleye's white tail tip, the pike's pale beans.
+
 ## How each piece fits
 
 | Piece | Source pack | Size on grid | Outline | Motion |
@@ -79,7 +106,7 @@ we borrow is the thinking behind them.
 | Rowboat and oars | CraftPix skiff, made double-ended; oars drawn in the build | 1x | shared | rides the swell and rocks through 4 baked tilt frames, sending tiny ripples off each end |
 | Tiny ripples | drawn in the build | 22 x 3 | none | spread and fade in 5 frames, all over the surface |
 | Angler | CraftPix fishing (turned, line erased) | 48 x 48 frames | shared | idle, fish, reel, land |
-| Fish species | the game's own field-guide paintings, redrawn small | 18–42 px long, 1x; full painting on the card | shared | 6-frame head-to-tail swim wave; depth tint |
+| 17 fish species | painted by `tools/fish_art.py` | 17–44 px swimming, 1x; drawn again at about 3.4x for the card | shared | 6-frame head-to-tail swim wave; depth tint |
 | Minnows | ansimuz underwater, redrawn small | 13 px long, 1x | shared | 4-frame swim, school |
 | Deer, fox, hare, bear | ScratchIO animals | 1x | shared | foot-locked walk, hop and idle cycles; deer drinks, hare nibbles, bear stands planted |
 | Gulls, ducks, eagle | MoikMellah, aroachi, Spring Spring | 1x | shared | gulls and eagle flap then glide; ducks flap steadily |

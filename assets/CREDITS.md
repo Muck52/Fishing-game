@@ -6,7 +6,7 @@ Every image in the game is compiled from the packs below by
 
 | Pack | Author | License | Used for |
 | --- | --- | --- | --- |
-| [Fishing game assets](https://opengameart.org/content/fishing-game-assets-pixel-art) | CraftPix.net | OGA-BY 3.0 | the angler, fishing hut, posts, boat, barrel, cattails, water surface, bucket icon |
+| [Fishing game assets](https://opengameart.org/content/fishing-game-assets-pixel-art) | CraftPix.net | OGA-BY 3.0 | the angler, fishing hut, posts, boat (rebuilt as a rowboat), barrel, cattails, water surface, bucket icon |
 | [Mountain river landscape](https://opengameart.org/content/mountain-river-landscape-pixel-game-background) | CraftPix.net | OGA-BY 3.0 | sky, mountains, cloud, the far bank and waterfall |
 | [Treasure Hunters](https://opengameart.org/content/treasure-hunters-demo) | Pixel Frog | CC-BY 4.0 | wooden boards and buttons, gold coin, splash, surface glints, bubbles, small clouds |
 | [Fishing bobbles](https://opengameart.org/content/fishing-bobbles-spritesheet-24x24) | Nelson Yiap | CC-BY 3.0 | the float |
@@ -19,9 +19,15 @@ Every image in the game is compiled from the packs below by
 | [Kenney Fonts](https://kenney.nl/assets/kenney-fonts) | Kenney | CC0 | all lettering (Kenney Pixel, Kenney Mini), baked to bitmap fonts |
 | [Pixel art lake assets](https://opengameart.org/content/pixel-art-lake-assets) | Amberfall Studio | CC0 | drifting branch, ripples |
 
-The seven species of fish (`assets/source/baked-fish/`) are the game's own
-field-guide paintings, drawn by the game's earlier pixel painter and saved
-as images.
+The seventeen species of fish are painted by the game's own build
+(`tools/fish_art.py`). No outside fish art is copied into them; these free
+sprites were studied for technique (see `docs/ART_DIRECTION.md`):
+
+| Reference | Author | License | What we learned from it |
+| --- | --- | --- | --- |
+| [Pike fish](https://opengameart.org/content/pike-fish) | angrycheese | CC0 | banded countershading; rows of pale bean spots |
+| [8 simple fishes](https://opengameart.org/content/8-simple-fishes) | dreyzn | CC0 | lateral line, gill cover, translucent ray-lined fins, ringed eye |
+| [Tiny Creatures](https://opengameart.org/content/tiny-creatures) (Tiny Fishing) | Clint Bellanger | CC0 | one silhouette and one signature mark keep a tiny fish readable |
 
 Every image is also recoloured to one master palette (`docs/palette.png`)
 and every actor gets the same outline colour; see `docs/ART_DIRECTION.md`.

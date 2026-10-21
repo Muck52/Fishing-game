@@ -16,6 +16,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
+import fish_art
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "assets/source"
 OUT = ROOT / "assets/art"
@@ -407,12 +409,6 @@ def wildlife():
 
 
 # ---------------------------------------------------------------- fish
-# How long each species swims on screen, in pixels, nose to tail. The angler
-# stands about 34 pixels tall; fish are drawn a little larger than life
-# beside him so their markings still read, smallest to largest.
-FISH_LENGTH = {"bluegill": 16, "perch": 19, "bass": 24, "trout": 24, "catfish": 28, "pike": 34, "golden": 40}
-
-
 def shrink(img, length):
     """Redraws a sprite smaller on the pixel grid: each new pixel takes the
     average of the pixels it covers, edges are cut clean, and a fresh
@@ -430,20 +426,19 @@ def shrink(img, length):
     inner[solid, :3] = np.clip(rgb[solid] * 1.08, 0, 255)  # a touch brighter, as the outline darkens it
     inner[solid, 3] = 255
     body = out[..., 3] > 0
-    ring = np.zeros_like(body)
-    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        ring |= np.roll(np.roll(body, dy, 0), dx, 1)
+    p = np.pad(body, 1)
+    ring = p[:-2, 1:-1] | p[2:, 1:-1] | p[1:-1, :-2] | p[1:-1, 2:]
     out[ring & ~body] = (*OUTLINE, 255)
     return Image.fromarray(out)
 
 
 def fish():
-    """Swim frames for each species: the rear of the body sways side to side."""
+    """Every species, painted by tools/fish_art.py straight onto the grid: a
+    small one that swims and a large one for the journal card."""
     info = {}
-    for path in sorted((SRC / "baked-fish").glob("*.png")):
-        card = Image.open(path).convert("RGBA")
-        card = card.crop(card.getbbox())
-        img = shrink(card, FISH_LENGTH[path.stem])
+    for sid in fish_art.SPECIES:
+        img = fish_art.paint(sid, fish_art.LENGTH[sid])
+        card = fish_art.paint(sid, min(150, round(fish_art.LENGTH[sid] * 3.4)), card=True)
         w, h = img.size
         # A swimming wave that runs from head to tail: each column of the
         # body is lifted by a sine that lags further behind toward the tail,
@@ -463,9 +458,9 @@ def fish():
                     if sp[x, y][3]:
                         dp[x, y + 2 + dy] = sp[x, y]
             frames.append(out)
-        save(strip(frames), f"fish/{path.stem}.png", key=f"fish-{path.stem}", frame=(w, h + 4), frames=n, actor=True)
-        save(card, f"fish/{path.stem}-card.png", key=f"card-{path.stem}", actor=True)
-        info[path.stem] = {"w": w, "h": h}
+        save(strip(frames), f"fish/{sid}.png", key=f"fish-{sid}", frame=(w, h + 4), frames=n, actor=True)
+        save(card, f"fish/{sid}-card.png", key=f"card-{sid}", actor=True)
+        info[sid] = {"w": w, "h": h}
     manifest["anchors"]["fish"] = info
 
 

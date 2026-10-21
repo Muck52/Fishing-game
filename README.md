@@ -2,7 +2,7 @@
 
 A cozy pixel-art fishing game for phones, built with [Phaser 3](https://phaser.io).
 
-It's late September on Loon Lake, a remote lake in the northern forest. Fog lifts off the water, the tamaracks have turned gold, and the wildlife goes about its morning: an eagle on a dead snag, a loon diving, a heron in the reeds, deer and moose at the far shore, geese heading south. Every catch goes into your field journal.
+It's late September on Loon Lake, a remote lake in the northern forest. Fog lifts off the water, the tamaracks have turned gold, and the wildlife goes about its morning: an eagle on a dead snag, a loon diving, a heron in the reeds, deer and moose at the far shore, geese heading south. Seventeen species of upper-Midwest fish live in it, from bluegill to lake sturgeon, and every catch goes into your field journal.
 
 The scene is a side view of the lake: snowy peaks and a waterfall on the far bank, a fishing hut on stilts, and a cut-away of the water where you can watch the fish come to your bait. All of it is pixel art from free art packs (see `assets/CREDITS.md`), held together by one pixel grid and one palette (see `docs/ART_DIRECTION.md`). The lake follows your phone's clock: dawn, day, dusk and night each look different. Add `?hour=21` to the address to see another time.
 
