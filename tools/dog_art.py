@@ -20,8 +20,9 @@ INK = {
     "W": "#eae2dc",  # white fur
     "N": "#3f2939",  # nose: glossy black, apart from the outline
     "n": "#8b7373",  # the shine on it
-    "E": "#704a30",  # eye, warm brown
-    "e": "#faffff",  # glint in the eye
+    "E": "#a36443",  # eye: a warm amber-brown iris that shows against her black face
+    "p": "#25131a",  # the pupil
+    "e": "#faffff",  # the catchlight in her eye
     "R": "#d88571",  # bandana
     "r": "#c25f62",  # its shaded folds
     "F": "#fff4d6",  # the little flowers on it
@@ -38,8 +39,8 @@ HEAD = [
     "........K....",
     ".......KPK.K.",
     "......KKWKKKK",
-    ".....KKWKeKKK",
-    ".nWWWWWKKEKKK",
+    ".....KKWKeEKK",
+    ".nWWWWWKKEpKK",
     "NNWWWWKKKKKKK",
     ".NWWWWKKKKKK.",
     "..WWWWKKKKK..",
