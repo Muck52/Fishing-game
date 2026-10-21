@@ -65,6 +65,10 @@ we borrow is the thinking behind them.
    gold then mauve at dusk, deep blue at night. After dark the hut's
    window and doorway light up (only the openings change colour, so the
    light sits exactly on the art) and fireflies come out over the reeds.
+   The clock is read every frame, so the lake follows real time as you
+   play. Night is kept a little brighter than true dark, and a faint blue
+   is added over the scene after dusk so the deepest shadows lift and
+   details still read on a phone in the dark.
    The interface sits above the grade so it always reads the same.
 
 ## The fish

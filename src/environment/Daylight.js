@@ -1,21 +1,25 @@
 import { W, H, SURFACE_Y, DEPTH } from '../core/constants.js';
 
-// The lake keeps the phone's own time. Each moment of the day is a colour
+// The lake keeps the phone's own time, read afresh every frame, so it is
+// dark in the game when it is dark outside. Each moment of the day is a colour
 // the whole scene is multiplied by, and how dark it is (0 noon, 1 night).
 // Between the keyframes the colours blend minute by minute.
 const DAY = [
-  [0, 0x46528c, 1],
-  [4.5, 0x4a5690, 1],
-  [6, 0xb88aa0, 0.55], // dawn: rose
+  [0, 0x6c78b0, 1],
+  [4.5, 0x707cb2, 1],
+  [6, 0xc89cb0, 0.55], // dawn: rose
   [7.5, 0xffe2c8, 0.1],
   [9, 0xffffff, 0],
   [16.5, 0xffffff, 0],
   [18, 0xffc890, 0.2], // golden hour
-  [19.5, 0xc07a8a, 0.55], // dusk: mauve
-  [21, 0x4a4e8e, 0.9],
-  [22, 0x46528c, 1],
-  [24, 0x46528c, 1],
+  [19.5, 0xcc8a98, 0.55], // dusk: mauve
+  [21, 0x7076ae, 0.9],
+  [22, 0x6c78b0, 1],
+  [24, 0x6c78b0, 1],
 ];
+// After dark a faint blue is added over everything as well, so the deepest
+// shadows lift a little and details still read on a phone at night.
+const LIFT = 0x0e1424;
 
 // The hour the lake shows: the phone's clock, or ?hour=21 in the address
 // bar to look at another time.
@@ -46,6 +50,7 @@ export class Daylight {
   constructor(scene, pier) {
     this.scene = scene;
     this.shade = scene.add.image(0, 0, '__WHITE').setOrigin(0).setDisplaySize(W, H).setDepth(DEPTH.SHADE).setBlendMode(Phaser.BlendModes.MULTIPLY);
+    this.lift = scene.add.image(0, 0, '__WHITE').setOrigin(0).setDisplaySize(W, H).setDepth(DEPTH.SHADE + 0.1).setBlendMode(Phaser.BlendModes.ADD).setTint(LIFT);
     // lights that show through the dark: the hut's windows and doorway,
     // and fireflies over the reeds
     this.lights = scene.add.image(pier.hutAt.x, pier.hutAt.y, 'hut-lights').setOrigin(0).setDepth(DEPTH.GLOW);
@@ -65,6 +70,7 @@ export class Daylight {
     const { color, night } = sample(hourNow());
     this.night = night;
     this.shade.setTint(color);
+    this.lift.setAlpha(night);
     this.lights.setAlpha(Phaser.Math.Clamp((night - 0.3) / 0.5, 0, 1)); // on from dusk
     this.flies.setVisible(night > 0.5);
   }
