@@ -265,11 +265,16 @@ book's order, each with its name in small print (`ink-small`), its picture
 (a silhouette until caught) and its page. Tap one to go straight there;
 from any page the arrows go to the next or previous fish in the same order.
 Turning forward, the page swings up off the right side, standing on edge
-over the spine (narrowing, its near edge growing taller, darkening), and
-settles onto the held-up half; going back, it comes down the other way.
+over the spine (narrowing, its near edge growing taller, darkening), then
+falls onto the stack of turned pages, gathering pace, its edges bowing like
+theirs and its shadow darkening the stack, lands a hair proud of the stack
+and settles flush, and a fresh page edge on the stack catches the light.
+Going back, the top page peels off the stack the same way in reverse.
 
-Each fish has one page: its name fitted to the header (a size smaller, or
-set a pixel tighter, if it's long), the Latin name, the photo, your record
+Each fish has one page: its name filling the same box in the header on
+every page (the same height, stretched across by a whole number so its
+pixels stay square-edged, with the room left over shared between the
+letters), the Latin name, the photo, your record
 and the notes. On it:
 
 - a photo taped in at both corners: a window onto the lake (its own water

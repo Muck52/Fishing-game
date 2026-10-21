@@ -73,10 +73,11 @@ export class Journal {
     scene.input.on('pointerup', (p) => this.release(p));
     this.pages = scene.add.container(0, 0);
     this.sheet = scene.add.graphics(); // the page being turned
+    this.glint = scene.add.graphics(); // a page edge catching the light as it joins or leaves the stack
     this.ribbon = scene.add.graphics(); // the red ribbon bookmark
     // centred: as much room to its left as to its right
     const left = Math.round(W / 2 - (a.x0 + a.x1 + 1) / 2);
-    this.book = scene.add.container(left, this.homeY(), [art, this.hit, this.pages, this.ribbon, this.sheet]);
+    this.book = scene.add.container(left, this.homeY(), [art, this.hit, this.pages, this.ribbon, this.sheet, this.glint]);
     this.root = scene.add.container(0, 0, [dim, this.book]).setDepth(DEPTH.UI + 6).setVisible(false);
   }
 
@@ -104,6 +105,17 @@ export class Journal {
       if (t.getTextBounds(true).local.width <= width) return t;
     }
     return t;
+  }
+
+  // A fish's name, filling the same box on every page: the same height,
+  // stretched by a whole number across (so its pixels stay square-edged),
+  // and the room left over shared out between the letters.
+  title(t, box = TW - 16) {
+    const w = t.getTextBounds(true).local.width;
+    let sx = 1;
+    while (sx < 3 && w * (sx + 1) <= box) sx++;
+    const gaps = Math.max(1, t.text.length - 1);
+    return t.setScale(sx, 2).setLetterSpacing((box - w * sx) / gaps / sx);
   }
 
   // A heading in bold red and a note under it, wrapped to the page; returns
@@ -179,7 +191,7 @@ export class Journal {
     const t = this.writer(pg.c);
 
     // the name fills the header and nothing more
-    this.fit(t(CX, PAGE.y0 + 18, known ? fish.name : '???', { font: 'ink-bold', size: 2, color: RED }), TW);
+    this.title(t(CX, PAGE.y0 + 18, known ? fish.name : '???', { font: 'ink-bold', color: RED }));
     if (known) this.fit(t(CX, PAGE.y0 + 38, fish.latin, { color: PENCIL }), TW, [16]);
 
     // the photo, taped in below the header
@@ -282,8 +294,9 @@ export class Journal {
       // the page lifts away, uncovering the next one beneath it
       old.c.destroy();
     } else {
-      // the page comes back over from the held-up side and covers this one
+      // the top page peels off the stack and comes back over to cover this one
       next.c.setVisible(false);
+      this.glinting = { t: 0 };
     }
     this.turn = { dir, old, next, t: 0 };
   }
@@ -298,6 +311,7 @@ export class Journal {
     let outer;
     let rise;
     let shadeK;
+    let bow = 1; // straight edges over the flat side; bowed like the held pages over the stack
     if (k < 0.6) {
       const a = (k / 0.6) * (Math.PI / 2); // 0 flat .. 90 degrees upright
       outer = SPINE + (PAGE.x1 - SPINE) * Math.cos(a);
@@ -306,27 +320,24 @@ export class Journal {
       // its shadow on the page beneath
       g.fillStyle(0x10141c, 0.18 * (1 - Math.cos(a))).fillRect(Math.round(outer), PAGE.y0, 8, PAGE.y1 - PAGE.y0);
     } else {
-      const b = (k - 0.6) / 0.4; // upright .. down onto the held-up half
-      outer = SPINE - (SPINE - HELD.x) * b;
-      rise = lerp(HELD.rise * 1.6, HELD.rise, b);
-      shadeK = 1 - b * 0.5;
+      // upright .. down onto the stack of turned pages: it falls, gathering
+      // pace, lands a hair proud of the stack's edge, then settles flush
+      const b = (k - 0.6) / 0.4;
+      const land = Math.min(1, b / 0.8);
+      outer = SPINE - (SPINE - (HELD.x - 3)) * land * land; // falling, gathering pace
+      if (b > 0.8) outer = lerp(HELD.x - 3, HELD.x, (b - 0.8) / 0.2);
+      rise = lerp(HELD.rise * 1.6, HELD.rise, land);
+      shadeK = lerp(1, 0.3, land);
+      bow = 0.7;
+      // its shadow darkening the stack as it comes down
+      g.fillStyle(0x10141c, 0.22 * land).fillPoints(this.pageShape(HELD.x, HELD.rise, 0.7), true);
     }
     outer = Math.round(outer);
     rise = Math.round(rise);
     const shade = C.Interpolate.ColorWithColor(C.ValueToColor(PAPER), C.ValueToColor(0xdaab76), 100, Math.round(shadeK * 100));
     const side = outer >= SPINE ? 1 : -1;
-    const pts = [
-      { x: SPINE, y: PAGE.y0 },
-      { x: outer, y: PAGE.y0 - rise },
-      { x: outer, y: PAGE.y1 + rise },
-      { x: SPINE, y: PAGE.y1 },
-    ];
-    const rim = [
-      { x: SPINE, y: PAGE.y0 - 1 },
-      { x: outer + side, y: PAGE.y0 - rise - 1 },
-      { x: outer + side, y: PAGE.y1 + rise + 1 },
-      { x: SPINE, y: PAGE.y1 + 1 },
-    ];
+    const pts = this.pageShape(outer, rise, bow);
+    const rim = this.pageShape(outer + side, rise + 1, bow, 1);
     g.fillStyle(0x25131a, 1).fillPoints(rim, true);
     g.fillStyle(C.GetColor(shade.r, shade.g, shade.b), 1).fillPoints(pts, true);
     // faint lines of writing, converging with its edges
@@ -343,6 +354,37 @@ export class Journal {
     }
   }
 
+  // The outline of a page standing out from the spine to `outer`, its free
+  // edge `rise` pixels taller at top and bottom; bow < 1 curves its top and
+  // bottom edges up out of the gutter, as the held pages do.
+  pageShape(outer, rise, bow = 1, grow = 0) {
+    const top = [];
+    const n = 10;
+    for (let i = 0; i <= n; i++) {
+      const f = i / n;
+      top.push({ x: Math.round(SPINE + (outer - SPINE) * f), y: Math.round(PAGE.y0 - grow - rise * f ** bow) });
+    }
+    const bottom = top.map((p) => ({ x: p.x, y: PAGE.y1 + (PAGE.y0 - p.y) })).reverse();
+    return [...top, ...bottom];
+  }
+
+  // A page edge on the stack catching the light, fading: the page that has
+  // just joined it, or the one just lifting away.
+  drawGlint(dt) {
+    const gl = this.glinting;
+    const g = this.glint.clear();
+    if (!gl) return;
+    gl.t += dt * 1000;
+    const a = 1 - gl.t / 380;
+    if (a <= 0) {
+      this.glinting = null;
+      return;
+    }
+    const x = HELD.x - 1;
+    g.fillStyle(0xf5f2db, a).fillRect(x, PAGE.y0 - HELD.rise - 3, 1, PAGE.y1 - PAGE.y0 + HELD.rise * 2 + 6);
+    g.fillStyle(0x25131a, a * 0.5).fillRect(x - 1, PAGE.y0 - HELD.rise - 2, 1, PAGE.y1 - PAGE.y0 + HELD.rise * 2 + 4);
+  }
+
   stepTurn(dt) {
     const tr = this.turn;
     tr.t = Math.min(1, tr.t + (dt * 1000) / TURN_MS);
@@ -351,6 +393,7 @@ export class Journal {
     this.drawSheet(tr.dir > 0 ? e : 1 - e);
     if (tr.t >= 1) {
       this.sheet.clear();
+      if (tr.dir > 0) this.glinting = { t: 0 }; // it has joined the stack
       if (tr.dir < 0) {
         tr.old.c.destroy();
         tr.next.c.setVisible(true);
@@ -433,6 +476,7 @@ export class Journal {
   update(dt) {
     if (!this.isOpen) return;
     this.drawRibbon(this.scene.time.now);
+    this.drawGlint(dt);
     if (this.turn) return this.stepTurn(dt);
     if (this.flop) {
       this.flop.update(dt);
