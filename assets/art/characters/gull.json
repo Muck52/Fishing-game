@@ -1,0 +1,24 @@
+{
+ "frameWidth": 30,
+ "frameHeight": 30,
+ "animations": {
+  "fly": {
+   "frames": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "fps": 9,
+   "loop": true
+  },
+  "glide": {
+   "frames": [
+    5
+   ],
+   "fps": 1,
+   "loop": false
+  }
+ }
+}

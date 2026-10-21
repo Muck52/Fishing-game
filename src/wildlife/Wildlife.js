@@ -1,9 +1,10 @@
 // The animals of the lake. Birds cross the sky and fish leap now and then;
-// every so often a deer, fox, rabbit or bear comes down to the bank, and
+// every so often a deer, fox, hare or bear comes down to the bank, and
 // gets a field note.
 import { W, SURFACE_Y, DEPTH } from '../core/constants.js';
 import { FISH } from '../../data/fish/fish.js';
 import { splash } from '../environment/Effects.js';
+import { ART } from '../core/Assets.js';
 
 const R = (a, b) => Phaser.Math.Between(a, b);
 
@@ -24,17 +25,21 @@ function flapAndGlide(scene, bird, anim, glide, glideMs = 900) {
 }
 const BANK_Y = SURFACE_Y - 4; // where the far bank meets the water
 
-// How each visitor moves. All the animal sheets face left. `step` is how
-// far the body travels on each frame of the walk cycle, measured from the
-// sheets by following a planted foot from frame to frame, so the feet stay
-// put on the ground instead of sliding. The hare covers ground only in the
-// air and barely moves on landing. The bear has no idle cycle, so it
-// stands on one planted frame (`rest`) while it looks around.
+// Who comes down to the bank. All the animals are drawn facing left (see
+// tools/characters) and turned to face the way they travel. Each moves only
+// when its walk cycle advances a frame, by that frame's step, taken from
+// its gait when it was drawn, so its feet stay put on the ground instead of
+// sliding. The hare covers ground only in the air.
 const VISITORS = {
-  deer: { walk: 'deer-walk', idle: 'deer-idle', step: [5, 5, 5, 5, 5, 5, 6, 5], reach: 125, note: 'A white-tailed doe steps down to the water to drink.' },
-  fox: { walk: 'fox-walk', idle: 'fox-idle', step: [3, 4, 4, 3, 3, 4, 4, 3], reach: 100, note: 'A red fox trots along the bank, nose to the ground.' },
-  rabbit: { walk: 'rabbit-hop', idle: 'rabbit-idle', step: [5, 6, 6, 4, 1, 5, 6, 6, 4, 1], reach: 75, note: 'A snowshoe hare stops to nibble clover by the water.' },
-  bear: { walk: 'bear-walk', rest: 0, step: [4, 5, 3, 4, 5, 3, 4, 3], reach: 85, note: 'A black bear ambles out of the pines. Best keep your distance.' },
+  deer: { reach: 125, note: 'A white-tailed doe steps down to the water to drink.' },
+  fox: { reach: 100, note: 'A red fox trots along the bank, nose to the ground.' },
+  hare: { reach: 75, note: 'A snowshoe hare stops to nibble clover by the water.' },
+  bear: { reach: 85, note: 'A black bear ambles out of the pines. Best keep your distance.' },
+};
+// how far a creature moves on frame i of its walk
+const stepOf = (key, i) => {
+  const w = ART.anchors.creatures[key].walk;
+  return w.steps ? w.steps[i] : w.step;
 };
 
 export class Wildlife {
@@ -75,14 +80,15 @@ export class Wildlife {
     this.last = key;
     const v = VISITORS[key];
     const s = this.scene;
-    const a = s.add.sprite(-30, BANK_Y, v.walk, 0).setOrigin(0.5, 1).setDepth(DEPTH.SHORE_LIFE);
+    const walk = `${key}-walk`;
+    const a = s.add.sprite(-30, BANK_Y, key, 0).setOrigin(0.5, 1).setDepth(DEPTH.SHORE_LIFE);
     const stop = v.reach + R(-15, 15);
     let dir = 1; // walking right, so turned to face right
-    a.setFlipX(true).play(v.walk);
-    const stand = () => (v.idle ? a.play(v.idle) : a.stop().setFrame(v.rest));
+    a.setFlipX(true).play(walk);
+    const stand = () => a.play(`${key}-idle`);
     a.on('animationupdate', (anim, frame) => {
-      if (anim.key !== v.walk) return;
-      a.x += dir * v.step[frame.index - 1];
+      if (anim.key !== walk) return;
+      a.x += dir * stepOf(key, frame.index - 1);
       if (dir > 0 && a.x >= stop) {
         dir = 0;
         // switching animation inside its own frame event confuses Phaser,
@@ -93,7 +99,7 @@ export class Wildlife {
           if (!a.scene) return;
           // turn round, then set off back the way it came
           dir = -1;
-          a.setFlipX(false).play(v.walk);
+          a.setFlipX(false).play(walk);
         });
       } else if (dir < 0 && a.x < -40) {
         // gone into the trees; removed on the next tick, as removing a
@@ -108,24 +114,26 @@ export class Wildlife {
   // A few gulls or sparrows crossing the sky, each on its own line.
   gulls() {
     const s = this.scene;
-    const anim = Math.random() < 0.6 ? 'gull-fly' : 'sparrow-fly';
+    const gull = Math.random() < 0.6;
     const right = Math.random() < 0.5;
     const y0 = R(30, 150);
     for (let i = 0; i < R(1, 3); i++) {
-      const b = s.add.sprite(right ? -20 - i * 25 : W + 20 + i * 25, y0 + R(-15, 15), 'birds').setDepth(DEPTH.BIRDS).setFlipX(right);
-      flapAndGlide(s, b, anim, anim === 'gull-fly' ? 4 : 10);
+      const b = s.add.sprite(right ? -20 - i * 25 : W + 20 + i * 25, y0 + R(-15, 15), gull ? 'gull' : 'sparrow').setDepth(DEPTH.BIRDS).setFlipX(right);
+      // gulls beat and glide; sparrows fly in bounds, built into their cycle
+      if (gull) flapAndGlide(s, b, 'gull-fly', ART.anchors.creatures.gull.glide.frames[0]);
+      else b.play({ key: 'sparrow-fly', startFrame: i * 3 });
       s.tweens.add({ targets: b, x: right ? W + 40 : -40, y: b.y + R(-30, 20), duration: R(9000, 14000), delay: i * 400, onComplete: () => b.destroy() });
     }
   }
 
-  // Ducks heading south in a ragged V.
+  // Mallards heading south in a ragged V, drakes and hens.
   ducks() {
     const s = this.scene;
     const y0 = R(45, 110);
     for (let i = 0; i < 5; i++) {
       const side = i % 2 ? 1 : -1;
       const k = Math.ceil(i / 2);
-      const d = s.add.sprite(W + 15 + k * 17, y0 + side * k * 9, 'duck').setDepth(DEPTH.BIRDS).play({ key: 'duck-fly', startFrame: i % 4 });
+      const d = s.add.sprite(W + 15 + k * 21, y0 + side * k * 11, 'mallard').setDepth(DEPTH.BIRDS).play({ key: i % 2 ? 'mallard-hen' : 'mallard-fly', startFrame: i % 4 });
       s.tweens.add({ targets: d, x: d.x - W - 130, y: d.y + 20, duration: 11000, onComplete: () => d.destroy() });
     }
   }
@@ -133,8 +141,8 @@ export class Wildlife {
   // A bald eagle sweeps across high over the lake.
   eagle() {
     const s = this.scene;
-    const e = s.add.sprite(-45, R(40, 90), 'eagle').setDepth(DEPTH.BIRDS);
-    flapAndGlide(s, e, 'eagle-flap', 0, 2500);
+    const e = s.add.sprite(-45, R(40, 90), 'eagle').setDepth(DEPTH.BIRDS).setFlipX(true);
+    flapAndGlide(s, e, 'eagle-fly', ART.anchors.creatures.eagle.glide.frames[0], 2500);
     s.tweens.add({ targets: e, x: W + 45, duration: 15000, onComplete: () => e.destroy() });
     s.tweens.add({ targets: e, y: e.y + 25, duration: 3500, yoyo: true, repeat: 1, ease: 'Sine.easeInOut' });
     this.note('A bald eagle circles high over the lake.');

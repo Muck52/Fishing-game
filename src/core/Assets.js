@@ -25,18 +25,6 @@ const ANIMS = [
   ['angler-land', 'angler', range(8, 10), 9, 0],
   ['angler-body', 'angler', range(12, 15), 4, -1],
   ['angler-step', 'angler', [16, 17, 18, 17, 16], 8, 0],
-  ['deer-walk', 'deer-walk', range(0, 7), 8, -1],
-  ['deer-idle', 'deer-idle', range(0, 9), 5, -1],
-  ['fox-walk', 'fox-walk', range(0, 7), 10, -1],
-  ['fox-idle', 'fox-idle', range(0, 5), 6, -1],
-  ['rabbit-hop', 'rabbit-hop', range(0, 9), 12, -1],
-  ['rabbit-idle', 'rabbit-idle', range(0, 9), 6, -1],
-  ['bear-walk', 'bear-walk', range(0, 7), 6, -1],
-  ['gull-fly', 'birds', range(0, 4), 10, -1],
-  ['sparrow-fly', 'birds', range(6, 10), 12, -1],
-  ['eagle-flap', 'eagle', range(0, 6), 9, -1],
-  ['duck-fly', 'duck', range(0, 3), 10, -1],
-  ['minnow-swim', 'minnow', range(0, 3), 8, -1],
   ['splash', 'splash', range(0, 4), 14, 0],
   ['bubble-pop', 'bubble', range(0, 2), 8, -1],
   ['ripple', 'ripple', range(0, 3), 9, 0],
@@ -58,8 +46,12 @@ export function makeAnims(scene, fishIds) {
   };
   for (const a of ANIMS) add(...a);
   for (const id of fishIds) add(`swim-${id}`, `fish-${id}`, range(0, ART.sheets[`fish-${id}`].frames - 1), 9, -1);
-  // Olive, the angler's dog: her animations are listed with her sheet
-  for (const [name, an] of Object.entries(ART.anchors.olive || {})) add(`olive-${name}`, 'olive', an.frames, an.fps, an.loop ? -1 : 0);
+  // Olive and the lake's animals: each one's animations are listed with its
+  // sheet (tools/characters), as <creature>-<animation>
+  const creatures = { olive: ART.anchors.olive, ...ART.anchors.creatures };
+  for (const [who, table] of Object.entries(creatures)) {
+    for (const [name, an] of Object.entries(table || {})) add(`${who}-${name}`, who, an.frames, an.fps, an.loop ? -1 : 0);
+  }
   // plants sway slowly, each sheet four frames
   for (const key of Object.keys(ART.sheets)) if (key.startsWith('bed-sea') || key.startsWith('cattails')) add(`sway-${key}`, key, range(0, 3), 3, -1);
 }

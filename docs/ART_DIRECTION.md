@@ -32,8 +32,10 @@ we borrow is the thinking behind them.
 2. **One palette.** Every image is recoloured to one master palette of 76
    colours (`docs/palette.png`, also listed in `assets/art/manifest.json`).
    It is the 56 colours that best cover all the packs together, plus a few
-   key colours and the interface art's own shades. This is what makes art
-   from eleven different packs look like one game.
+   key colours and the interface art's own shades. It is now fixed in
+   `tools/palette.json`, with a few shades added for the creatures, so
+   redrawing art never shifts it. This is what makes art from many packs
+   and our own drawings look like one game.
 3. **Outlines say "this moves."** Characters, animals, fish, the boat, the
    hut and props carry the shared dark outline. The backdrop, water and
    lakebed have none, so actors always read in front of scenery.
@@ -87,6 +89,16 @@ we borrow is the thinking behind them.
    is added over the scene after dusk so the deepest shadows lift and
    details still read on a phone in the dark.
    The interface sits above the grade so it always reads the same.
+
+## The creatures
+
+Olive, the deer, fox, hare and bear on the far bank, the gulls, sparrows,
+mallards and the bald eagle in the sky, and the minnows are all drawn by
+the game's own scripts (`tools/characters/`) with one shared kit: side-on
+and lit from above, one palette and outline, real proportions on one scale,
+legs drawn through their joints, real gaits, birds seen from below. The
+rules and the research behind each animal are in
+[docs/characters/README.md](characters/README.md).
 
 ## The fish
 

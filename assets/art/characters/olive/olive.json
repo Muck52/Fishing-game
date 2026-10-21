@@ -26,7 +26,8 @@
     13
    ],
    "fps": 10,
-   "loop": true
+   "loop": true,
+   "step": 1
   },
   "run": {
    "frames": [
@@ -38,7 +39,8 @@
     19
    ],
    "fps": 14,
-   "loop": true
+   "loop": true,
+   "step": 4
   },
   "leap": {
    "frames": [

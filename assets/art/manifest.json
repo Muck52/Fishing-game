@@ -153,69 +153,57 @@
    "frameHeight": 48,
    "frames": 22
   },
-  "deer-walk": {
-   "url": "assets/art/characters/deer-walk.png",
-   "frameWidth": 72,
-   "frameHeight": 52,
-   "frames": 8
+  "deer": {
+   "url": "assets/art/characters/deer.png",
+   "frameWidth": 40,
+   "frameHeight": 32,
+   "frames": 18
   },
-  "deer-idle": {
-   "url": "assets/art/characters/deer-idle.png",
-   "frameWidth": 72,
-   "frameHeight": 52,
-   "frames": 10
+  "fox": {
+   "url": "assets/art/characters/fox.png",
+   "frameWidth": 36,
+   "frameHeight": 20,
+   "frames": 14
   },
-  "fox-walk": {
-   "url": "assets/art/characters/fox-walk.png",
-   "frameWidth": 64,
-   "frameHeight": 36,
-   "frames": 8
+  "hare": {
+   "url": "assets/art/characters/hare.png",
+   "frameWidth": 26,
+   "frameHeight": 18,
+   "frames": 20
   },
-  "fox-idle": {
-   "url": "assets/art/characters/fox-idle.png",
-   "frameWidth": 64,
-   "frameHeight": 36,
+  "bear": {
+   "url": "assets/art/characters/bear.png",
+   "frameWidth": 38,
+   "frameHeight": 24,
+   "frames": 14
+  },
+  "gull": {
+   "url": "assets/art/characters/gull.png",
+   "frameWidth": 30,
+   "frameHeight": 30,
    "frames": 6
   },
-  "rabbit-hop": {
-   "url": "assets/art/characters/rabbit-hop.png",
-   "frameWidth": 32,
-   "frameHeight": 26,
-   "frames": 10
-  },
-  "rabbit-idle": {
-   "url": "assets/art/characters/rabbit-idle.png",
-   "frameWidth": 32,
-   "frameHeight": 26,
-   "frames": 10
-  },
-  "bear-walk": {
-   "url": "assets/art/characters/bear-walk.png",
-   "frameWidth": 64,
-   "frameHeight": 33,
+  "sparrow": {
+   "url": "assets/art/characters/sparrow.png",
+   "frameWidth": 12,
+   "frameHeight": 12,
    "frames": 8
   },
-  "birds": {
-   "url": "assets/art/characters/birds.png",
-   "frameWidth": 32,
-   "frameHeight": 32,
-   "frames": 12
+  "mallard": {
+   "url": "assets/art/characters/mallard.png",
+   "frameWidth": 20,
+   "frameHeight": 22,
+   "frames": 8
   },
   "eagle": {
    "url": "assets/art/characters/eagle.png",
-   "frameWidth": 41,
-   "frameHeight": 21,
-   "frames": 7
-  },
-  "duck": {
-   "url": "assets/art/characters/duck.png",
-   "frameWidth": 16,
-   "frameHeight": 16,
-   "frames": 4
+   "frameWidth": 36,
+   "frameHeight": 40,
+   "frames": 8
   },
   "minnow": {
    "url": "assets/art/characters/minnow.png",
-   "frameWidth": 13,
+   "frameWidth": 14,
    "frameHeight": 7,
    "frames": 4
   },
@@ -541,6 +529,237 @@
     }
    ]
   },
+  "creatures": {
+   "deer": {
+    "walk": {
+     "frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "fps": 8,
+     "loop": true,
+     "step": 1
+    },
+    "idle": {
+     "frames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+     ],
+     "fps": 4,
+     "loop": true
+    }
+   },
+   "fox": {
+    "walk": {
+     "frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "fps": 10,
+     "loop": true,
+     "step": 2
+    },
+    "idle": {
+     "frames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+     ],
+     "fps": 5,
+     "loop": true
+    }
+   },
+   "hare": {
+    "walk": {
+     "frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "fps": 12,
+     "loop": true,
+     "steps": [
+      0,
+      4,
+      6,
+      5,
+      3,
+      1,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    "idle": {
+     "frames": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+     ],
+     "fps": 4,
+     "loop": true
+    }
+   },
+   "bear": {
+    "walk": {
+     "frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "fps": 7,
+     "loop": true,
+     "step": 1
+    },
+    "idle": {
+     "frames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+     ],
+     "fps": 3,
+     "loop": true
+    }
+   },
+   "gull": {
+    "fly": {
+     "frames": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "fps": 9,
+     "loop": true
+    },
+    "glide": {
+     "frames": [
+      5
+     ],
+     "fps": 1,
+     "loop": false
+    }
+   },
+   "sparrow": {
+    "fly": {
+     "frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "fps": 14,
+     "loop": true
+    }
+   },
+   "mallard": {
+    "fly": {
+     "frames": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "fps": 12,
+     "loop": true
+    },
+    "hen": {
+     "frames": [
+      4,
+      5,
+      6,
+      7
+     ],
+     "fps": 12,
+     "loop": true
+    }
+   },
+   "eagle": {
+    "fly": {
+     "frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "fps": 6,
+     "loop": true
+    },
+    "glide": {
+     "frames": [
+      7
+     ],
+     "fps": 1,
+     "loop": false
+    }
+   },
+   "minnow": {
+    "swim": {
+     "frames": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "fps": 8,
+     "loop": true
+    }
+   }
+  },
   "fish": {
    "bluegill": {
     "w": 21,
@@ -652,7 +871,8 @@
      13
     ],
     "fps": 10,
-    "loop": true
+    "loop": true,
+    "step": 1
    },
    "run": {
     "frames": [
@@ -664,7 +884,8 @@
      19
     ],
     "fps": 14,
-    "loop": true
+    "loop": true,
+    "step": 4
    },
    "leap": {
     "frames": [
@@ -739,6 +960,7 @@
   "#704a30",
   "#455b54",
   "#833f4c",
+  "#545666",
   "#51642b",
   "#90453b",
   "#5c5e52",

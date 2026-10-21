@@ -397,31 +397,24 @@ def angler():
 
 
 # ---------------------------------------------------------------- wildlife
+CREATURES = ["deer", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "minnow"]
+
+
 def wildlife():
-    sw = "scratchio-wild-animals"
-    for name, fw in [("Deer_Walk", 72), ("Deer_Idle", 72), ("Fox_Walk", 64), ("Fox_Idle", 64),
-                     ("Rabbit_Hop", 32), ("Rabbit_Idle", 32), ("Bear_Walk", 64)]:
-        img = load(f"{sw}/{name}.png")
-        save(img, f"characters/{name.lower().replace('_', '-')}.png", frame=(fw, img.height), frames=img.width // fw, actor=True)
-    birds = load("moikmellah-birds/birds.32x32.png")
-    bp = birds.load()
-    for y in range(birds.height):  # the sheet has a magenta backdrop
-        for x in range(birds.width):
-            if bp[x, y][:3] == (255, 0, 255):
-                bp[x, y] = (0, 0, 0, 0)
-    save(birds, "characters/birds.png", frame=(32, 32), frames=12, actor=True)
-    save(load("spring-spring-eagle/eagle_flap.png"), "characters/eagle.png", frame=(41, 21), frames=7, actor=True)
-    duck = cut(load("duck-16x16/duck_spritesheet.png"), 16, 16, vertical=True)
-    save(strip(duck), "characters/duck.png", frame=(16, 16), frames=4, actor=True)
-    # minnows: a third of their pack size, smaller than any catchable fish
-    darts = [shrink(f.crop(f.getbbox()), 11) for f in cut(load("ansimuz-underwater/fish-dart.png"), 39)]
-    fw, fh = max(d.width for d in darts), max(d.height for d in darts)
-    padded = []
-    for d in darts:
-        p = Image.new("RGBA", (fw, fh))
-        p.alpha_composite(d, (0, fh - d.height))
-        padded.append(p)
-    save(strip(padded), "characters/minnow.png", frame=(fw, fh), frames=4, actor=True)
+    """The lake's animals, each drawn by its own script in tools/characters
+    with the shared kit (kit.py): the same palette, outline, scale and
+    construction as Olive. Their sheets are saved as drawn (already in the
+    palette) and their animation tables go into the manifest."""
+    import importlib
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
+    table = {}
+    for name in CREATURES:
+        mod = importlib.import_module(name)
+        strip, index = mod.sheet()
+        save(strip, f"characters/{name}.png", key=name, frame=(mod.FW, mod.FH), frames=strip.width // mod.FW, grade=False)
+        table[name] = index
+    manifest["anchors"]["creatures"] = table
 
 
 # ---------------------------------------------------------------- fish
@@ -1027,7 +1020,7 @@ def olive():
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
     import olive as rig
-    strip, index = rig.sheet()
+    strip, index = rig.sheet()  # also writes her json and previews
     save(strip, "characters/olive/olive.png", key="olive", frame=(rig.FW, rig.FH), frames=strip.width // rig.FW, grade=False)
     manifest["anchors"]["olive"] = index
     manifest["anchors"]["olive-at"] = {"feet": rig.FEET + 1, "waterline": rig.WATERLINE}
@@ -1135,28 +1128,28 @@ KEY_COLORS = [OUTLINE, (255, 244, 214), (255, 216, 74), (232, 74, 58), (138, 208
 def palette_pass():
     """Recolours every graded image to one master palette.
 
-    The palette is the 56 colours that best cover all the packs together
-    (median cut over every opaque pixel), plus the key colours above and
-    the interface art's own colours. Then
+    The palette is fixed in tools/palette.json: it began as the 56 colours
+    that best covered all the packs together (a median cut), plus the key
+    colours above and the interface art's own colours, and has the shades
+    added for the creatures in tools/characters. Then
     each actor's dark edge pixels are set to the shared outline colour.
     """
     arrays = [np.array(Image.open(p).convert("RGBA")) for p, _ in GRADED]
-    pix = np.concatenate([a[a[..., 3] > 0][:, :3] for a in arrays])[::5]
-    side = int(np.ceil(np.sqrt(len(pix))))
-    pad = np.zeros((side * side, 3), np.uint8)
-    pad[: len(pix)] = pix
-    pad[len(pix):] = pix[0]
-    q = Image.fromarray(pad.reshape(side, side, 3)).quantize(colors=56, method=Image.Quantize.MEDIANCUT)
-    pal = q.getpalette()[: 56 * 3]
-    kept = {tuple(int(v) for v in c) for im in KEEP for c in np.array(im)[np.array(im)[..., 3] > 0][:, :3]}
-    colors = np.array(sorted({tuple(pal[i:i + 3]) for i in range(0, len(pal), 3)} | set(KEY_COLORS) | kept), np.int32)
+    # the palette is fixed in tools/palette.json (it began as a median cut
+    # over the packs), so redrawing or dropping art never shifts it
+    fixed = json.loads((ROOT / "tools" / "palette.json").read_text())
+    rgb = lambda h: tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))  # noqa: E731
+    # graded art snaps to the original colours; the creature shades (drawn
+    # straight in the palette, never graded) are listed with them
+    colors = np.array(sorted({rgb(h) for h in fixed["colours"]}), np.int32)
+    listed = np.array(sorted({rgb(h) for h in fixed["colours"] + fixed["creatures"]}), np.int32)
     # sorted by brightness for the swatch sheet in the docs
-    colors = colors[np.argsort(colors @ np.array([3, 6, 1]))]
-    sw = Image.new("RGB", (len(colors) * 8, 8))
-    for i, c in enumerate(colors):
+    listed = listed[np.argsort(listed @ np.array([3, 6, 1]))]
+    sw = Image.new("RGB", (len(listed) * 8, 8))
+    for i, c in enumerate(listed):
         sw.paste(tuple(int(v) for v in c), (i * 8, 0, i * 8 + 8, 8))
     sw.save(ROOT / "docs/palette.png")
-    manifest["palette"] = ["#%02x%02x%02x" % tuple(int(v) for v in c) for c in colors]
+    manifest["palette"] = ["#%02x%02x%02x" % tuple(int(v) for v in c) for c in listed]
 
     w = np.array([2, 4, 3])
     for (path, actor), a in zip(GRADED, arrays):
