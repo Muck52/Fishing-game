@@ -1,4 +1,4 @@
-import { W, SURFACE_Y, BED_Y, DECK_Y, ANGLER_X, HUT_X, DEPTH, STATE, INK, clamp, lerp, label } from '../core/constants.js';
+import { W, SURFACE_Y, BED_Y, DECK_Y, ANGLER_X, HUT_X, DEPTH, STATE, INK, LOOK_UP, clamp, lerp, label, pinToScreen } from '../core/constants.js';
 import { ART } from '../core/Assets.js';
 import { World } from '../environment/World.js';
 import { depthTint } from '../environment/Lake.js';
@@ -61,6 +61,8 @@ export class FishingScene extends Phaser.Scene {
 
     this.input.on('pointerdown', this.onDown, this);
     this.input.on('pointerup', this.onUp, this);
+    pinToScreen(this);
+    this.cameras.main.scrollY = -LOOK_UP;
     this.resetToIdle();
   }
 
@@ -109,7 +111,16 @@ export class FishingScene extends Phaser.Scene {
 
   // ---- state changes -------------------------------------------------------
 
+  // A slow, steady pan of the camera: up to the sky while you're idle, down
+  // to the whole lake once the line is out.
+  pan(to, duration) {
+    const cam = this.cameras.main;
+    this.tweens.killTweensOf(cam);
+    this.tweens.add({ targets: cam, scrollY: to, duration, ease: 'Sine.easeInOut' });
+  }
+
   resetToIdle() {
+    this.pan(-LOOK_UP, 2400);
     this.state = STATE.IDLE;
     this.fight = null;
     this.fish = null;
@@ -125,6 +136,7 @@ export class FishingScene extends Phaser.Scene {
   }
 
   cast(power) {
+    this.pan(0, 2600);
     this.state = STATE.CASTING;
     this.castPower = power;
     this.setHint('');

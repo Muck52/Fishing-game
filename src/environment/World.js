@@ -30,7 +30,7 @@ export class World {
   update(time, dt) {
     this.wind.update(dt);
     const w = this.wind.strength;
-    this.backdrop.update(dt, w);
+    this.backdrop.update(dt, w, this.daylight.night, time);
     this.lake.update(time, dt, w);
     this.pier.update(time);
     this.daylight.update(time);

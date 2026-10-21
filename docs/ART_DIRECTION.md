@@ -57,6 +57,13 @@ we borrow is the thinking behind them.
    faster when the fish swims faster); big birds alternate wingbeats and
    glides.
 
+   **The camera breathes with the cast.** On the dock with the rod up, the
+   camera looks up into a big sky (the sky art's bands carried on upward,
+   with stars at night) and the dock sits low on screen. Casting pans slowly
+   down until the whole lake, down to the lakebed, is in view with the dock
+   near the top; when the fish is in (or gone) it drifts back up. The
+   interface and the time-of-day grade stay pinned to the screen.
+
 8. **Lettering is part of the art.** Two CC0 Kenney fonts are baked into
    bitmap fonts at their native 16px with the same outline as the sprites
    (`fonts()` in the build). Text is tinted, never resized off the grid.

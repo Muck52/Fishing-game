@@ -17,6 +17,19 @@ export const BED_Y = H - 48;
 
 // The fishing hut stands on stilts on the right; its walkway runs out over
 // the water toward the left, and the angler stands near its end.
+// How far above the scene the camera looks while you're on the dock with
+// the rod up: the sky runs on above the art, so the dock sits low on screen.
+// Casting pans down to the whole lake.
+export const LOOK_UP = Math.round((H * 0.25) / 2) * 2;
+
+// The interface (and the time-of-day grade over the whole screen) stays put
+// while the camera pans; everything else scrolls with the world.
+export function pinToScreen(scene) {
+  for (const o of scene.children.list) {
+    if (o.depth >= 50 || (o.depth >= 30 && o.depth < 31)) o.setScrollFactor(0, 0, true);
+  }
+}
+
 export const HUT_X = 216;
 export const ANGLER_X = 232;
 

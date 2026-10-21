@@ -1,4 +1,4 @@
-import { W, H, DEPTH, INK, label } from '../core/constants.js';
+import { W, H, DEPTH, INK, LOOK_UP, label, pinToScreen } from '../core/constants.js';
 import { World } from '../environment/World.js';
 import { partOfDay } from '../environment/Daylight.js';
 import { Wildlife } from '../wildlife/Wildlife.js';
@@ -38,6 +38,10 @@ export class MenuScene extends Phaser.Scene {
     const btn = ui(pill(this, W / 2, by, 150, 34));
     const tap = ui(label(this, W / 2, by, 'Tap to fish', { font: 'head', size: 2 }));
     this.tweens.add({ targets: [btn, tap], y: by - 2, duration: 700, yoyo: true, repeat: -1, ease: 'Stepped', easeParams: [2] });
+
+    // the camera looks up at the sky, the dock low on screen
+    pinToScreen(this);
+    this.cameras.main.scrollY = -LOOK_UP;
 
     this.input.once('pointerdown', () => {
       this.cameras.main.fadeOut(300, 10, 20, 30);
