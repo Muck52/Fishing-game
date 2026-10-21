@@ -36,60 +36,57 @@ SHADE = "#b3a697"  # shade under the white fur
 OUTLINE = (37, 19, 26)
 
 HEAD = [
-    "........K....",
-    ".......KPK.K.",
-    "......KKWKKKK",
-    ".....KKWKeEKK",
-    ".nWWWWWKKEpKK",
-    "NNWWWWKKKKKKK",
-    ".NWWWWKKKKKK.",
-    "..WWWWKKKKK..",
+    "....K.K..",
+    "...KPKKK.",
+    "...KWKKKK",
+    ".KKWeEKKK",
+    "nWWWEpKKK",
+    "NWWWWKKKK",
+    ".WWWKKKK.",
 ]
 
-# Standing, side on, facing left, at the angler's scale (her head about 60%
-# of his height: pixel games draw pets a little large so they read). About
-# as tall at the shoulder as she is long, as border collies are. A domed
-# skull rising from the stop, a longish muzzle ending in a rounded nose,
-# the blaze running up its bridge, the near ear up (pink inside) and the far
-# one tipped, a bright eye; then a neck, narrower than the head and set off
-# from it behind the jaw, down to the shoulders; a deep chest, hocks on the
-# hind legs, the far legs in shade.
-STAND = [r.ljust(26, ".") for r in HEAD] + [
-    "...WWWWKKKK...............",
-    "....WWWKKK................",
-    "....WWWRKKKKKKKKKKKKKKK...",
-    "....WRRFRKKKKKKKKKKKKKKK..",
-    "....WWRRKKKKKKKKKKKKKKKK..",
-    ".....WWWKKKKKKKKKKKKKKKK..",
-    ".....WWWWKKKKKKKKKKKKKKK..",
-    "......WWWWWKK...KKKKKKK...",
-    ".......WW.ww....KKK.KKK...",
-    ".......WW.ww....KKW..KW...",
-    ".......WW.ww.....WW..WW...",
-    "......WWW.www....ww.WWW...",
+# Proportions after the breed standards of her parents. A cattle dog is a
+# little longer than she is tall at the shoulder (10 to 9); a husky's muzzle
+# is as long as its skull, with a clear stop, and its legs from elbow to
+# ground slightly longer than elbow to withers. At 40 lb she's at the small
+# end of the mix, about 18 inches at the shoulder. Drawn a touch larger than
+# life beside the angler (about 55% of his height, as pets are in pixel
+# games) so she reads, facing left like every creature sheet. Her eyes sit
+# right at the stop, where the white of her muzzle meets the black; an
+# arched neck sets her head off from her shoulders; the far legs are shaded.
+STAND = [r.ljust(20, ".") for r in HEAD] + [
+    "..WWWKKK............",
+    "..WWRKKKKKKKKKKK....",
+    "..WRFRKKKKKKKKKKK...",
+    "...RRKKKKKKKKKKKK...",
+    "...WWKKKKKKKKKKKK...",
+    "...WWWWKKKK..KKKK...",
+    "...WW.ww.....KKKK...",
+    "...WW.ww.....KW.KW..",
+    "...WW.ww.....WW..W..",
+    "..WWW.www...ww..WW..",
 ]
 # the tail carried up in a curl, white at the tip: four frames of a slow
-# wag, drawn over the rump at (19, 2)
+# wag, drawn over the rump at (14, 4)
 TAILS = [
-    ["..W", ".KW", ".KK", "KK.", "KK."],
-    ["...", ".WW", "KKW", "KK.", "KK."],
-    [".W.", "KW.", "KK.", "KK.", "KK."],
-    ["...", ".WW", "KKW", "KK.", "KK."],
+    ["..W", ".KW", ".KK", "KK.", "K.."],
+    ["...", ".WW", "KKW", "KK.", "K.."],
+    [".W.", "KW.", "KK.", "KK.", "K.."],
+    ["...", ".WW", "KKW", "KK.", "K.."],
 ]
 
 # Lying down as on the carpet: head up and turned to you, the back dipping
 # behind the shoulders and rising over the hip, the line of the hind thigh,
 # front legs stretched out ahead, hind leg along the floor, tail curled up.
-LIE = [r.ljust(33, ".") for r in HEAD] + [
-    "...WWWWKKKK.........KKK...KW.....",
-    "....WWWKKK.........KKKKK..KW.....",
-    "....WWRKKKK.....KKKKKKKKK.KKW....",
-    "....WRFRKKKKKKKKKKKKKKKKKKK......",
-    "....WRRKKKKKKKKKKKKKKDKKKKK......",
-    ".....WWKKKKKKKKKKKKKDKKKKKKK.....",
-    "..WWWWWWWWWWKKKKKKDKKKKKKWWWW....",
-    "WWWWWWWWWWWW..WWWWWWWWWWWWWWWW...",
-    "wwwwwwwwwww...............wwwww..",
+LIE = [r.ljust(26, ".") for r in HEAD] + [
+    "..WWWKKK.........KK..KW...",
+    "..WWRKKK......KKKKKK.KW...",
+    "..WRFRKKKKKKKKKKKKKKKK....",
+    "...RRKKKKKKKKKKKDKKKK.....",
+    "...WWKKKKKKKKKKDKKKKK.....",
+    ".WWWWWWWWKKKKKDKKKKWWW....",
+    "WWWWWWWWW..WWWWWWWWWWWW...",
+    "wwwwwwww............wwww..",
 ]
 
 
@@ -126,7 +123,7 @@ def paint(rows, tail=None, tail_at=(21, 2)):
 
 
 def frames():
-    stand = [paint(STAND, t, (20, 5)) for t in TAILS]
+    stand = [paint(STAND, t, (14, 4)) for t in TAILS]
     lie = [paint(LIE)]
     return stand, lie
 
