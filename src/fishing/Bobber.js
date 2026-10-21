@@ -10,6 +10,12 @@ export class Bobber {
     this.mode = 'flight';
     this.sprite = scene.add.sprite(0, 0, 'bobber', 0).setOrigin(0.5, 9.5 / 11).setDepth(DEPTH.BOBBER).setVisible(false);
     this.alert = scene.add.text(0, 0, '!', textStyle(64, '#ffd54f')).setOrigin(0.5, 1).setDepth(DEPTH.BOBBER + 1).setVisible(false);
+    // a soft glow so the float stands out on the water, flaring on a bite
+    this.glow = null;
+    if (scene.sys.game.renderer.type === Phaser.WEBGL) {
+      this.sprite.preFX.setPadding(4);
+      this.glow = this.sprite.preFX.addGlow(0xfff6dc, 1, 0, false, 0.1, 6);
+    }
   }
 
   get visible() {
@@ -38,5 +44,6 @@ export class Bobber {
     const bob = this.mode === 'float' && Math.sin(time / 300) > 0.6 ? -s : 0;
     this.sprite.setFrame(FRAME[this.mode]).setScale(s).setPosition(this.x, this.y + bob);
     this.alert.setPosition(this.x, this.y - 12 * s);
+    if (this.glow) this.glow.outerStrength = this.alert.visible ? 4 + 2 * Math.sin(time / 80) : 1.2;
   }
 }

@@ -5,6 +5,7 @@ import { Waves } from './Waves.js';
 import { Sun } from './Sun.js';
 import { Reeds } from './Reeds.js';
 import { Lighting } from './Lighting.js';
+import { SceneFx } from './SceneFx.js';
 
 const layer = (scene, key, y, depth) => scene.add.image(0, y, key).setOrigin(0).setScale(PX).setDepth(depth);
 
@@ -21,7 +22,7 @@ export class Scenery {
     const fallsH = HORIZON - FALLS.top;
     this.falls = scene.add.tileSprite(FALLS.x * PX, FALLS.top * PX, FALLS.w, fallsH, 'falls').setOrigin(0).setScale(PX).setDepth(DEPTH.FOREST + 0.2);
     scene.add.sprite((FALLS.x + FALLS.w / 2) * PX, HORIZON * PX + PX, 'foam').setScale(PX).setDepth(DEPTH.WATER_LIFE).play('foam-churn');
-    layer(scene, 'water', WATER_Y, DEPTH.WATER);
+    this.water = layer(scene, 'water', WATER_Y, DEPTH.WATER);
     layer(scene, 'banks', 0, DEPTH.BANKS);
     layer(scene, 'dock', 0, DEPTH.DOCK);
 
@@ -62,6 +63,7 @@ export class Scenery {
     for (let i = 0; i < 12; i++) {
       const s = scene.add.sprite(0, 0, 'sparkle', 0).setScale(PX).setDepth(DEPTH.WATER_LIFE);
       this.placeSparkle(s);
+      this.sparkles.push(s);
       s.on('animationcomplete', () => scene.time.delayedCall(Phaser.Math.Between(200, 2500), () => this.placeSparkle(s)));
     }
 
@@ -82,6 +84,8 @@ export class Scenery {
     this.dog = scene.add.sprite(DOG.x * PX, DOG.y * PX, 'dog', 0).setOrigin(0.5, 1).setScale(PX).setDepth(DEPTH.DOCK_LIFE);
     this.nextWag = scene.time.now + 4000;
     scene.add.sprite((MUG.x + 2) * PX, MUG.y * PX, 'steam').setOrigin(0.5, 1).setScale(PX).setAlpha(0.55).setDepth(DEPTH.DOCK_LIFE).play('steam-rise');
+
+    this.fx = new SceneFx(scene, this);
   }
 
   // Glints appear where the low sun lights the water.
@@ -134,6 +138,7 @@ export class Scenery {
     const w = this.wind.strength;
     this.sun.update(time, dt, this.clouds);
     this.lighting.update(this.sun.dim);
+    this.fx.update(time, w);
     this.waves.update(time, dt);
     this.reeds.update();
     this.falls.tilePositionY -= 40 * dt;
