@@ -17,6 +17,7 @@ import { pill } from '../ui/Panels.js';
 import { FishBar } from '../ui/FishBar.js';
 import { Hud } from '../ui/Hud.js';
 import { CatchPopup } from '../ui/CatchPopup.js';
+import { Backpack } from '../ui/Backpack.js';
 import { SaveManager } from '../save/SaveManager.js';
 
 const MIN_SWIPE = 70; // px of upward drag needed to count as a cast
@@ -53,6 +54,7 @@ export class FishingScene extends Phaser.Scene {
     this.meter = new TensionMeter(this);
     this.bar = new FishBar(this);
     this.popup = new CatchPopup(this);
+    this.bag = new Backpack(this, this.save, () => this.state === STATE.IDLE);
     // hints sit on a little wooden plaque, like the counters
     this.plaque = pill(this, W / 2, 165, 40, 20).setDepth(DEPTH.UI).setVisible(false);
     this.hint = label(this, W / 2, 165, '', { font: 'head', size: 2 }).setDepth(DEPTH.UI);
@@ -292,6 +294,12 @@ export class FishingScene extends Phaser.Scene {
   // ---- input ---------------------------------------------------------------
 
   onDown(pointer) {
+    if (this.bag.isOpen) {
+      // a tap outside the open backpack closes it
+      this.bag.close();
+      this.downAt = null;
+      return;
+    }
     this.downAt = { x: pointer.x, y: pointer.y };
     if (this.state === STATE.REELING) {
       if (RHYTHM) this.fight.tap();

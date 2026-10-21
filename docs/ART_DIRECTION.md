@@ -187,6 +187,20 @@ toward the fish, which pumps up as the reel's handle spins on every good
 turn. The rod is a pixel line drawn from his hands each frame, so it bends
 without breaking the one-pixel grid.
 
+## The backpack
+
+The inventory lives in a backpack (`src/ui/Backpack.js`). Its button in
+the bottom-right corner is a wooden counter with the bag drawn on it:
+canvas body lit from the left, a leather flap with a brass buckle, shoulder
+straps, a front pocket and the shared outline. It stays shut while the
+inventory is closed; tap it and the flap lifts and falls back, a fish tail
+and a float peek out and bob while you look; close the inventory and it
+shuts again. The panel is the journal's board with a 5 x 4 grid of slots
+carved into the planks (shadow along the top and left, light on the bottom
+edge) and a dark inlay that names whatever you tap. Tackle is always in the
+bag; each kind of fish you catch stacks in its own slot. The bag opens
+while you're on the dock with the rod up, and a tap outside closes it.
+
 ## How each piece fits
 
 | Piece | Source pack | Size on grid | Outline | Motion |
@@ -204,6 +218,7 @@ without breaking the one-pixel grid.
 | Gulls, ducks, eagle | MoikMellah, aroachi, Spring Spring | 1x | shared | gulls and eagle flap then glide; ducks flap steadily |
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
+| Backpack (inventory button and icon) | drawn in the build (`backpack()`) in palette colours | 24 x 24, 1x | shared | closed; opens in 3 frames when the inventory opens, then a slow rummage loop; shuts again when it closes; a little hop now and then |
 | Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |
 
 ## Changing the art

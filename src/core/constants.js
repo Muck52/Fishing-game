@@ -26,8 +26,15 @@ export const LOOK_UP = Math.round((H * 0.25) / 2) * 2;
 // while the camera pans; everything else scrolls with the world.
 export function pinToScreen(scene) {
   for (const o of scene.children.list) {
-    if (o.depth >= 50 || (o.depth >= 30 && o.depth < 31)) o.setScrollFactor(0, 0, true);
+    if (o.depth >= 50 || (o.depth >= 30 && o.depth < 31)) pin(o);
   }
+}
+
+// Pins one object, and everything inside it if it's a container.
+export function pin(o) {
+  o.setScrollFactor(0);
+  if (o.list) o.list.forEach(pin);
+  return o;
 }
 
 export const HUT_X = 216;

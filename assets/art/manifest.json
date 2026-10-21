@@ -367,6 +367,12 @@
    "frameWidth": 14,
    "frameHeight": 14,
    "frames": 4
+  },
+  "backpack": {
+   "url": "assets/art/ui/backpack.png",
+   "frameWidth": 24,
+   "frameHeight": 24,
+   "frames": 4
   }
  },
  "fonts": {

@@ -561,6 +561,117 @@ def ui():
     save(strip(btn), "ui/button.png", frame=(14, 14), frames=4, keep=True)
 
 
+def backpack():
+    """The backpack: the inventory's button and its picture. Drawn straight
+    onto the grid in palette colours (so the palette pass leaves it alone):
+    a canvas body with a leather flap, straps and a brass buckle, a front
+    pocket, and the shared outline. Four frames: closed, the flap lifting,
+    open, and open with what's inside bobbing up (a fish's tail and a float)."""
+    hexc = lambda h: tuple(int(h[i:i + 2], 16) for i in (1, 3, 5)) + (255,)
+    BODY, BODY_LT, BODY_DK = hexc("#a9805f"), hexc("#daab76"), hexc("#704a30")
+    FLAP, FLAP_LT, FLAP_DK = hexc("#90453b"), hexc("#b77357"), hexc("#543426")
+    BRASS, GLINT, DEEP, INSIDE = hexc("#c79a49"), hexc("#ffd84a"), hexc("#25131a"), hexc("#342a24")
+    TAIL, TAIL_LT, RED, CREAM = hexc("#86a398"), hexc("#b0ecf0"), hexc("#e84a3a"), hexc("#fff4d6")
+    edge = OUTLINE + (255,)
+
+    def frame(stage):
+        im = Image.new("RGBA", (24, 24))
+        px = im.load()
+
+        def put(x, y, c):
+            if 0 <= x < 24 and 0 <= y < 24:
+                px[x, y] = c
+
+        # side pockets, then the body: canvas lit from the left
+        for y in range(13, 20):
+            put(3, y, BODY_DK)
+            put(20, y, BODY_DK)
+        for y in range(9, 21):
+            for x in range(4, 20):
+                if (x, y) in ((4, 9), (19, 9), (4, 20), (19, 20)):
+                    continue
+                put(x, y, BODY_LT if x == 4 else BODY_DK if x >= 18 or y == 20 else BODY)
+        # the front pocket with its own little flap and buckle
+        for y in range(15, 20):
+            for x in range(8, 16):
+                put(x, y, BODY_DK if y == 19 else BODY)
+        for x in range(8, 16):
+            put(x, 14, FLAP)
+            put(x, 15, FLAP_DK)
+        put(11, 15, BRASS)
+        put(12, 15, BRASS)
+        # shoulder straps down the front
+        for y in range(9, 21):
+            put(7, y, FLAP_DK)
+            put(16, y, FLAP_DK)
+
+        if stage == 0:
+            # the flap, buckled down
+            for y in range(8, 14):
+                for x in range(5, 19):
+                    if (x, y) in ((5, 13), (18, 13)):
+                        continue
+                    put(x, y, FLAP_LT if y == 8 or x == 5 else FLAP_DK if y == 13 else FLAP)
+            for y in range(12, 15):
+                put(11, y, FLAP_DK)
+                put(12, y, FLAP_DK)
+            put(11, 13, GLINT)
+            put(12, 13, BRASS)
+        elif stage == 1:
+            # the flap lifting: a sliver of the dark inside shows
+            for x in range(6, 18):
+                put(x, 9, INSIDE)
+                put(x, 10, DEEP)
+            for y in range(5, 10):
+                for x in range(5, 19):
+                    if (x, y) in ((5, 5), (18, 5)):
+                        continue
+                    put(x, y, FLAP_LT if y == 5 or x == 5 else FLAP_DK if y == 9 else FLAP)
+            put(11, 10, FLAP_DK)
+            put(12, 10, FLAP_DK)
+            put(11, 11, BRASS)
+            put(12, 11, BRASS)
+        else:
+            # open: the flap thrown back shows its paler underside
+            bob = 1 if stage == 3 else 0
+            for y in range(1, 7):
+                for x in range(5, 19):
+                    if (x, y) in ((5, 1), (18, 1)):
+                        continue
+                    put(x, y, FLAP if y == 6 else FLAP_LT)
+            for y in range(7, 11):
+                for x in range(5 if y > 7 else 6, 19 if y > 7 else 18):
+                    put(x, y, DEEP if y < 10 else INSIDE)
+            put(11, 0, FLAP_DK)
+            put(12, 0, FLAP_DK)
+            put(11, 1, BRASS)
+            put(12, 1, GLINT)
+            # what's inside, peeking out
+            for (x, y, c) in ((7, 6, TAIL), (9, 6, TAIL), (7, 7, TAIL), (8, 7, TAIL), (9, 7, TAIL), (8, 8, TAIL_LT), (8, 9, TAIL)):
+                put(x, y - bob, c)
+            for (x, y, c) in ((14, 6, RED), (15, 6, RED), (14, 7, RED), (15, 7, CREAM), (14, 8, CREAM), (14, 9, FLAP_DK)):
+                put(x, y - bob, c)
+        # the shared outline round everything
+        a = np.array(im)
+        solid = a[..., 3] > 0
+        pad = np.pad(solid, 1)
+        ring = ~solid & (pad[:-2, 1:-1] | pad[2:, 1:-1] | pad[1:-1, :-2] | pad[1:-1, 2:])
+        a[ring] = edge
+        im = Image.fromarray(a).copy()
+        px = im.load()
+        if stage == 0:
+            # the carrying loop on top
+            for (x, y) in ((10, 5), (11, 5), (12, 5), (13, 5), (9, 6), (14, 6)):
+                px[x, y] = edge
+            px[11, 5] = FLAP_DK
+            px[12, 5] = FLAP_DK
+        if stage == 3:
+            px[3, 3] = CREAM  # a glint
+        return im
+
+    save(strip([frame(i) for i in range(4)]), "ui/backpack.png", frame=(24, 24), frames=4, grade=False)
+
+
 # ---------------------------------------------------------------- fonts
 OUTLINE = (37, 19, 26)  # the one dark edge colour shared by every actor and all lettering
 CHARS = [chr(c) for c in range(32, 127)] + ["\u00b7"]
@@ -657,7 +768,7 @@ def palette_pass():
 
 
 if __name__ == "__main__":
-    for step in (backdrop, lake, pier, angler, wildlife, fish, effects, ui, fonts, palette_pass):
+    for step in (backdrop, lake, pier, angler, wildlife, fish, effects, ui, backpack, fonts, palette_pass):
         step()
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1) + "\n")
     print(f"{len(manifest['images'])} images, {len(manifest['sheets'])} sheets")
