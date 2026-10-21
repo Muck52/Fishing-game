@@ -859,33 +859,63 @@ def journal():
         t = (SP - x) / (SP - OUTER)
         bow = t ** 0.7
         return round((PY0 - RISE * bow) if top else (PY1 + RISE * bow))
-    T = 10  # the turned pages' thickness at the free edge
+    T = 13  # the turned pages' thickness at the free edge
     C = 9  # the cover board round them: its inside face, then its thick edge
     for x in range(OUTER - T - C, SP):
         xe = max(x, OUTER)
         t = (SP - xe) / (SP - OUTER)
         y0, y1 = edge_y(xe, True), edge_y(xe, False)
-        band = round(1 + 6 * t)  # the page block seen along the top and bottom
+        band = round(1 + 7 * t)  # the page block seen along the top and bottom
         for y in range(y0 - band - C, y1 + band + C + 1):
             if x >= OUTER and y0 <= y <= y1:
                 n = hash01(x, y, 13)
-                # darker toward the spine where it curves and turns from the light
-                c = BASE if t > 0.55 and n > 0.04 else AGED if t > 0.25 or n > 0.5 else DEEP
-                if t < 0.12:
-                    c = DEEP if n > 0.2 else EDGE2
+                # the top page curves: lit across its middle, shading down
+                # into the gutter and a little as it curls to its free edge
+                v = 1 - abs(t - 0.6) / 0.6
+                if t < 0.1:
+                    c = DEEP if n > 0.25 else EDGE2
+                elif v > 0.85:
+                    c = hexc("#f5f2db") if n > 0.3 else BASE
+                elif v > 0.6:
+                    c = BASE if n > 0.08 else AGED
+                elif v > 0.35:
+                    c = AGED if n < (0.6 - v) * 2.5 else BASE
+                elif v > 0.18:
+                    c = AGED if n > 0.25 else DEEP
+                else:
+                    c = DEEP if n > 0.4 else AGED
                 px[x, y] = c
                 continue
             # the edges of the turned pages: fine lines, each page a shade
             # different, a few standing proud of the rest
             if x < OUTER:
-                k = OUTER - 1 - x  # how deep into the block, along the free edge
+                k = OUTER - 1 - x  # which page, counting back into the block
                 proud = hash01(0, y // 3, 8) > 0.82
-                if k < T - (0 if proud else 1) and y0 - band - (k * band) // T <= y <= y1 + band + (k * band) // T:
-                    px[x, y] = (EDGE2, AGED, BASE, AGED)[(k + (y // 7) % 2) % 4] if hash01(x, y, 6) > 0.08 else DEEP
+                tip = round(hash01(k, 1, 9) * 3)  # each page ends a little short or long
+                reach = band + (k * band) // T
+                if k < T - (0 if proud else 1) and y0 - reach + tip <= y <= y1 + reach - tip:
+                    if k == 0:
+                        c = DEEP  # the shadow of the top page on the pages below
+                    else:
+                        # each page's edge a shade of its own, darker deeper in
+                        deep = k / T
+                        light = BASE if k % 2 else AGED
+                        c = light if deep < 0.45 else (AGED if k % 2 else EDGE2) if deep < 0.8 else (EDGE2 if k % 2 else DEEP)
+                        if hash01(x, y // 2, 6) < 0.06:
+                            c = DEEP  # a page edge catching in shadow
+                    px[x, y] = c
                     continue
             elif y0 - band <= y < y0 or y1 < y <= y1 + band:
-                k = (y0 - y) if y < y0 else (y - y1)
-                px[x, y] = (AGED, EDGE2, BASE)[k % 3] if hash01(x, y, 6) > 0.06 else DEEP
+                k = (y0 - y) if y < y0 else (y - y1)  # which page along the top or bottom
+                dip = hash01(x // 5, k, 7) < 0.12  # a page tip dipping out of line
+                if k == 1:
+                    c = DEEP
+                elif dip:
+                    c = EDGE2
+                else:
+                    deep = k / max(1, band)
+                    c = (BASE if k % 2 else AGED) if deep < 0.5 else (AGED if k % 2 else EDGE2)
+                px[x, y] = c
                 continue
             # the cover board behind the pages: its inside face, stitched,
             # then the board's own thickness turned toward you, darker, with

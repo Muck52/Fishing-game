@@ -245,7 +245,12 @@ overhangs the pages, stitched round the edge with brass corner caps, and
 the edges of the pages beneath show along the right and bottom. You're
 well into the book, so the lifted half is thick with turned pages: a deep
 block of page edges along its free edge and its top and bottom, deeper
-toward the free edge (it's nearer), a few pages standing proud of the rest,
+toward the free edge (it's nearer), a few pages standing proud of the rest.
+The pages have depth of their own: the top page curves, lit across its
+middle and shading into the gutter and toward its curling edge; under it,
+each page's edge is a shade of its own, darker deeper into the block, with
+a thin shadow where the top page overhangs the rest, and the page tips
+along the top and bottom staggered as real pages are,
 and round them the lifted cover: a thick board whose stitched inside face
 shows, then its own edge turned toward you, darker, with a worn highlight
 and brass on its corners. The whole book is centred on the screen, as much
