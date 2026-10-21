@@ -3,6 +3,7 @@
 // bright water. Shading is clean bands of a colour ramp with dark outlines.
 import { Painter, mix, mulberry32, shade, noise } from './Painter.js';
 import { P } from './palette.js';
+import { placePiece } from './Packs.js';
 import { AW, AH, HORIZON, DOCK_AY } from '../core/constants.js';
 
 export const SUN = { x: 138, y: 30 };
@@ -334,14 +335,15 @@ function paintForest(scene, rng) {
     else tree(p, x, base - 1 - Math.floor(rng() * 3), 5 + Math.floor(rng() * 3), P.leafBack, x + 10);
   }
   snag(p);
-  // front rank: big round canopies, a few pines, splashes of colour
+  // front rank: trees from the Tiny Town pack, gold tamaracks among them and
+  // the odd painted blossom tree for a splash of pink
   for (let x = 24; x < AW + 8; x += 9 + Math.floor(rng() * 6)) {
     const roll = rng();
-    if (roll < 0.22) pine(p, x, base, 16 + Math.floor(rng() * 10), P.pine);
-    else {
-      const colour = roll < 0.3 ? P.maple : roll < 0.36 ? P.blossom : roll < 0.55 ? P.leafLime : P.leaf;
-      tree(p, x, base, 6 + Math.floor(rng() * 4), colour, x + 300);
-    }
+    const v = rng();
+    if (roll < 0.22) placePiece(p, 'tree-tall', x, base + 2, v < 0.5);
+    else if (roll < 0.3) placePiece(p, v < 0.5 ? 'tree-tall-gold' : 'tree-small-gold', x, base + 2, v < 0.25);
+    else if (roll < 0.36) tree(p, x, base, 6 + Math.floor(v * 4), P.blossom, x + 300);
+    else placePiece(p, v < 0.5 ? 'tree-small' : v < 0.8 ? 'bush' : 'tree-tall', x, base + 2, v < 0.3);
   }
   cliff(p);
   // grassy shore with wildflowers
@@ -349,6 +351,8 @@ function paintForest(scene, rng) {
     for (let y = base - 1; y < HORIZON; y++) p.px(x, y, tone(P.grass, y === base - 1 ? 0.35 : -0.2));
     if (noise(x, 0, 32) < 0.12) p.px(x, base - 1, [P.flowerRed, P.flowerYellow, P.flowerWhite][x % 3]);
   }
+  // boulders from the Zelda-like pack along the waterline
+  [[44, 'rock-3'], [70, 'rock-4'], [101, 'rock-1'], [133, 'rock-3'], [150, 'rock-4'], [174, 'rock-0']].forEach(([x, k], i) => placePiece(p, k, x, HORIZON + 1, i % 2 === 1));
   p.texture(scene, 'forest');
   return p;
 }
@@ -432,6 +436,9 @@ function paintWater(scene, rng, mountains, forest) {
     p.hline(cx - len, cx + len, r, '#ffffff', 0.7 * (1 - r / 80));
   }
 
+  // rocks breaking the surface, ringed in foam
+  placePiece(p, 'rock-wet-0', 58, REED_BED.y - HORIZON + 12);
+  placePiece(p, 'rock-wet-1', 118, 36, true);
   island(p, 160, 20);
   basking(p, Math.round(AW * 0.66), Math.round(h * 0.42));
   lilyPads(p, rng, 56, REED_BED.y - HORIZON + 4, 5);
