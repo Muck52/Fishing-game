@@ -3,19 +3,24 @@ import { pill } from './Panels.js';
 import { FISH, RARITY } from '../../data/fish/fish.js';
 import { JOURNAL } from '../../data/fish/journal.js';
 import { Swimmer } from '../fish/Swim.js';
-import { Flopper, FLOPS } from '../fish/Flop.js';
+import { Flopper } from '../fish/Flop.js';
 
-// The book lying open: two pages either side of the gutter. Its height is
-// about three quarters of the screen; the art's middle repeats to fit.
+// The book lying open: two pages either side of the gutter, in the
+// proportions of a real open book. A 6 x 9 in page opens to a 12 x 9 in
+// spread, 4:3 (an A5 journal is about 1.41:1, a Moleskine 1.24:1), so the
+// spread is three quarters as tall as it is wide. The art's middle repeats
+// to fit.
 const BW = 352;
-const BH = Math.round(Math.min(600, H * 0.75) / 2) * 2;
+const BH = Math.round((BW * 3) / 4 / 2) * 2;
 const TOP = -BH / 2;
 const PAGE_TOP = TOP + 9;
 const PAGE_BOT = TOP + BH - 13;
 const LP = { x0: -164, x1: -2 }; // the left page
 const RP = { x0: 1, x1: 163 }; // the right page
-const PAD = 10;
-const FOOT = PAGE_BOT - 16;
+const PAD = 8;
+const FOOT = PAGE_BOT - 11;
+const LINE = 14; // a line of ink text, line spacing included
+const ROW = 36; // a line in the contents
 const TURN_MS = 420;
 
 // Ink on the page, in plain blocky letters (the 'ink' fonts have no dark
@@ -44,7 +49,11 @@ export class Journal {
     this.save = save;
     this.canOpen = canOpen;
     this.isOpen = false;
-    this.page = 0; // 0 is the contents; fish i is on page i + 1
+    // the contents fill the first few spreads; then a spread for each fish
+    this.perPage = Math.floor((FOOT - 14 - (PAGE_TOP + 34)) / ROW);
+    this.contentSpreads = Math.ceil(FISH.length / (this.perPage * 2));
+    this.last = this.contentSpreads + FISH.length - 1;
+    this.page = 0;
 
     const bx = W - 62;
     const by = H - 26;
@@ -73,7 +82,7 @@ export class Journal {
   }
 
   homeY() {
-    return Math.round(H / 2 - 10);
+    return Math.round(H / 2 + 12); // a little below the middle, clear of the hints
   }
 
   // ---- building a spread ----------------------------------------------------
@@ -83,21 +92,24 @@ export class Journal {
     const s = this.scene;
     const sp = { left: s.add.container(0, 0), right: s.add.container(0, 0), hits: [], swim: null, sprite: null };
     this.pages.add([sp.left, sp.right]);
-    if (n === 0) this.contents(sp);
-    else this.fishPages(sp, FISH[n - 1]);
+    const fish = n - this.contentSpreads;
+    if (fish < 0) this.contents(sp, n);
+    else this.fishPages(sp, FISH[fish]);
     // turning: an arrow in each outer corner, and a way back to the contents
     const l = this.writer(sp.left);
     const r = this.writer(sp.right);
     if (n > 0) {
-      l(LP.x0 + 16, FOOT, '<', { font: 'ink-bold', size: 2, color: RED });
-      l(mid(LP), FOOT, 'Contents', { color: PENCIL });
-      sp.hits.push({ x0: LP.x0, x1: LP.x0 + 50, y0: FOOT - 20, y1: FOOT + 16, go: () => this.turnTo(n - 1) });
-      sp.hits.push({ x0: mid(LP) - 40, x1: mid(LP) + 40, y0: FOOT - 12, y1: FOOT + 12, go: () => this.turnTo(0) });
-      r(mid(RP), FOOT, `${n} / ${FISH.length}`, { font: 'ink-bold', color: PENCIL });
+      l(LP.x0 + 14, FOOT, '<', { font: 'ink-bold', size: 2, color: RED });
+      sp.hits.push({ x0: LP.x0, x1: LP.x0 + 46, y0: FOOT - 18, y1: FOOT + 14, go: () => this.turnTo(n - 1) });
     }
-    if (n < FISH.length) {
-      r(RP.x1 - 16, FOOT, '>', { font: 'ink-bold', size: 2, color: RED });
-      sp.hits.push({ x0: RP.x1 - 50, x1: RP.x1, y0: FOOT - 20, y1: FOOT + 16, go: () => this.turnTo(n + 1) });
+    if (fish >= 0) {
+      l(mid(LP), FOOT, 'Contents', { color: PENCIL });
+      sp.hits.push({ x0: mid(LP) - 40, x1: mid(LP) + 40, y0: FOOT - 12, y1: FOOT + 12, go: () => this.turnTo(0) });
+      r(mid(RP), FOOT, `${fish + 1} / ${FISH.length}`, { font: 'ink-bold', color: PENCIL });
+    }
+    if (n < this.last) {
+      r(RP.x1 - 14, FOOT, '>', { font: 'ink-bold', size: 2, color: RED });
+      sp.hits.push({ x0: RP.x1 - 46, x1: RP.x1, y0: FOOT - 18, y1: FOOT + 14, go: () => this.turnTo(n + 1) });
     }
     pin(sp.left);
     pin(sp.right);
@@ -118,45 +130,42 @@ export class Journal {
     const t = this.writer(c);
     t(p.x0 + PAD, y, head, { font: 'ink-bold', color: RED }).setOrigin(0, 0.5);
     const b = t(p.x0 + PAD, y + 9, body, { color: PEN, width: p.x1 - p.x0 - PAD * 2, align: 0 }).setOrigin(0, 0);
-    b.setLineSpacing(-7);
-    return y + 9 + b.getTextBounds(true).local.height + 12;
+    b.setLineSpacing(LINE - 22).setLetterSpacing(-1); // set a pixel tighter to fit the small page
+    return y + 9 + b.getTextBounds(true).lines.lengths.length * LINE + 13;
   }
 
   // The contents: every fish in the book's order, its picture, name and
-  // page. Tap one to go straight to it.
-  contents(sp) {
+  // page, over as many spreads as it takes. Tap one to go straight to it.
+  contents(sp, n) {
     const s = this.scene;
     const species = this.save.data.species;
-    const half = Math.ceil(FISH.length / 2);
-    const head = this.writer(sp.left)(mid(LP), PAGE_TOP + 24, 'Contents', { font: 'ink-bold', size: 2, color: RED });
+    const per = this.perPage;
+    const head = this.writer(sp.left)(mid(LP), PAGE_TOP + 16, 'Contents', { font: 'ink-bold', size: 2, color: RED });
     if (head.getTextBounds(true).local.width > LP.x1 - LP.x0 - 16) head.setFontSize(16);
-    this.writer(sp.right)(mid(RP), PAGE_TOP + 24, 'tap a fish', { color: PENCIL });
-    const rowsTop = PAGE_TOP + 46;
-    const rowH = Math.floor((FOOT - 14 - rowsTop) / half);
-    FISH.forEach((f, i) => {
-      const p = i < half ? LP : RP;
-      const c = i < half ? sp.left : sp.right;
-      const y = Math.round(rowsTop + (i % half) * rowH + rowH / 2);
+    this.writer(sp.right)(mid(RP), PAGE_TOP + 16, n === 0 ? 'tap a fish' : '', { color: PENCIL });
+    const rowsTop = PAGE_TOP + 34;
+    for (let k = 0; k < per * 2; k++) {
+      const i = n * per * 2 + k;
+      const f = FISH[i];
+      if (!f) break;
+      const p = k < per ? LP : RP;
+      const c = k < per ? sp.left : sp.right;
+      const y = rowsTop + (k % per) * ROW + ROW / 2;
       const known = !!species[f.id];
-      const img = s.add.image(p.x0 + 6 + 23, y, `fish-${f.id}`, 0);
+      // the name across the page, then the fish and its page under it
+      const w = this.writer(c);
+      const name = w(p.x0 + PAD, y - 9, known ? f.name : '???', { color: known ? PEN : PENCIL }).setOrigin(0, 0.5);
+      if (name.getTextBounds(true).local.width > p.x1 - p.x0 - PAD * 2) name.setLetterSpacing(-1); // a long name set a little tighter
+      const img = s.add.image(p.x0 + PAD + 23, y + 7, `fish-${f.id}`, 0);
       if (!known) img.setTintFill(0x342a24);
       c.add(img);
-      const w = this.writer(c);
-      // the name, and its page beneath it in pencil, centred on the row
-      const nx = p.x0 + 6 + 50;
-      const room = p.x1 - nx - 2;
-      const name = w(nx, 0, known ? f.name : '???', { color: known ? PEN : PENCIL, width: room, align: 0 }).setOrigin(0, 0).setLineSpacing(-8);
-      if (name.getTextBounds(true).local.width > room) name.setLetterSpacing(-1); // one long word, set a little tighter
-      const lines = name.getTextBounds(true).lines.lengths.length;
-      const LINE = 14;
-      name.y = Math.round(y - ((lines + 1) * LINE) / 2) + 2;
-      w(nx, name.y + lines * LINE, `page ${i + 1}`, { color: PENCIL }).setOrigin(0, 0);
+      w(p.x1 - PAD, y + 7, `page ${i + 1}`, { color: PENCIL }).setOrigin(1, 0.5);
       // a dotted rule under each entry
       const g = s.add.graphics();
-      for (let x = p.x0 + PAD; x < p.x1 - PAD; x += 3) g.fillStyle(0xe7cd8d, 1).fillRect(x, Math.round(y + rowH / 2) - 1, 1, 1);
+      for (let x = p.x0 + PAD; x < p.x1 - PAD; x += 3) g.fillStyle(0xe7cd8d, 1).fillRect(x, y + ROW / 2 - 1, 1, 1);
       c.add(g);
-      sp.hits.push({ x0: p.x0, x1: p.x1, y0: y - rowH / 2, y1: y + rowH / 2, go: () => this.turnTo(i + 1) });
-    });
+      sp.hits.push({ x0: p.x0, x1: p.x1, y0: y - ROW / 2, y1: y + ROW / 2, go: () => this.turnTo(this.contentSpreads + i) });
+    }
   }
 
   // A fish's spread: its name, photo and record on the left, notes on the
@@ -170,12 +179,16 @@ export class Journal {
     const cx = mid(LP);
     const inner = LP.x1 - LP.x0 - 16;
 
-    const title = t(cx, PAGE_TOP + 24, known ? fish.name : '???', { font: 'ink-bold', size: 2, color: RED });
+    const title = t(cx, PAGE_TOP + 16, known ? fish.name : '???', { font: 'ink-bold', size: 2, color: RED });
     if (title.getTextBounds(true).local.width > inner) title.setFontSize(16);
-    if (known) t(cx, PAGE_TOP + 44, fish.latin, { color: PENCIL, width: inner }).setLineSpacing(-5);
+    if (known) {
+      const latin = t(cx, PAGE_TOP + 33, fish.latin, { color: PENCIL });
+      if (latin.getTextBounds(true).local.width > inner) latin.setLetterSpacing(-1);
+      if (latin.getTextBounds(true).local.width > inner) latin.setText(fish.latin.split(' ')[0][0] + '. ' + fish.latin.split(' ')[1]); // abbreviate the genus, as naturalists do
+    }
 
     // the photo, taped in
-    const photo = { x: Math.round(cx - 68), y: PAGE_TOP + 66, w: 136, h: 80 };
+    const photo = { x: Math.round(cx - 68), y: PAGE_TOP + 48, w: 136, h: 58 };
     const g = s.add.graphics();
     sp.left.add(g);
     const f = { x: photo.x - 5, y: photo.y - 5, w: photo.w + 10, h: photo.h + 20 };
@@ -191,7 +204,7 @@ export class Journal {
     for (let y = 0; y < photo.h * 0.7; y += 2) g.fillStyle(0xb2d0d0, 0.14).fillRect(photo.x + 24 + Math.floor(y / 3), photo.y + y, 3, 1);
     for (let x = 0; x < photo.w; x++) if (x % 3) g.fillStyle(0xb0ecf0, 0.7).fillRect(photo.x + x, photo.y, 1, 1);
     g.fillStyle(0xa9805f, 1).fillRect(photo.x, photo.y + photo.h - 5, photo.w, 5);
-    for (const [wx, wh, col] of [[8, 20, 0x407e55], [14, 12, 0x51642b], [118, 22, 0x407e55], [124, 14, 0x51642b]]) {
+    for (const [wx, wh, col] of [[8, 16, 0x407e55], [14, 10, 0x51642b], [118, 18, 0x407e55], [124, 11, 0x51642b]]) {
       for (let j = 0; j < wh; j++) g.fillStyle(col, 1).fillRect(photo.x + wx + (Math.floor(j / 4) % 2), photo.y + photo.h - 5 - j, 2, 1);
     }
     for (const tx of [f.x - 8, f.x + f.w - 22]) {
@@ -212,21 +225,21 @@ export class Journal {
       t(photo.x + photo.w / 2, photo.y + photo.h / 2, '?', { font: 'head', size: 2, color: INK.cream });
     }
     const cap = photo.y + photo.h + 9;
-    t(photo.x, cap, RARITY[fish.rarity].label.toUpperCase(), { font: 'ink-bold', color: STAMP[fish.rarity] }).setOrigin(0, 0.5);
-    if (known) t(photo.x + photo.w, cap, 'tap me!', { color: PENCIL }).setOrigin(1, 0.5);
-
-    let y = cap + 24;
+    const rarity = t(photo.x, cap, RARITY[fish.rarity].label.toUpperCase(), { font: 'ink-bold', color: STAMP[fish.rarity] }).setOrigin(0, 0.5);
     if (known) {
-      t(LP.x0 + PAD, y, `Caught: ${rec.count}`, { color: PENCIL }).setOrigin(0, 0.5);
-      t(LP.x0 + PAD, y + 14, `Best: ${rec.best.toFixed(1)} lb`, { color: PENCIL }).setOrigin(0, 0.5);
-      this.note(sp.left, LP, y + 36, 'Did you know?', facts.fact);
-      y = PAGE_TOP + 24;
+      const tap = t(photo.x + photo.w, cap, 'tap it!', { color: PENCIL }).setOrigin(1, 0.5);
+      if (tap.getTextBounds(true).local.width + rarity.getTextBounds(true).local.width + 6 > photo.w) tap.setText('');
+      this.note(sp.left, LP, cap + 20, 'Did you know?', facts.fact);
+      let y = PAGE_TOP + 16;
       y = this.note(sp.right, RP, y, 'Lives', facts.habitat);
       y = this.note(sp.right, RP, y, 'Eats', facts.eats);
-      y = this.note(sp.right, RP, y, 'Size', facts.size);
-      this.note(sp.right, RP, y, 'Out of water', FLOPS[fish.id].say);
+      this.note(sp.right, RP, y, 'Size', facts.size);
+      // your own record, pencilled in at the foot of the page
+      const r = this.writer(sp.right);
+      r(RP.x0 + PAD, FOOT - 40, `Caught: ${rec.count}`, { color: PENCIL }).setOrigin(0, 0.5);
+      r(RP.x0 + PAD, FOOT - 26, `Best: ${rec.best.toFixed(1)} lb`, { color: PENCIL }).setOrigin(0, 0.5);
     } else {
-      y = this.note(sp.right, RP, PAGE_TOP + 24, 'Not caught yet', 'Catch one to fill in these pages.');
+      const y = this.note(sp.right, RP, PAGE_TOP + 16, 'Not caught yet', 'Catch one to fill in these pages.');
       this.note(sp.right, RP, y, 'A clue', facts.habitat);
     }
   }
@@ -256,7 +269,7 @@ export class Journal {
     if (s && !this.flop && Math.abs(x - s.x) < s.displayWidth / 2 + 6 && Math.abs(y - s.y) < s.displayHeight / 2 + 6) {
       // a fish out of water, right there in the photo
       s.anims.stop();
-      this.flop = new Flopper(this.scene, s, FISH[this.page - 1].id, cur.left);
+      this.flop = new Flopper(this.scene, s, FISH[this.page - this.contentSpreads].id, cur.left);
       this.flop.bout();
     }
   }
@@ -264,7 +277,7 @@ export class Journal {
   // ---- turning pages --------------------------------------------------------
 
   turnTo(n) {
-    if (n < 0 || n > FISH.length || n === this.page || this.turn) return;
+    if (n < 0 || n > this.last || n === this.page || this.turn) return;
     const dir = n > this.page ? 1 : -1;
     this.endFlop();
     const old = this.cur;
@@ -401,7 +414,7 @@ export class Journal {
       if (this.flop.mode === 'rest') {
         // done flopping: back to swimming
         this.endFlop();
-        this.cur.sprite.play(`swim-${FISH[this.page - 1].id}`);
+        this.cur.sprite.play(`swim-${FISH[this.page - this.contentSpreads].id}`);
       }
     } else this.cur?.swim?.update(dt);
   }

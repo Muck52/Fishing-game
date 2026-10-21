@@ -232,25 +232,28 @@ patches and rubbed corners, a fish pressed into the cover, a strap with a
 brass clasp. It swings open (and a page corner lifts now and then) while
 the journal is open, and shuts when it closes.
 
-Open, it lies flat as a whole book, about three quarters of the screen
-tall: two pages either side of the gutter (each aged toward its edges and
-curving down into the spine) on grained, scuffed leather boards stitched
-round the edge with brass corner caps, the edges of the pages beneath
-stacked along both outer sides and the bottom (`book-top`, a repeating
-`book-mid` and `book-bottom`, so it fits any phone). A red satin ribbon
+Open, it lies flat as a whole book in the proportions of a real one: a
+6 x 9 in page opens to a 12 x 9 in spread, 4:3 (an A5 journal is about
+1.41:1, a Moleskine-style notebook 1.24:1), so the spread is three quarters
+as tall as it is wide. Two pages sit either side of the gutter (each aged
+toward its edges and curving down into the spine) on grained, scuffed
+leather boards stitched round the edge with brass corner caps, the edges of
+the pages beneath stacked along both outer sides and the bottom
+(`book-top`, a repeating `book-mid` and `book-bottom`). A red satin ribbon
 bookmark lies down the gutter and hangs out past the cover, V-cut at its
 end, its tail stirring now and then; tap it to go to the contents. The
 same ribbon trails from the closed journal on the button.
 
-The first spread is the contents: every fish in the book's order with its
-picture (a silhouette until caught), its name and its page. Tap one to go
+The first spreads are the contents: every fish in the book's order with its
+name, its picture (a silhouette until caught) and its page. Tap one to go
 straight there; from any page the arrows go to the next or previous fish
 in the same order. Pages turn with a sheet that lifts off the right-hand
 page, narrows as it stands on edge over the gutter (rising and darkening)
 and lays down over the left; going back, it runs the other way.
 
-Each fish has a spread: name, photo, record and a fact on the left, notes
-on the right. On it:
+Each fish has a spread: name, photo and a fact on the left; where it
+lives, what it eats, its size and your record on the right. Body text is
+set a pixel tighter to suit the small page. On it:
 - the name as a bold red heading and the Latin name in grey;
 - a photo taped in at both corners: a window onto the lake (its own water
   colours, light shafts, sand and weed) with the fish swimming in it at 2x,
@@ -263,8 +266,7 @@ on the right. On it:
   eel. Tap it and it flops like a fish out of water, then swims on;
 - how many you've caught and the best weight;
 - notes in brown ink under bold red headings: where it lives, what it eats, how big it grows,
-  something worth knowing (`data/fish/journal.js`) and how it behaves out
-  of the water.
+  and something worth knowing (`data/fish/journal.js`).
 
 A fish not yet caught is a dark silhouette with a question mark, with only
 a clue to where it lives. Swipe or tap the arrows to turn the page.
@@ -287,7 +289,7 @@ a clue to where it lives. Swipe or tap the arrows to turn the page.
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
 | Backpack (inventory button and icon) | drawn in the build (`backpack()`) in palette colours | 24 x 24, 1x | shared | closed; opens in 3 frames when the inventory opens, then a slow rummage loop; shuts again when it closes; a little hop now and then |
-| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; open book 352 wide, 3/4 of the screen tall, 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
+| Journal (button icon and book) | drawn in the build (`journal()`) in palette colours | icon 24 x 24; open book 352 x 264 (4:3), 1x | shared | closed; opens in 3 frames, page corner lifting while read; the page slides as it turns |
 | Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |
 
 ## Changing the art
