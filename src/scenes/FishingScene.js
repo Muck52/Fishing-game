@@ -1,4 +1,4 @@
-import { W, BG, SURFACE_Y, BED_Y, DECK_Y, ANGLER_X, DEPTH, STATE, clamp, lerp, textStyle } from '../core/constants.js';
+import { W, SURFACE_Y, BED_Y, DECK_Y, ANGLER_X, DEPTH, STATE, INK, clamp, lerp, label } from '../core/constants.js';
 import { ART } from '../core/Assets.js';
 import { World } from '../environment/World.js';
 import { depthTint } from '../environment/Lake.js';
@@ -31,8 +31,8 @@ export class FishingScene extends Phaser.Scene {
     this.hud.update(this.save.data);
     this.meter = new TensionMeter(this);
     this.popup = new CatchPopup(this);
-    this.hint = this.add.text(W / 2, 330, '', textStyle(44)).setOrigin(0.5).setDepth(DEPTH.UI);
-    this.note = this.add.text(W / 2, 190, '', textStyle(24, '#fff4d6', { wordWrap: { width: W - 80 } })).setOrigin(0.5).setDepth(DEPTH.UI).setAlpha(0);
+    this.hint = label(this, W / 2, 165, '', { font: 'head', size: 2 }).setDepth(DEPTH.UI);
+    this.note = label(this, W / 2, 95, '', { width: W - 40 }).setDepth(DEPTH.UI).setAlpha(0);
     this.fishSprite = null;
 
     this.input.on('pointerdown', this.onDown, this);
@@ -44,8 +44,8 @@ export class FishingScene extends Phaser.Scene {
 
   setHint(text, fadeAfter = 0) {
     this.tweens.killTweensOf(this.hint);
-    this.hint.setText(text).setAlpha(1).setScale(1);
-    if (text === 'TAP!') this.tweens.add({ targets: this.hint, scale: 1.25, duration: 120, yoyo: true, repeat: 3 });
+    this.hint.setText(text).setAlpha(1).setFontSize(text.length > 12 ? 16 : 32).setTint(text === 'TAP!' ? INK.gold : INK.cream);
+    if (text === 'TAP!') this.tweens.add({ targets: this.hint, alpha: 0.4, duration: 90, yoyo: true, repeat: 3 });
     if (fadeAfter) this.tweens.add({ targets: this.hint, alpha: 0, delay: fadeAfter, duration: 400 });
   }
 
@@ -63,19 +63,19 @@ export class FishingScene extends Phaser.Scene {
   // right (flipped) has its mouth on the right.
   mouth() {
     const f = this.fishSprite;
-    const half = (f.width * BG) / 2;
-    return { x: f.x + (f.flipX ? half : -half), y: f.y + 2 };
+    const half = Math.floor(f.width / 2);
+    return { x: f.x + (f.flipX ? half : -half), y: f.y + 1 };
   }
 
   spawnFish() {
     const id = this.fish.id;
     const fromLeft = this.tackle.x > 160 || Math.random() < 0.6;
-    const y = this.tackle.hookY + R(-40, 40);
-    this.fishSprite = this.add.sprite(fromLeft ? -140 : W * 0.55, y, `fish-${id}`).setScale(BG).setDepth(DEPTH.FISH).setFlipX(fromLeft).play(`swim-${id}`);
-    if (!fromLeft) this.fishSprite.y = BED_Y - 20;
+    const y = this.tackle.hookY + R(-20, 20);
+    this.fishSprite = this.add.sprite(fromLeft ? -70 : W * 0.55, y, `fish-${id}`).setDepth(DEPTH.FISH).setFlipX(fromLeft).play(`swim-${id}`);
+    if (!fromLeft) this.fishSprite.y = BED_Y - 10;
     // it noses up to the bait and hangs there, fins working
-    const w = (ART.anchors.fish[id].w * BG) / 2;
-    this.hover = { x: this.tackle.x + (fromLeft ? -w - 34 : w + 34), y: this.tackle.hookY + 2 };
+    const w = Math.floor(ART.anchors.fish[id].w / 2);
+    this.hover = { x: this.tackle.x + (fromLeft ? -w - 17 : w + 17), y: this.tackle.hookY + 1 };
     this.tweens.add({ targets: this.fishSprite, x: this.hover.x, y: this.hover.y, duration: 2200, ease: 'Sine.easeOut' });
     this.fishSprite.setFlipX(this.hover.x < this.tackle.x).setTint(depthTint(this.hover.y));
   }
@@ -88,7 +88,7 @@ export class FishingScene extends Phaser.Scene {
     const dir = f.flipX ? -1 : 1;
     f.setFlipX(dir > 0).anims.timeScale = 3;
     bubbles(this, f.x, f.y, 3);
-    this.tweens.add({ targets: f, x: f.x + dir * 700, y: f.y + R(-40, 80), duration: 900, ease: 'Quad.easeIn', onComplete: () => f.destroy() });
+    this.tweens.add({ targets: f, x: f.x + dir * 350, y: f.y + R(-20, 40), duration: 900, ease: 'Quad.easeIn', onComplete: () => f.destroy() });
   }
 
   // ---- state changes -------------------------------------------------------
@@ -112,13 +112,13 @@ export class FishingScene extends Phaser.Scene {
     this.setHint('');
     const t = this.tackle;
     const from = this.angler.tip;
-    const landX = Math.round(lerp(from.x - 110, 50, power));
+    const landX = Math.round(lerp(from.x - 55, 25, power));
     this.angler.cast(() => {
       const start = this.angler.tip;
       t.show(true);
       t.x = start.x;
       t.y = start.y;
-      const arc = 120 + power * 220;
+      const arc = 60 + power * 110;
       this.tweens.addCounter({
         from: 0,
         to: 1,
@@ -133,8 +133,8 @@ export class FishingScene extends Phaser.Scene {
           splash(this, landX, 0.6);
           this.state = STATE.WAITING;
           // the bait sinks; a longer cast reaches deeper water
-          t.hookY = SURFACE_Y + 20;
-          this.tweens.add({ targets: t, hookY: lerp(SURFACE_Y + 170, Math.min(BED_Y - 70, SURFACE_Y + 560), power), duration: 1400, ease: 'Sine.easeOut' });
+          t.hookY = SURFACE_Y + 10;
+          this.tweens.add({ targets: t, hookY: Math.round(lerp(SURFACE_Y + 85, Math.min(BED_Y - 35, SURFACE_Y + 280), power)), duration: 1400, ease: 'Sine.easeOut' });
           this.startWaiting();
         },
       });
@@ -166,7 +166,7 @@ export class FishingScene extends Phaser.Scene {
     this.state = STATE.BITE;
     this.biteUntil = this.time.now + 1100 - this.fish.strength * 350;
     this.peck(true);
-    this.tackle.dip = 16;
+    this.tackle.dip = 8;
     this.tackle.shout(true);
     splash(this, this.tackle.x, 0.4);
     this.setHint('TAP!');
@@ -220,9 +220,8 @@ export class FishingScene extends Phaser.Scene {
       ease: 'Sine.easeIn',
       onUpdate: (tw) => {
         const k = tw.getValue();
-        f.x = lerp(x0, ANGLER_X + 30, k);
-        f.y = lerp(y0, DECK_Y - 40, k) - Math.sin(Math.PI * k) * 220;
-        f.rotation = k * 6;
+        f.x = lerp(x0, ANGLER_X + 15, k);
+        f.y = lerp(y0, DECK_Y - 20, k) - Math.sin(Math.PI * k) * 110;
       },
       onComplete: () => f.destroy(),
     });
@@ -231,7 +230,7 @@ export class FishingScene extends Phaser.Scene {
     const value = catchValue(this.fish, this.weight);
     const { isNew, isRecord } = this.save.recordCatch(this.fish, this.weight, value);
     this.time.delayedCall(750, () => {
-      this.hud.coinBurst(ANGLER_X, DECK_Y - 60, value);
+      this.hud.coinBurst(ANGLER_X, DECK_Y - 30, value);
       this.hud.update(this.save.data);
       this.popup.show({ fish: this.fish, weight: this.weight, value, isNew, isRecord, entry: this.save.data.totalCatches });
     });
@@ -275,7 +274,7 @@ export class FishingScene extends Phaser.Scene {
         this.peck(false);
         ripple(this, t.x);
       }
-      t.dip = time < this.nibbleUntil ? 6 : 0;
+      t.dip = time < this.nibbleUntil ? 3 : 0;
       if (time >= this.biteAt && this.fishSprite) this.bite();
     } else if (this.state === STATE.BITE) {
       if (time > this.biteUntil) this.lose('It got away...');
@@ -298,19 +297,18 @@ export class FishingScene extends Phaser.Scene {
     // the fish is dragged from where it bit toward the foot of the pier,
     // fighting up and down and running back out when it surges
     const k = clamp(f.distance / f.startDistance, 0, 1.3);
-    const near = { x: ANGLER_X - 150, y: SURFACE_Y + 70 };
+    const near = { x: ANGLER_X - 75, y: SURFACE_Y + 35 };
     const s = this.fishSprite;
-    const wob = Math.sin(time / 230) * 26 * f.strength + (f.surging ? (Math.random() - 0.5) * 16 : 0);
-    s.x = clamp(lerp(near.x, this.far.x, k) + wob, 40, W - 60);
-    s.y = clamp(lerp(near.y, this.far.y, k) + Math.cos(time / 310) * 20 * f.strength, SURFACE_Y + 50, BED_Y - 30);
-    s.rotation = Math.sin(time / 160) * 0.12 * (0.4 + f.pull);
+    const wob = Math.sin(time / 230) * 13 * f.strength + (f.surging ? (Math.random() - 0.5) * 8 : 0);
+    s.x = Math.round(clamp(lerp(near.x, this.far.x, k) + wob, 20, W - 30));
+    s.y = Math.round(clamp(lerp(near.y, this.far.y, k) + Math.cos(time / 310) * 10 * f.strength, SURFACE_Y + 25, BED_Y - 15));
     s.anims.timeScale = 1 + f.pull * 2;
     s.setTint(depthTint(s.y));
     if (f.surging && Math.random() < 0.06) bubbles(this, s.x, s.y, 1);
 
     // the float is towed along the surface just ahead of the fish
-    this.tackle.x = this.mouth().x + 30;
-    this.tackle.dip = f.tension / 8;
+    this.tackle.x = this.mouth().x + 15;
+    this.tackle.dip = f.tension / 16;
 
     this.meter.update(f.tension, f.distance);
     if (result === 'caught') this.land();

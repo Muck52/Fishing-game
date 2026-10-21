@@ -16,11 +16,15 @@ Every image in the game is compiled from the packs below by
 | [Animated birds 32x32](https://opengameart.org/content/animated-birds-32x32) | MoikMellah | CC0 | gulls and sparrows |
 | [A bald eagle](https://opengameart.org/content/a-bald-eagle) | Spring Spring | CC0 | the eagle |
 | [16x16 duck](https://opengameart.org/content/16x16-duck) | aroachifoundonmypillow | CC0 | ducks |
+| [Kenney Fonts](https://kenney.nl/assets/kenney-fonts) | Kenney | CC0 | all lettering (Kenney Pixel, Kenney Mini), baked to bitmap fonts |
 | [Pixel art lake assets](https://opengameart.org/content/pixel-art-lake-assets) | Amberfall Studio | CC0 | drifting branch, ripples |
 
 The seven species of fish (`assets/source/baked-fish/`) are the game's own
 field-guide paintings, drawn by the game's earlier pixel painter and saved
 as images.
+
+Every image is also recoloured to one master palette (`docs/palette.png`)
+and every actor gets the same outline colour; see `docs/ART_DIRECTION.md`.
 
 Changes made when compiling: the hut is mirrored, the angler is turned to
 face the lake and the line he holds is erased (the game draws its own), the

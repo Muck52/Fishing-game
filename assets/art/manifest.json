@@ -10,31 +10,17 @@
   "water-surface": "assets/art/environments/water-surface.png",
   "underwater": "assets/art/environments/underwater.png",
   "light-ray": "assets/art/effects/light-ray.png",
-  "bed-seaweed-1": "assets/art/environments/bed-seaweed-1.png",
-  "bed-seaweed-2": "assets/art/environments/bed-seaweed-2.png",
-  "bed-seaweed-3": "assets/art/environments/bed-seaweed-3.png",
-  "bed-seaweed-4": "assets/art/environments/bed-seaweed-4.png",
-  "bed-sea-bush-weed-1": "assets/art/environments/bed-sea-bush-weed-1.png",
-  "bed-sea-bush-weed-2": "assets/art/environments/bed-sea-bush-weed-2.png",
-  "bed-sea-flora-plant-1": "assets/art/environments/bed-sea-flora-plant-1.png",
-  "bed-sea-flora-plant-2": "assets/art/environments/bed-sea-flora-plant-2.png",
-  "bed-sea-flora-plant-3": "assets/art/environments/bed-sea-flora-plant-3.png",
-  "bed-sea-flora-plant-4": "assets/art/environments/bed-sea-flora-plant-4.png",
   "bed-sand-pit-2": "assets/art/environments/bed-sand-pit-2.png",
   "bed-sand-pit-3": "assets/art/environments/bed-sand-pit-3.png",
   "bed-sand-pit-4": "assets/art/environments/bed-sand-pit-4.png",
   "bed-sand-pit-5": "assets/art/environments/bed-sand-pit-5.png",
   "bed-clam-small": "assets/art/environments/bed-clam-small.png",
   "lakebed": "assets/art/environments/lakebed.png",
+  "shelf": "assets/art/environments/shelf.png",
   "hut": "assets/art/environments/hut.png",
   "post-wet": "assets/art/environments/post-wet.png",
   "boat": "assets/art/environments/boat.png",
   "barrel": "assets/art/environments/barrel.png",
-  "cattails-1": "assets/art/environments/cattails-1.png",
-  "cattails-2": "assets/art/environments/cattails-2.png",
-  "cattails-3": "assets/art/environments/cattails-3.png",
-  "cattails-4": "assets/art/environments/cattails-4.png",
-  "portrait": "assets/art/ui/portrait.png",
   "bucket": "assets/art/ui/bucket.png",
   "card-bass": "assets/art/fish/bass-card.png",
   "card-bluegill": "assets/art/fish/bluegill-card.png",
@@ -47,7 +33,11 @@
   "mote": "assets/art/effects/mote.png",
   "drop": "assets/art/effects/drop.png",
   "spark": "assets/art/effects/spark.png",
+  "star": "assets/art/effects/star.png",
   "mist": "assets/art/effects/mist.png",
+  "glow": "assets/art/effects/glow.png",
+  "firefly": "assets/art/effects/firefly.png",
+  "light-streak": "assets/art/effects/light-streak.png",
   "ripple-map": "assets/art/effects/ripple-map.png",
   "board": "assets/art/ui/board.png"
  },
@@ -56,6 +46,90 @@
    "url": "assets/art/environments/falls.png",
    "frameWidth": 250,
    "frameHeight": 204,
+   "frames": 4
+  },
+  "bed-seaweed-1": {
+   "url": "assets/art/environments/bed-seaweed-1.png",
+   "frameWidth": 10,
+   "frameHeight": 34,
+   "frames": 4
+  },
+  "bed-seaweed-2": {
+   "url": "assets/art/environments/bed-seaweed-2.png",
+   "frameWidth": 11,
+   "frameHeight": 31,
+   "frames": 4
+  },
+  "bed-seaweed-3": {
+   "url": "assets/art/environments/bed-seaweed-3.png",
+   "frameWidth": 21,
+   "frameHeight": 33,
+   "frames": 4
+  },
+  "bed-seaweed-4": {
+   "url": "assets/art/environments/bed-seaweed-4.png",
+   "frameWidth": 20,
+   "frameHeight": 31,
+   "frames": 4
+  },
+  "bed-sea-bush-weed-1": {
+   "url": "assets/art/environments/bed-sea-bush-weed-1.png",
+   "frameWidth": 24,
+   "frameHeight": 26,
+   "frames": 4
+  },
+  "bed-sea-bush-weed-2": {
+   "url": "assets/art/environments/bed-sea-bush-weed-2.png",
+   "frameWidth": 20,
+   "frameHeight": 21,
+   "frames": 4
+  },
+  "bed-sea-flora-plant-1": {
+   "url": "assets/art/environments/bed-sea-flora-plant-1.png",
+   "frameWidth": 19,
+   "frameHeight": 34,
+   "frames": 4
+  },
+  "bed-sea-flora-plant-2": {
+   "url": "assets/art/environments/bed-sea-flora-plant-2.png",
+   "frameWidth": 16,
+   "frameHeight": 34,
+   "frames": 4
+  },
+  "bed-sea-flora-plant-3": {
+   "url": "assets/art/environments/bed-sea-flora-plant-3.png",
+   "frameWidth": 21,
+   "frameHeight": 35,
+   "frames": 4
+  },
+  "bed-sea-flora-plant-4": {
+   "url": "assets/art/environments/bed-sea-flora-plant-4.png",
+   "frameWidth": 24,
+   "frameHeight": 35,
+   "frames": 4
+  },
+  "cattails-1": {
+   "url": "assets/art/environments/cattails-1.png",
+   "frameWidth": 34,
+   "frameHeight": 33,
+   "frames": 4
+  },
+  "cattails-2": {
+   "url": "assets/art/environments/cattails-2.png",
+   "frameWidth": 40,
+   "frameHeight": 25,
+   "frames": 4
+  },
+  "cattails-3": {
+   "url": "assets/art/environments/cattails-3.png",
+   "frameWidth": 23,
+   "frameHeight": 24,
+   "frames": 4
+  },
+  "cattails-4": {
+   "url": "assets/art/environments/cattails-4.png",
+   "frameWidth": 21,
+   "frameHeight": 23,
    "frames": 4
   },
   "angler": {
@@ -178,12 +252,6 @@
    "frameHeight": 14,
    "frames": 5
   },
-  "glints": {
-   "url": "assets/art/effects/glints.png",
-   "frameWidth": 56,
-   "frameHeight": 36,
-   "frames": 6
-  },
   "bubble": {
    "url": "assets/art/effects/bubble.png",
    "frameWidth": 7,
@@ -221,6 +289,16 @@
    "frames": 4
   }
  },
+ "fonts": {
+  "body": {
+   "png": "assets/art/fonts/body.png",
+   "xml": "assets/art/fonts/body.xml"
+  },
+  "head": {
+   "png": "assets/art/fonts/head.png",
+   "xml": "assets/art/fonts/head.xml"
+  }
+ },
  "anchors": {
   "falls": {
    "x": 326,
@@ -230,6 +308,58 @@
    "x": 352,
    "y": 214
   },
+  "shelf": [
+   33,
+   36,
+   37,
+   37,
+   35,
+   34,
+   36,
+   41,
+   48,
+   54,
+   58,
+   60,
+   63,
+   67,
+   75,
+   85,
+   95,
+   103,
+   109,
+   113,
+   119,
+   126,
+   136,
+   147,
+   157,
+   165,
+   170,
+   176,
+   183,
+   193,
+   206,
+   218,
+   229,
+   238,
+   246,
+   255,
+   267,
+   282,
+   298,
+   313,
+   325,
+   335,
+   345,
+   357,
+   371,
+   387,
+   403,
+   417,
+   428,
+   438
+  ],
   "hut": {
    "deck": 62,
    "stilts": [
@@ -239,7 +369,11 @@
     94.0
    ],
    "w": 192,
-   "h": 122
+   "h": 122,
+   "window": {
+    "x": 109,
+    "y": 41
+   }
   },
   "angler": {
    "idle": [
@@ -304,5 +438,83 @@
     "h": 30
    }
   }
- }
+ },
+ "palette": [
+  "#020102",
+  "#25131a",
+  "#131f39",
+  "#0e2238",
+  "#0e2436",
+  "#0f243a",
+  "#10273f",
+  "#2c2322",
+  "#122d45",
+  "#163235",
+  "#14324c",
+  "#3d2828",
+  "#17354e",
+  "#173953",
+  "#1b3a4f",
+  "#33323d",
+  "#204032",
+  "#1b3f5b",
+  "#1d463d",
+  "#1e4662",
+  "#3c3e44",
+  "#473d33",
+  "#3d452e",
+  "#214c5d",
+  "#3c424e",
+  "#234d69",
+  "#3c4844",
+  "#2b5362",
+  "#275571",
+  "#2c5c78",
+  "#8a3930",
+  "#305e6e",
+  "#833f4c",
+  "#51642b",
+  "#565875",
+  "#635a50",
+  "#71573a",
+  "#536f3e",
+  "#a04f45",
+  "#985252",
+  "#407f54",
+  "#4f738b",
+  "#9e5c39",
+  "#6b7e58",
+  "#8a7358",
+  "#e84a3a",
+  "#c25f62",
+  "#938357",
+  "#b77357",
+  "#ae7764",
+  "#80a78c",
+  "#d88571",
+  "#bd9852",
+  "#a69f9d",
+  "#8ad06a",
+  "#daab76",
+  "#d1b386",
+  "#b2d0d0",
+  "#e7cd8d",
+  "#c8d6be",
+  "#ffd84a",
+  "#ebd9a1",
+  "#e4dab5",
+  "#b0ecf0",
+  "#bae9f0",
+  "#eae2dc",
+  "#ececaa",
+  "#d3f0ee",
+  "#f7ec9b",
+  "#dafafa",
+  "#f6f2d9",
+  "#e5f6f6",
+  "#f9eef3",
+  "#fff4d6",
+  "#ebfafa",
+  "#ffffff"
+ ]
 }

@@ -1,4 +1,4 @@
-import { FG, DECK_Y, ANGLER_X, DEPTH } from '../core/constants.js';
+import { DECK_Y, ANGLER_X, DEPTH } from '../core/constants.js';
 import { ART } from '../core/Assets.js';
 
 // The angler standing at the end of the walkway, facing out over the lake.
@@ -7,7 +7,7 @@ import { ART } from '../core/Assets.js';
 export class Angler {
   constructor(scene) {
     this.scene = scene;
-    this.sprite = scene.add.sprite(ANGLER_X, DECK_Y + FG, 'angler', 0).setOrigin(0.5, 1).setScale(FG).setDepth(DEPTH.ANGLER);
+    this.sprite = scene.add.sprite(ANGLER_X, DECK_Y + 1, 'angler', 0).setOrigin(0.5, 1).setDepth(DEPTH.ANGLER);
     this.idle();
   }
 
@@ -17,7 +17,7 @@ export class Angler {
     const i = Phaser.Math.Clamp(Number(this.sprite.frame.name) - a.fish[0], 0, a.tips.length - 1);
     const t = a.tips[i];
     const s = this.sprite;
-    return { x: s.x + (t.x - 24) * FG + FG / 2, y: s.y - (48 - t.y) * FG + FG / 2 };
+    return { x: s.x + t.x - 24, y: s.y - 48 + t.y };
   }
 
   idle() {
@@ -55,6 +55,6 @@ export class Angler {
 
   hurt() {
     this.sprite.stop().setFrame(ART.anchors.angler.hurt);
-    this.scene.tweens.add({ targets: this.sprite, x: ANGLER_X + 6, duration: 50, yoyo: true, repeat: 3, onComplete: () => this.sprite.setX(ANGLER_X) });
+    this.scene.tweens.add({ targets: this.sprite, x: ANGLER_X + 2, duration: 50, yoyo: true, repeat: 3, onComplete: () => this.sprite.setX(ANGLER_X) });
   }
 }

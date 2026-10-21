@@ -16,18 +16,15 @@ Plan for the next working session on Reel It In.
 - Screenshots in a headless browser are fine for checking layout.
 
 ## Status
-- Done: the whole scene was redrawn as a side view built from image packs
-  (CC0, CC-BY and OGA-BY, see `assets/CREDITS.md`). `tools/build_art.py`
-  compiles `assets/source/` into `assets/art/` plus a manifest the game
-  loads. Fish come to the bait in an underwater cut-away; particles carry
-  splashes, bubbles, motes, waterfall mist and pollen; a displacement
-  ripple and a vignette are the only full-screen effects (bloom was
-  dropped for speed on phones).
-- Next: sound; a day/night tint; more species art; a shop for rods and
-  lures (`src/economy`, `src/equipment` are still empty).
+- Done: side view built from image packs; one 360-px pixel grid; one
+  master palette and shared outline; baked pixel fonts; the lake follows
+  the phone's clock (dawn, day, dusk, night with lit window and fireflies).
+  See `docs/ART_DIRECTION.md` for the rules every new asset must follow.
+- Next: sound; more species art; a shop for rods and lures
+  (`src/economy`, `src/equipment` are still empty); small daily reasons to
+  open the game (a fish of the day, weather).
 
 ## Current scene, for reference
-- Portrait 720 px wide. Backdrop at 2x, everything near the angler at 3x
-  (`BG`, `FG` in `src/core/constants.js`).
+- Portrait canvas 360 px wide, every sprite at 1x (`src/core/constants.js`).
 - Waterline at `SURFACE_Y`, angler on the hut's walkway at `DECK_Y`,
   lakebed at `BED_Y`.

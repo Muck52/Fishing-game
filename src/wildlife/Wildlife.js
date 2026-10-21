@@ -1,19 +1,19 @@
 // The animals of the lake. Birds cross the sky and fish leap now and then;
 // every so often a deer, fox, rabbit or bear comes down to the bank, and
 // gets a field note.
-import { W, BG, SURFACE_Y, DEPTH } from '../core/constants.js';
+import { W, SURFACE_Y, DEPTH } from '../core/constants.js';
 import { FISH } from '../../data/fish/fish.js';
 import { splash } from '../environment/Effects.js';
 
 const R = (a, b) => Phaser.Math.Between(a, b);
-const BANK_Y = SURFACE_Y - 8; // where the far bank meets the water
+const BANK_Y = SURFACE_Y - 4; // where the far bank meets the water
 
 // [walk texture, walk anim, idle anim, speed px/s, how far along the bank, note]
 const VISITORS = {
-  deer: ['deer-walk', 'deer-walk', 'deer-idle', 46, 250, 'A white-tailed doe steps down to the water to drink.'],
-  fox: ['fox-walk', 'fox-walk', 'fox-idle', 60, 200, 'A red fox trots along the bank, nose to the ground.'],
-  rabbit: ['rabbit-hop', 'rabbit-hop', 'rabbit-idle', 50, 150, 'A snowshoe hare stops to nibble clover by the water.'],
-  bear: ['bear-walk', 'bear-walk', 'bear-walk', 34, 170, 'A black bear ambles out of the pines. Best keep your distance.'],
+  deer: ['deer-walk', 'deer-walk', 'deer-idle', 23, 125, 'A white-tailed doe steps down to the water to drink.'],
+  fox: ['fox-walk', 'fox-walk', 'fox-idle', 30, 100, 'A red fox trots along the bank, nose to the ground.'],
+  rabbit: ['rabbit-hop', 'rabbit-hop', 'rabbit-idle', 25, 75, 'A snowshoe hare stops to nibble clover by the water.'],
+  bear: ['bear-walk', 'bear-walk', 'bear-walk', 17, 85, 'A black bear ambles out of the pines. Best keep your distance.'],
 };
 
 export class Wildlife {
@@ -53,15 +53,15 @@ export class Wildlife {
     this.last = key;
     const [tex, walk, idle, speed, reach, note] = VISITORS[key];
     const s = this.scene;
-    const a = s.add.sprite(-60, BANK_Y, tex, 0).setOrigin(0.5, 1).setScale(BG).setDepth(DEPTH.SHORE_LIFE).play(walk);
-    const stop = reach + R(-30, 30);
+    const a = s.add.sprite(-30, BANK_Y, tex, 0).setOrigin(0.5, 1).setDepth(DEPTH.SHORE_LIFE).play(walk);
+    const stop = reach + R(-15, 15);
     const ms = (dx) => (Math.abs(dx) / speed) * 1000;
     s.tweens.chain({
       targets: a,
       tweens: [
-        { x: stop, duration: ms(stop + 60), onComplete: () => { a.play(idle); this.note(note); } },
+        { x: stop, duration: ms(stop + 30), onComplete: () => { a.play(idle); this.note(note); } },
         { x: stop, duration: R(6000, 10000) },
-        { x: -80, duration: ms(stop + 80), onStart: () => a.setFlipX(true).play(walk), onComplete: () => a.destroy() },
+        { x: -40, duration: ms(stop + 40), onStart: () => a.setFlipX(true).play(walk), onComplete: () => a.destroy() },
       ],
     });
   }
@@ -71,32 +71,32 @@ export class Wildlife {
     const s = this.scene;
     const anim = Math.random() < 0.6 ? 'gull-fly' : 'sparrow-fly';
     const right = Math.random() < 0.5;
-    const y0 = R(60, 300);
+    const y0 = R(30, 150);
     for (let i = 0; i < R(1, 3); i++) {
-      const b = s.add.sprite(right ? -40 - i * 50 : W + 40 + i * 50, y0 + R(-30, 30), 'birds').setScale(BG).setDepth(DEPTH.BIRDS).setFlipX(!right);
+      const b = s.add.sprite(right ? -20 - i * 25 : W + 20 + i * 25, y0 + R(-15, 15), 'birds').setDepth(DEPTH.BIRDS).setFlipX(!right);
       b.play({ key: anim, startFrame: i % 6 });
-      s.tweens.add({ targets: b, x: right ? W + 80 : -80, y: b.y + R(-60, 40), duration: R(9000, 14000), delay: i * 400, onComplete: () => b.destroy() });
+      s.tweens.add({ targets: b, x: right ? W + 40 : -40, y: b.y + R(-30, 20), duration: R(9000, 14000), delay: i * 400, onComplete: () => b.destroy() });
     }
   }
 
   // Ducks heading south in a ragged V.
   ducks() {
     const s = this.scene;
-    const y0 = R(90, 220);
+    const y0 = R(45, 110);
     for (let i = 0; i < 5; i++) {
       const side = i % 2 ? 1 : -1;
       const k = Math.ceil(i / 2);
-      const d = s.add.sprite(W + 30 + k * 34, y0 + side * k * 18, 'duck').setScale(BG).setDepth(DEPTH.BIRDS).play({ key: 'duck-fly', startFrame: i % 4 });
-      s.tweens.add({ targets: d, x: d.x - W - 260, y: d.y + 40, duration: 11000, onComplete: () => d.destroy() });
+      const d = s.add.sprite(W + 15 + k * 17, y0 + side * k * 9, 'duck').setDepth(DEPTH.BIRDS).play({ key: 'duck-fly', startFrame: i % 4 });
+      s.tweens.add({ targets: d, x: d.x - W - 130, y: d.y + 20, duration: 11000, onComplete: () => d.destroy() });
     }
   }
 
   // A bald eagle sweeps across high over the lake.
   eagle() {
     const s = this.scene;
-    const e = s.add.sprite(-90, R(80, 180), 'eagle').setScale(BG).setDepth(DEPTH.BIRDS).play('eagle-flap');
-    s.tweens.add({ targets: e, x: W + 90, duration: 15000, onComplete: () => e.destroy() });
-    s.tweens.add({ targets: e, y: e.y + 50, duration: 3500, yoyo: true, repeat: 1, ease: 'Sine.easeInOut' });
+    const e = s.add.sprite(-45, R(40, 90), 'eagle').setDepth(DEPTH.BIRDS).play('eagle-flap');
+    s.tweens.add({ targets: e, x: W + 45, duration: 15000, onComplete: () => e.destroy() });
+    s.tweens.add({ targets: e, y: e.y + 25, duration: 3500, yoyo: true, repeat: 1, ease: 'Sine.easeInOut' });
     this.note('A bald eagle circles high over the lake.');
   }
 
@@ -104,9 +104,9 @@ export class Wildlife {
   jump() {
     const s = this.scene;
     const fish = FISH[R(0, 3)];
-    const x = R(60, W - 340);
+    const x = R(70, W - 170);
     const dir = Math.random() < 0.5 ? -1 : 1;
-    const f = s.add.sprite(x, SURFACE_Y + 10, `fish-${fish.id}`, 0).setScale(BG).setDepth(DEPTH.SPLASH - 0.5).setFlipX(dir > 0);
+    const f = s.add.sprite(x, SURFACE_Y + 5, `fish-${fish.id}`, 0).setDepth(DEPTH.SPLASH - 0.5).setFlipX(dir > 0);
     splash(s, x, 0.5);
     s.tweens.addCounter({
       from: 0,
@@ -114,9 +114,9 @@ export class Wildlife {
       duration: 900,
       onUpdate: (tw) => {
         const t = tw.getValue();
-        f.x = x + dir * t * 90;
-        f.y = SURFACE_Y + 10 - Math.sin(Math.PI * t) * 110;
-        f.rotation = dir * (t - 0.5) * 1.6;
+        f.x = x + dir * t * 45;
+        f.y = SURFACE_Y + 5 - Math.sin(Math.PI * t) * 55;
+        f.setFrame(Math.floor(t * 8) % 4); // flexing in the air
       },
       onComplete: () => {
         splash(s, f.x, 0.7);

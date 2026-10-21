@@ -4,10 +4,10 @@ A cozy pixel-art fishing game for phones, built with [Phaser 3](https://phaser.i
 
 It's late September on Loon Lake, a remote lake in the northern forest. Fog lifts off the water, the tamaracks have turned gold, and the wildlife goes about its morning: an eagle on a dead snag, a loon diving, a heron in the reeds, deer and moose at the far shore, geese heading south. Every catch goes into your field journal.
 
-The scene is a side view of the lake: snowy peaks and a waterfall on the far bank, a fishing hut on stilts, and a cut-away of the water where you can watch the fish come to your bait. All of it is pixel art from free art packs (see `assets/CREDITS.md`).
+The scene is a side view of the lake: snowy peaks and a waterfall on the far bank, a fishing hut on stilts, and a cut-away of the water where you can watch the fish come to your bait. All of it is pixel art from free art packs (see `assets/CREDITS.md`), held together by one pixel grid and one palette (see `docs/ART_DIRECTION.md`). The lake follows your phone's clock: dawn, day, dusk and night each look different. Add `?hour=21` to the address to see another time.
 
 ## Art pipeline
-The original packs live in `assets/source/`. `tools/build_art.py` (Python + Pillow) compiles them into the sprite sheets in `assets/art/` and writes `assets/art/manifest.json`, which the game reads at start-up to load every texture. After changing anything in `assets/source/`, run:
+The original packs live in `assets/source/`. `tools/build_art.py` (Python + Pillow) compiles them into the sprite sheets and pixel fonts in `assets/art/`, recoloured to one master palette, and writes `assets/art/manifest.json`, which the game reads at start-up to load every texture. After changing anything in `assets/source/`, run:
 
 ```
 python3 tools/build_art.py

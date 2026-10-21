@@ -10,6 +10,7 @@ export function loadArt(scene) {
     ART = data;
     for (const [k, url] of Object.entries(data.images)) scene.load.image(k, url);
     for (const [k, s] of Object.entries(data.sheets)) scene.load.spritesheet(k, s.url, { frameWidth: s.frameWidth, frameHeight: s.frameHeight });
+    for (const [k, f] of Object.entries(data.fonts)) scene.load.bitmapFont(k, f.png, f.xml);
   });
 }
 
@@ -35,7 +36,6 @@ const ANIMS = [
   ['duck-fly', 'duck', range(0, 3), 10, -1],
   ['minnow-swim', 'minnow', range(0, 3), 8, -1],
   ['splash', 'splash', range(0, 4), 14, 0],
-  ['glint', 'glints', range(0, 5), 10, 0],
   ['bubble-pop', 'bubble', range(0, 2), 8, -1],
   ['ripple', 'ripple', range(0, 3), 9, 0],
   ['branch-bob', 'branch', range(0, 3), 4, -1],
@@ -49,4 +49,6 @@ export function makeAnims(scene, fishIds) {
   };
   for (const a of ANIMS) add(...a);
   for (const id of fishIds) add(`swim-${id}`, `fish-${id}`, range(0, 3), 7, -1);
+  // plants sway slowly, each sheet four frames
+  for (const key of Object.keys(ART.sheets)) if (key.startsWith('bed-sea') || key.startsWith('cattails')) add(`sway-${key}`, key, range(0, 3), 3, -1);
 }
