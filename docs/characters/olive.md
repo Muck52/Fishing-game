@@ -5,9 +5,11 @@ Australian cattle dog mix who keeps him company on the dock.
 
 ![Olive's animations](olive-sheet.png)
 
-| Idle | Walk | Trot | Head tilt | Sit | Lie |
-| --- | --- | --- | --- | --- | --- |
-| ![](olive-idle.gif) | ![](olive-walk.gif) | ![](olive-trot.gif) | ![](olive-tilt.gif) | ![](olive-sit.gif) | ![](olive-lie.gif) |
+| Lying (breathing) | Blink | Tail wag | Ear flick |
+| --- | --- | --- | --- |
+| ![](olive-lie.gif) | ![](olive-blink.gif) | ![](olive-wag.gif) | ![](olive-ear.gif) |
+
+![Her photo, her sprite, and her at game size beside the angler](olive-compare.png)
 
 ## Her files
 
@@ -15,9 +17,9 @@ Everything that is Olive lives under her name:
 
 | What | Where |
 | --- | --- |
-| Her rig and drawings (source) | `tools/characters/olive.py` |
+| Her drawing and animations (source) | `tools/characters/olive.py` |
 | Her sprite sheet and animation table | `assets/art/characters/olive/olive.png`, `olive.json` |
-| In the game's art | the `olive` sheet in `assets/art/manifest.json`, animations `olive-idle`, `olive-walk`, `olive-trot`, `olive-tilt`, `olive-sit`, `olive-lie` |
+| In the game's art | the `olive` sheet in `assets/art/manifest.json`, animations `olive-lie`, `olive-blink`, `olive-wag`, `olive-ear` |
 | This sheet and her previews | `docs/characters/` |
 
 Build her on her own with `python3 tools/characters/olive.py`; the full art
@@ -25,60 +27,47 @@ build (`python3 tools/build_art.py`) includes her.
 
 ## How she looks
 
-Drawn from photos of her, in the game's palette with its shared outline:
+She's rotoscoped from a photo of her lying on the carpet, so her shape,
+pose and markings are her own rather than a drawn guess:
 
-- **Coat:** black, with light along her back and her far side in shade.
-- **Face:** a narrow white blaze up her forehead widening to a white muzzle;
-  a glossy black nose with a shine, rounded at the end.
-- **Eyes:** warm amber-brown, at the stop where the white of her muzzle meets
-  the black: a white catchlight, a two-tone iris (light catching the top),
-  a dark pupil, and a pixel of black fur between the eye and the blaze so
-  they don't run together.
-- **Ears:** one up (pink inside), one tipped over.
-- **Body:** white chest and throat, white front legs, black hind legs with
-  white socks, a plumed tail carried up in a curl with a white tip.
-- **Bandana:** coral with little cream flowers.
-- **Habit:** she tilts her head when she's curious.
+1. Her outline and her white markings (blaze and muzzle, throat and chest,
+   front legs and belly, hind legs, the tip of her tail) were traced by hand
+   over the photo.
+2. The photo was shrunk to sprite size inside those shapes, and its own light
+   and shade sampled into the game's palette: four shades of black coat (from
+   deep shadow to the sheen along her back) and four of white fur.
+3. Her face (eyes, nose, the line of her mouth), her ears and her bandana
+   were finished by hand, and the game's shared outline drawn around her.
 
-## Her proportions
+- **Coat:** black, sheen along her back, shadow under her ribs and thigh.
+- **Face:** a narrow white blaze widening to a white muzzle, a black nose
+  with a shine, warm brown eyes with catchlights.
+- **Ears:** both up, pink inside.
+- **Body:** white throat, chest, belly and front legs; black thigh over white
+  hind legs; a plumed tail curled over her rump with a white tip.
+- **Bandana:** coral with cream flowers, knotted at her throat.
 
-Taken from her parents' breed standards, then drawn a little larger than
-life so she reads beside the angler.
+## Her size
 
-- A cattle dog's body is a little longer than she is tall at the shoulder,
-  10 to 9, breastbone to buttocks.
-- A husky's muzzle (nose to stop) is as long as its skull (stop to the back
-  of the head), with a clear stop.
-- A husky's leg from elbow to ground is slightly longer than from elbow to
-  withers, so her legs are about as long as her chest is deep.
-- At 40 lb she's at the small end of the mix (about 18 inches at the
-  shoulder). Beside the angler, about 34 pixels tall, a dog her size would
-  be about a third of his height; pixel games draw pets a little large so
-  they read, so she stands a bit over half his height, about 13 pixels at
-  the shoulder.
+50 x 39 pixels lying down, beside the 48-pixel angler frame. The photo was
+taken from a little above her, so her stretched hind legs reach down the
+frame as they do in the picture.
 
 ## How she moves
 
-She's built as a small pixel rig rather than drawn frame by frame. Her head
-and body are fixed pixel drawings; her legs are jointed (shoulder, elbow,
-wrist, paw in front; hip, stifle, hock, paw behind) and placed by a gait;
-her tail is a chain of segments. Every frame still lands on whole pixels.
+Each animation is a small change to the one traced drawing, the way a dog
+lying down really moves, so she always looks like herself.
 
 | Animation | Frames | Speed | What it does |
 | --- | --- | --- | --- |
-| `idle` | 4 | 4 fps | a slow breath (her back rises a pixel), the tail wagging a frame behind |
-| `walk` | 8 | 10 fps | a four-beat walk: hind-left, fore-left, hind-right, fore-right, three paws down at any moment; her hips rise as each hind paw passes under her, the head nods against the body, the tail sways a beat late |
-| `trot` | 6 | 12 fps | diagonal pairs together, a longer stride, a moment with all four paws up, the body bobbing on each beat |
-| `tilt` | 3 | 6 fps | her curious head tilt: a little dip first (anticipation), then the tilt, held |
-| `sit` | 2 | 2 fps | sitting, breathing |
-| `lie` | 2 | 1.5 fps | lying as on the carpet, head up, front legs out ahead; a slow breath |
+| `lie` | 4 | 2 fps | a slow breath: the line of her back rises a pixel from shoulder to hip, her tail tip stirring a beat behind |
+| `blink` | 3 | 8 fps | a quick blink |
+| `wag` | 4 | 8 fps | the white tip of her tail swinging either way |
+| `ear` | 3 | 6 fps | her right ear twitching back at a sound |
 
-The principles behind it: quadrupeds share one footfall order (Muybridge);
-a walk is a four-beat gait with three feet down at a time, a trot moves
-diagonal pairs together; the hips rise as a foot passes under the body;
-secondary parts (tail, ears) follow through a frame behind the body;
-anticipation before a change of pose; and volume kept the same when the body
-squashes or stretches with a breath.
+Standing, walking and trotting will be traced the same way, from a side-on
+photo or video of her and Muybridge's public-domain plates of a dog walking
+(*Animal Locomotion*, 1887, plate 704) for the footfall timing.
 
 ## Sources
 

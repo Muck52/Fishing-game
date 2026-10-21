@@ -1020,8 +1020,8 @@ def journal():
 
 
 def olive():
-    """Olive, the angler's dog: her own character, drawn and animated by her
-    own rig in tools/characters/olive.py. Her sheet and its animation table
+    """Olive, the angler's dog: her own character, traced from her photo and
+    animated in tools/characters/olive.py. Her sheet and its animation table
     go into the manifest under her name."""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
