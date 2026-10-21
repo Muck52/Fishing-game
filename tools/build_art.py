@@ -445,19 +445,25 @@ def fish():
         card = card.crop(card.getbbox())
         img = shrink(card, FISH_LENGTH[path.stem])
         w, h = img.size
+        # A swimming wave that runs from head to tail: each column of the
+        # body is lifted by a sine that lags further behind toward the tail,
+        # and grows from almost nothing at the head to the full sweep at the
+        # tail fin. The head nods a little against it, as real fish do.
         frames = []
-        for f in range(4):
+        n = 6
+        for f in range(n):
             out = Image.new("RGBA", (w, h + 4))
             sp = img.load()
             dp = out.load()
             for x in range(w):
-                t = max(0, (x / w - 0.45) / 0.55)  # 0 at mid-body, 1 at the tail tip
-                dy = round(math.sin(f / 4 * math.pi * 2) * 1.4 * t * t)
+                t = x / (w - 1)  # 0 at the nose (the art faces left), 1 at the tail tip
+                amp = 0.35 + 1.6 * max(0, t - 0.35) ** 1.5 / 0.65 ** 1.5
+                dy = round(amp * math.sin(f / n * math.pi * 2 - t * math.pi * 1.4))
                 for y in range(h):
                     if sp[x, y][3]:
                         dp[x, y + 2 + dy] = sp[x, y]
             frames.append(out)
-        save(strip(frames), f"fish/{path.stem}.png", key=f"fish-{path.stem}", frame=(w, h + 4), frames=4, actor=True)
+        save(strip(frames), f"fish/{path.stem}.png", key=f"fish-{path.stem}", frame=(w, h + 4), frames=n, actor=True)
         save(card, f"fish/{path.stem}-card.png", key=f"card-{path.stem}", actor=True)
         info[path.stem] = {"w": w, "h": h}
     manifest["anchors"]["fish"] = info

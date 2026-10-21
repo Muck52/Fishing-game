@@ -50,6 +50,14 @@ we borrow is the thinking behind them.
 7. **Motion is slow and stepped.** Ambient loops run at 3–8 frames a second;
    floating UI moves in whole-pixel steps (`ease: 'Stepped'`). Fast motion is
    saved for the moments that matter: the bite, the splash, the landing.
+   Creatures move *with* their animation: each walk cycle has a step per
+   frame, measured from the sheet by following a planted foot, and the body
+   advances only by that step as the frame changes, so feet never slide. All
+   creature sheets face left and are turned to face the way they travel.
+   Fish swim with a wave that runs head to tail (6 frames, the tail beating
+   faster when the fish swims faster); big birds alternate wingbeats and
+   glides.
+
 8. **Lettering is part of the art.** Two CC0 Kenney fonts are baked into
    bitmap fonts at their native 16px with the same outline as the sprites
    (`fonts()` in the build). Text is tinted, never resized off the grid.
@@ -71,10 +79,10 @@ we borrow is the thinking behind them.
 | Rowboat and oars | CraftPix skiff, made double-ended; oars drawn in the build | 1x | shared | rides the swell and rocks through 4 baked tilt frames, sending tiny ripples off each end |
 | Tiny ripples | drawn in the build | 22 x 3 | none | spread and fade in 5 frames, all over the surface |
 | Angler | CraftPix fishing (turned, line erased) | 48 x 48 frames | shared | idle, fish, reel, land |
-| Fish species | the game's own field-guide paintings, redrawn small | 18–42 px long, 1x; full painting on the card | shared | 4-frame tail swish; depth tint |
+| Fish species | the game's own field-guide paintings, redrawn small | 18–42 px long, 1x; full painting on the card | shared | 6-frame head-to-tail swim wave; depth tint |
 | Minnows | ansimuz underwater, redrawn small | 13 px long, 1x | shared | 4-frame swim, school |
-| Deer, fox, hare, bear | ScratchIO animals | 1x | shared | walk and idle cycles |
-| Gulls, ducks, eagle | MoikMellah, aroachi, Spring Spring | 1x | shared | flap cycles |
+| Deer, fox, hare, bear | ScratchIO animals | 1x | shared | foot-locked walk, hop and idle cycles; deer drinks, hare nibbles, bear stands planted |
+| Gulls, ducks, eagle | MoikMellah, aroachi, Spring Spring | 1x | shared | gulls and eagle flap then glide; ducks flap steadily |
 | Float, branch, ripples | Nelson Yiap, Amberfall | 1x | shared | bob cycles |
 | Splash, bubbles, coins, boards | Pixel Frog (Treasure Hunters) | 1x | own | splash 5 frames; coin spin |
 | Lettering | Kenney Pixel and Kenney Mini | 16px glyphs, 1x or 2x | shared | stepped bobbing |

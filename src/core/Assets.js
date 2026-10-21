@@ -30,8 +30,8 @@ const ANIMS = [
   ['rabbit-hop', 'rabbit-hop', range(0, 9), 12, -1],
   ['rabbit-idle', 'rabbit-idle', range(0, 9), 6, -1],
   ['bear-walk', 'bear-walk', range(0, 7), 6, -1],
-  ['gull-fly', 'birds', range(0, 5), 10, -1],
-  ['sparrow-fly', 'birds', range(6, 11), 12, -1],
+  ['gull-fly', 'birds', range(0, 4), 10, -1],
+  ['sparrow-fly', 'birds', range(6, 10), 12, -1],
   ['eagle-flap', 'eagle', range(0, 6), 9, -1],
   ['duck-fly', 'duck', range(0, 3), 10, -1],
   ['minnow-swim', 'minnow', range(0, 3), 8, -1],
@@ -49,7 +49,7 @@ export function makeAnims(scene, fishIds) {
     if (!scene.anims.exists(key)) scene.anims.create({ key, frames: scene.anims.generateFrameNumbers(tex, { frames }), frameRate, repeat });
   };
   for (const a of ANIMS) add(...a);
-  for (const id of fishIds) add(`swim-${id}`, `fish-${id}`, range(0, 3), 7, -1);
+  for (const id of fishIds) add(`swim-${id}`, `fish-${id}`, range(0, ART.sheets[`fish-${id}`].frames - 1), 9, -1);
   // plants sway slowly, each sheet four frames
   for (const key of Object.keys(ART.sheets)) if (key.startsWith('bed-sea') || key.startsWith('cattails')) add(`sway-${key}`, key, range(0, 3), 3, -1);
 }

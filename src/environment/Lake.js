@@ -118,6 +118,7 @@ export class Lake {
     const s = this.scene.add.sprite(anywhere ? R(0, W) : fromLeft ? -60 : W + 60, y, `fish-${fish.id}`).setDepth(DEPTH.FISH - 0.5).setAlpha(0.9).play(`swim-${fish.id}`);
     s.setFlipX(fromLeft).setTint(depthTint(y)); // the art faces left
     s.vx = (fromLeft ? 1 : -1) * R(9, 20);
+    s.anims.timeScale = Math.abs(s.vx) / 14; // tail beats faster when it swims faster
     s.baseY = y;
     s.phase = Math.random() * 6;
     return s;
