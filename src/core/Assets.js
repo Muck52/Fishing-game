@@ -58,6 +58,8 @@ export function makeAnims(scene, fishIds) {
   };
   for (const a of ANIMS) add(...a);
   for (const id of fishIds) add(`swim-${id}`, `fish-${id}`, range(0, ART.sheets[`fish-${id}`].frames - 1), 9, -1);
+  // Olive, the angler's dog: her animations are listed with her sheet
+  for (const [name, an] of Object.entries(ART.anchors.olive || {})) add(`olive-${name}`, 'olive', an.frames, an.fps, an.loop ? -1 : 0);
   // plants sway slowly, each sheet four frames
   for (const key of Object.keys(ART.sheets)) if (key.startsWith('bed-sea') || key.startsWith('cattails')) add(`sway-${key}`, key, range(0, 3), 3, -1);
 }

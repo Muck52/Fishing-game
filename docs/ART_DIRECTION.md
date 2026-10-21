@@ -303,6 +303,11 @@ and the notes. On it:
 A fish not yet caught is a dark silhouette with a question mark, with only
 a clue to where it lives. Swipe or tap the arrows to turn the page.
 
+## Olive
+
+The angler's dog, Olive, is a character of her own with her own rig, sheet
+and character sheet: see [docs/characters/olive.md](characters/olive.md).
+
 ## How each piece fits
 
 | Piece | Source pack | Size on grid | Outline | Motion |

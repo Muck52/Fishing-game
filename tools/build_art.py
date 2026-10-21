@@ -1019,6 +1019,18 @@ def journal():
     }
 
 
+def olive():
+    """Olive, the angler's dog: her own character, drawn and animated by her
+    own rig in tools/characters/olive.py. Her sheet and its animation table
+    go into the manifest under her name."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
+    import olive as rig
+    strip, index = rig.sheet()
+    save(strip, "characters/olive/olive.png", key="olive", frame=(rig.FW, rig.FH), frames=strip.width // rig.FW, grade=False)
+    manifest["anchors"]["olive"] = index
+
+
 # ---------------------------------------------------------------- fonts
 OUTLINE = (37, 19, 26)  # the one dark edge colour shared by every actor and all lettering
 CHARS = [chr(c) for c in range(32, 127)] + ["\u00b7"]
@@ -1159,7 +1171,7 @@ def palette_pass():
 
 
 if __name__ == "__main__":
-    for step in (backdrop, lake, pier, angler, wildlife, fish, effects, ui, backpack, journal, fonts, palette_pass):
+    for step in (backdrop, lake, pier, angler, wildlife, fish, effects, ui, backpack, journal, olive, fonts, palette_pass):
         step()
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1) + "\n")
     print(f"{len(manifest['images'])} images, {len(manifest['sheets'])} sheets")
