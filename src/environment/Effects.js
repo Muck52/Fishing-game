@@ -7,22 +7,28 @@ export function ripple(scene, x, y, depth = DEPTH.WATER_LIFE) {
   return r;
 }
 
+// One droplet emitter per scene, shared by every splash.
+function drops(scene) {
+  if (!scene.splashDrops?.scene) {
+    scene.splashDrops = scene.add.particles(0, 0, 'drop', {
+      emitting: false,
+      lifespan: { min: 420, max: 600 },
+      speed: { onEmit: (p) => (50 + Math.random() * 110) * p.emitter.size },
+      angle: { min: 235, max: 305 },
+      gravityY: 640,
+      scale: { onEmit: (p) => p.emitter.px * (Math.random() < 0.3 ? 2 : 1) },
+      alpha: { start: 1, end: 0, ease: 'Quad.easeIn' },
+    }).setDepth(DEPTH.BOBBER + 1);
+  }
+  return scene.splashDrops;
+}
+
 // Ring plus a burst of chunky droplets.
 export function splash(scene, x, y, size = 1) {
   const s = pxScale(y);
   ripple(scene, x, y + s, DEPTH.WATER_LIFE + 0.5);
-  const drops = Math.round(4 + 6 * size);
-  for (let i = 0; i < drops; i++) {
-    const d = PX * (Math.random() < 0.3 ? 2 : 1) * (s / PX);
-    const drop = scene.add.rectangle(x, y, d, d, 0xe6f2ee).setDepth(DEPTH.BOBBER + 1);
-    const peak = (6 + Math.random() * 12) * s * size;
-    scene.tweens.add({
-      targets: drop,
-      x: x + (Math.random() - 0.5) * 16 * s * size,
-      y: { value: y - peak, duration: 240, ease: 'Quad.easeOut', yoyo: true },
-      alpha: { value: 0, delay: 280, duration: 200 },
-      duration: 500,
-      onComplete: () => drop.destroy(),
-    });
-  }
+  const e = drops(scene);
+  e.size = size * (s / PX);
+  e.px = s;
+  e.explode(Math.round(4 + 6 * size), x, y);
 }

@@ -6,6 +6,7 @@ import { Sun } from './Sun.js';
 import { Reeds } from './Reeds.js';
 import { Lighting } from './Lighting.js';
 import { SceneFx } from './SceneFx.js';
+import { Particles } from './Particles.js';
 
 const layer = (scene, key, y, depth) => scene.add.image(0, y, key).setOrigin(0).setScale(PX).setDepth(depth);
 
@@ -86,6 +87,7 @@ export class Scenery {
     scene.add.sprite((MUG.x + 2) * PX, MUG.y * PX, 'steam').setOrigin(0.5, 1).setScale(PX).setAlpha(0.55).setDepth(DEPTH.DOCK_LIFE).play('steam-rise');
 
     this.fx = new SceneFx(scene, this);
+    this.particles = new Particles(scene);
   }
 
   // Glints appear where the low sun lights the water.
@@ -139,6 +141,7 @@ export class Scenery {
     this.sun.update(time, dt, this.clouds);
     this.lighting.update(this.sun.dim);
     this.fx.update(time, w);
+    this.particles.update(w);
     this.waves.update(time, dt);
     this.reeds.update();
     this.falls.tilePositionY -= 40 * dt;

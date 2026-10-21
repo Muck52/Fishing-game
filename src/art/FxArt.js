@@ -1,4 +1,6 @@
-// Textures that drive the screen effects rather than being seen themselves.
+// Textures for the screen effects and particles.
+import { Painter } from './Painter.js';
+import { P } from './palette.js';
 
 export const RIPPLE_FRAMES = 6;
 
@@ -31,4 +33,22 @@ export function paintFxMaps(scene) {
     ctx.putImageData(img, 0, 0);
     tex.refresh();
   }
+}
+
+// Particles: a water droplet, a soft puff of mist and a mote of pollen.
+export function paintParticles(scene) {
+  const drop = new Painter(1, 1);
+  drop.px(0, 0, '#e6f2ee');
+  drop.texture(scene, 'drop');
+  const puff = new Painter(7, 7);
+  for (let y = 0; y < 7; y++) {
+    for (let x = 0; x < 7; x++) {
+      const d = Math.hypot(x - 3, y - 3) / 3.5;
+      if (d < 1) puff.px(x, y, P.mist, (1 - d) * 0.8);
+    }
+  }
+  puff.texture(scene, 'mist-puff');
+  const pollen = new Painter(1, 1);
+  pollen.px(0, 0, P.sun);
+  pollen.texture(scene, 'pollen');
 }

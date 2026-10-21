@@ -4,7 +4,7 @@ import { paintUi } from '../art/UiArt.js';
 import { paintFish } from '../art/FishArt.js';
 import { preloadPacks, recolorPacks } from '../art/Packs.js';
 import { addNormalMaps } from '../art/NormalMaps.js';
-import { paintFxMaps } from '../art/FxArt.js';
+import { paintFxMaps, paintParticles } from '../art/FxArt.js';
 import { FISH } from '../../data/fish/fish.js';
 
 // Loads the art packs and paints every other texture once, up front, then
@@ -25,6 +25,7 @@ export class BootScene extends Phaser.Scene {
     paintUi(this);
     FISH.forEach((fish) => paintFish(this, fish));
     paintFxMaps(this);
+    paintParticles(this);
     addNormalMaps(this);
     this.scene.start('Menu');
   }

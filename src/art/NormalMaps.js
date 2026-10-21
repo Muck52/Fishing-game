@@ -3,7 +3,7 @@
 // silhouette, so the low sun catches the edges turned toward it.
 
 // Things that give off light, or are only light, stay out of the lighting.
-export const UNLIT = /^(sky|sun|sun-glow|sun-rays|cloud-\d|mist-.*|sparkle|steam|ripple|wake|bobber|water-disp-.*|pack-.*|fish.*|ui-.*|__.*)$/;
+export const UNLIT = /^(sky|sun|sun-glow|sun-rays|cloud-\d|mist-.*|sparkle|steam|ripple|wake|bobber|water-disp-.*|drop|mist-puff|pollen|pack-.*|fish.*|ui-.*|__.*)$/;
 
 const STRENGTH = 2;
 
