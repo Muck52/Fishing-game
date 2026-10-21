@@ -1,32 +1,25 @@
-import { paintScenery } from '../art/SceneryArt.js';
-import { paintSprites } from '../art/sprites.js';
-import { paintUi } from '../art/UiArt.js';
-import { paintFish } from '../art/FishArt.js';
-import { preloadPacks, recolorPacks } from '../art/Packs.js';
-import { addNormalMaps } from '../art/NormalMaps.js';
-import { paintFxMaps, paintParticles } from '../art/FxArt.js';
+import { W, H, textStyle } from '../core/constants.js';
+import { loadArt, makeAnims } from '../core/Assets.js';
 import { FISH } from '../../data/fish/fish.js';
 
-// Loads the art packs and paints every other texture once, up front, then
-// opens the title screen.
+// Loads every image the game uses, with a progress bar, then opens the
+// title screen.
 export class BootScene extends Phaser.Scene {
   constructor() {
     super('Boot');
   }
 
   preload() {
-    preloadPacks(this);
+    const label = this.add.text(W / 2, H / 2 - 50, 'Loading...', textStyle(40)).setOrigin(0.5);
+    const bar = this.add.rectangle(W / 2 - 200, H / 2 + 10, 0, 18, 0xffd36a).setOrigin(0, 0.5);
+    this.add.rectangle(W / 2, H / 2 + 10, 408, 26).setStrokeStyle(4, 0xfff4d6);
+    this.load.on('progress', (p) => (bar.width = 400 * p));
+    this.load.on('loaderror', (file) => label.setText(`Could not load ${file.key}`));
+    loadArt(this);
   }
 
   create() {
-    recolorPacks(this);
-    paintScenery(this);
-    paintSprites(this);
-    paintUi(this);
-    FISH.forEach((fish) => paintFish(this, fish));
-    paintFxMaps(this);
-    paintParticles(this);
-    addNormalMaps(this);
+    makeAnims(this, FISH.map((f) => f.id));
     this.scene.start('Menu');
   }
 }

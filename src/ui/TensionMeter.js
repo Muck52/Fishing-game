@@ -1,33 +1,31 @@
-import { PX, DEPTH, textStyle } from '../core/constants.js';
+import { W, DEPTH, textStyle } from '../core/constants.js';
+import { pill } from './Panels.js';
 
-// Inner well of the 'meter' texture, in art pixels.
-const WELL = { x: 3, y: 5, w: 6, h: 98 };
+const Y = 128;
+const LEN = 420; // px of bar
 
+// A wooden gauge across the top while a fish is on: how tight the line is,
+// and how much line is out.
 export class TensionMeter {
-  constructor(scene, x, y) {
-    this.baseX = x;
-    const frame = scene.add.image(0, 0, 'meter').setScale(PX);
+  constructor(scene) {
+    const frame = pill(scene, 0, 0, LEN / 3 + 10, 14);
     this.fill = scene.add.graphics();
-    this.ox = -(12 * PX) / 2;
-    this.oy = -(108 * PX) / 2;
-    const label = scene.add.text(0, this.oy - 24, 'TENSION', textStyle(22)).setOrigin(0.5);
-    this.distanceText = scene.add.text(0, -this.oy + 30, '', textStyle(26)).setOrigin(0.5);
-    this.container = scene.add.container(x, y, [frame, this.fill, label, this.distanceText]).setDepth(DEPTH.UI).setVisible(false);
+    const label = scene.add.text(-LEN / 2 - 20, 0, 'TENSION', textStyle(22)).setOrigin(1, 0.5);
+    this.distance = scene.add.text(LEN / 2 + 22, 0, '', textStyle(24)).setOrigin(0, 0.5);
+    this.box = scene.add.container(W / 2 + 40, Y, [frame, this.fill, label, this.distance]).setDepth(DEPTH.UI).setVisible(false);
   }
 
-  show(visible) {
-    this.container.setVisible(visible);
+  show(on) {
+    this.box.setVisible(on);
   }
 
   update(tension, distance) {
-    const color = tension < 60 ? 0x7fb069 : tension < 85 ? 0xe8b83a : 0xd9533f;
-    const rows = Math.round((WELL.h * tension) / 100);
-    this.fill.clear();
-    this.fill.fillStyle(color, 1);
-    this.fill.fillRect(this.ox + WELL.x * PX, this.oy + (WELL.y + WELL.h - rows) * PX, WELL.w * PX, rows * PX);
-    this.fill.fillStyle(0xffffff, 0.25);
-    this.fill.fillRect(this.ox + WELL.x * PX, this.oy + (WELL.y + WELL.h - rows) * PX, PX, rows * PX);
-    this.distanceText.setText(`${Math.max(0, Math.round(distance * 0.6))} ft`);
-    this.container.x = this.baseX + (tension > 85 ? Phaser.Math.Between(-1, 1) * PX : 0);
+    const color = tension < 60 ? 0x8ad06a : tension < 85 ? 0xf0c040 : 0xe84a3a;
+    const w = Math.round((LEN * tension) / 100 / 3) * 3;
+    this.fill.clear().fillStyle(0x2a1a14, 0.55).fillRect(-LEN / 2, -12, LEN, 24);
+    this.fill.fillStyle(color, 1).fillRect(-LEN / 2, -12, w, 24);
+    this.fill.fillStyle(0xffffff, 0.35).fillRect(-LEN / 2, -12, w, 6);
+    this.distance.setText(`${Math.max(0, Math.round(distance * 0.6))} ft`);
+    this.box.y = Y + (tension > 85 ? Phaser.Math.Between(-2, 2) : 0);
   }
 }

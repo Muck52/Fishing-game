@@ -4,12 +4,19 @@ A cozy pixel-art fishing game for phones, built with [Phaser 3](https://phaser.i
 
 It's late September on Loon Lake, a remote lake in the northern forest. Fog lifts off the water, the tamaracks have turned gold, and the wildlife goes about its morning: an eagle on a dead snag, a loon diving, a heron in the reeds, deer and moose at the far shore, geese heading south. Every catch goes into your field journal.
 
-Most of the art is drawn in code. Trees, rocks and tiles come from CC0 art packs (see `assets/CREDITS.md`), recoloured in code to the game's palette.
+The scene is a side view of the lake: snowy peaks and a waterfall on the far bank, a fishing hut on stilts, and a cut-away of the water where you can watch the fish come to your bait. All of it is pixel art from free art packs (see `assets/CREDITS.md`).
+
+## Art pipeline
+The original packs live in `assets/source/`. `tools/build_art.py` (Python + Pillow) compiles them into the sprite sheets in `assets/art/` and writes `assets/art/manifest.json`, which the game reads at start-up to load every texture. After changing anything in `assets/source/`, run:
+
+```
+python3 tools/build_art.py
+```
 
 ## How to play
 1. **Swipe up** to cast. A longer swipe casts farther, where rarer fish bite.
-2. Wait for the bobber. Small nibbles are fake-outs; tapping during one scares the fish.
-3. When the bobber goes under and **!** appears, **tap** to hook the fish.
+2. Watch a fish come to the bait. Small nibbles are fake-outs; tapping during one scares the fish.
+3. When the float goes under and **!** appears, **tap** to hook the fish.
 4. **Hold** to reel. Watch the tension meter and **let go** before it hits red, or the line snaps.
 
 Progress (coins and species found) is saved in the browser.
@@ -26,6 +33,7 @@ Then open http://localhost:8000 in a browser (use the phone-sized view in your b
 ## Folder structure
 
 ### `assets/` – everything the player sees and hears
+- `source/` – the original art packs, untouched
 - `art/fish/` – fish sprites and models
 - `art/environments/` – lakes, rivers, ocean, docks, backgrounds, skies
 - `art/characters/` – the player character and NPCs
@@ -39,8 +47,7 @@ Then open http://localhost:8000 in a browser (use the phone-sized view in your b
 - `animations/` – casting, reeling, fish fighting, and so on
 
 ### `src/` – game code
-- `core/` – shared constants: screen layout, draw order, text styles
-- `art/` – the pixel painter plus all scenery, sprite, fish and interface art
+- `core/` – layout, draw order and text styles, and the asset loader that reads the art manifest
 - `wildlife/` – the animals and their behavior
 - `scenes/` – main menu, fishing spot, shop, map, aquarium/collection screens
 - `player/` – player stats and controls

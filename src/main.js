@@ -7,7 +7,7 @@ function start() {
   window.game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
-    backgroundColor: '#2a5059',
+    backgroundColor: '#14283a',
     pixelArt: true,
     scale: {
       mode: Phaser.Scale.FIT,

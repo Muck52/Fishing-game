@@ -1,0 +1,308 @@
+{
+ "images": {
+  "sky": "assets/art/environments/sky.png",
+  "mountains": "assets/art/environments/mountains.png",
+  "cloud-big": "assets/art/environments/cloud-big.png",
+  "land": "assets/art/environments/land.png",
+  "cloud-1": "assets/art/environments/cloud-1.png",
+  "cloud-2": "assets/art/environments/cloud-2.png",
+  "cloud-3": "assets/art/environments/cloud-3.png",
+  "water-surface": "assets/art/environments/water-surface.png",
+  "underwater": "assets/art/environments/underwater.png",
+  "light-ray": "assets/art/effects/light-ray.png",
+  "bed-seaweed-1": "assets/art/environments/bed-seaweed-1.png",
+  "bed-seaweed-2": "assets/art/environments/bed-seaweed-2.png",
+  "bed-seaweed-3": "assets/art/environments/bed-seaweed-3.png",
+  "bed-seaweed-4": "assets/art/environments/bed-seaweed-4.png",
+  "bed-sea-bush-weed-1": "assets/art/environments/bed-sea-bush-weed-1.png",
+  "bed-sea-bush-weed-2": "assets/art/environments/bed-sea-bush-weed-2.png",
+  "bed-sea-flora-plant-1": "assets/art/environments/bed-sea-flora-plant-1.png",
+  "bed-sea-flora-plant-2": "assets/art/environments/bed-sea-flora-plant-2.png",
+  "bed-sea-flora-plant-3": "assets/art/environments/bed-sea-flora-plant-3.png",
+  "bed-sea-flora-plant-4": "assets/art/environments/bed-sea-flora-plant-4.png",
+  "bed-sand-pit-2": "assets/art/environments/bed-sand-pit-2.png",
+  "bed-sand-pit-3": "assets/art/environments/bed-sand-pit-3.png",
+  "bed-sand-pit-4": "assets/art/environments/bed-sand-pit-4.png",
+  "bed-sand-pit-5": "assets/art/environments/bed-sand-pit-5.png",
+  "bed-clam-small": "assets/art/environments/bed-clam-small.png",
+  "lakebed": "assets/art/environments/lakebed.png",
+  "hut": "assets/art/environments/hut.png",
+  "post-wet": "assets/art/environments/post-wet.png",
+  "boat": "assets/art/environments/boat.png",
+  "barrel": "assets/art/environments/barrel.png",
+  "cattails-1": "assets/art/environments/cattails-1.png",
+  "cattails-2": "assets/art/environments/cattails-2.png",
+  "cattails-3": "assets/art/environments/cattails-3.png",
+  "cattails-4": "assets/art/environments/cattails-4.png",
+  "portrait": "assets/art/ui/portrait.png",
+  "bucket": "assets/art/ui/bucket.png",
+  "card-bass": "assets/art/fish/bass-card.png",
+  "card-bluegill": "assets/art/fish/bluegill-card.png",
+  "card-catfish": "assets/art/fish/catfish-card.png",
+  "card-golden": "assets/art/fish/golden-card.png",
+  "card-perch": "assets/art/fish/perch-card.png",
+  "card-pike": "assets/art/fish/pike-card.png",
+  "card-trout": "assets/art/fish/trout-card.png",
+  "hook": "assets/art/effects/hook.png",
+  "mote": "assets/art/effects/mote.png",
+  "drop": "assets/art/effects/drop.png",
+  "spark": "assets/art/effects/spark.png",
+  "mist": "assets/art/effects/mist.png",
+  "ripple-map": "assets/art/effects/ripple-map.png",
+  "board": "assets/art/ui/board.png"
+ },
+ "sheets": {
+  "falls": {
+   "url": "assets/art/environments/falls.png",
+   "frameWidth": 250,
+   "frameHeight": 204,
+   "frames": 4
+  },
+  "angler": {
+   "url": "assets/art/characters/angler.png",
+   "frameWidth": 48,
+   "frameHeight": 48,
+   "frames": 12
+  },
+  "deer-walk": {
+   "url": "assets/art/characters/deer-walk.png",
+   "frameWidth": 72,
+   "frameHeight": 52,
+   "frames": 8
+  },
+  "deer-idle": {
+   "url": "assets/art/characters/deer-idle.png",
+   "frameWidth": 72,
+   "frameHeight": 52,
+   "frames": 10
+  },
+  "fox-walk": {
+   "url": "assets/art/characters/fox-walk.png",
+   "frameWidth": 64,
+   "frameHeight": 36,
+   "frames": 8
+  },
+  "fox-idle": {
+   "url": "assets/art/characters/fox-idle.png",
+   "frameWidth": 64,
+   "frameHeight": 36,
+   "frames": 6
+  },
+  "rabbit-hop": {
+   "url": "assets/art/characters/rabbit-hop.png",
+   "frameWidth": 32,
+   "frameHeight": 26,
+   "frames": 10
+  },
+  "rabbit-idle": {
+   "url": "assets/art/characters/rabbit-idle.png",
+   "frameWidth": 32,
+   "frameHeight": 26,
+   "frames": 10
+  },
+  "bear-walk": {
+   "url": "assets/art/characters/bear-walk.png",
+   "frameWidth": 64,
+   "frameHeight": 33,
+   "frames": 8
+  },
+  "birds": {
+   "url": "assets/art/characters/birds.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "frames": 12
+  },
+  "eagle": {
+   "url": "assets/art/characters/eagle.png",
+   "frameWidth": 41,
+   "frameHeight": 21,
+   "frames": 7
+  },
+  "duck": {
+   "url": "assets/art/characters/duck.png",
+   "frameWidth": 16,
+   "frameHeight": 16,
+   "frames": 4
+  },
+  "minnow": {
+   "url": "assets/art/characters/minnow.png",
+   "frameWidth": 39,
+   "frameHeight": 20,
+   "frames": 4
+  },
+  "fish-bass": {
+   "url": "assets/art/fish/bass.png",
+   "frameWidth": 63,
+   "frameHeight": 39,
+   "frames": 4
+  },
+  "fish-bluegill": {
+   "url": "assets/art/fish/bluegill.png",
+   "frameWidth": 43,
+   "frameHeight": 38,
+   "frames": 4
+  },
+  "fish-catfish": {
+   "url": "assets/art/fish/catfish.png",
+   "frameWidth": 75,
+   "frameHeight": 27,
+   "frames": 4
+  },
+  "fish-golden": {
+   "url": "assets/art/fish/golden.png",
+   "frameWidth": 96,
+   "frameHeight": 33,
+   "frames": 4
+  },
+  "fish-perch": {
+   "url": "assets/art/fish/perch.png",
+   "frameWidth": 51,
+   "frameHeight": 31,
+   "frames": 4
+  },
+  "fish-pike": {
+   "url": "assets/art/fish/pike.png",
+   "frameWidth": 87,
+   "frameHeight": 28,
+   "frames": 4
+  },
+  "fish-trout": {
+   "url": "assets/art/fish/trout.png",
+   "frameWidth": 63,
+   "frameHeight": 34,
+   "frames": 4
+  },
+  "splash": {
+   "url": "assets/art/effects/splash.png",
+   "frameWidth": 56,
+   "frameHeight": 14,
+   "frames": 5
+  },
+  "glints": {
+   "url": "assets/art/effects/glints.png",
+   "frameWidth": 56,
+   "frameHeight": 36,
+   "frames": 6
+  },
+  "bubble": {
+   "url": "assets/art/effects/bubble.png",
+   "frameWidth": 7,
+   "frameHeight": 7,
+   "frames": 3
+  },
+  "ripple": {
+   "url": "assets/art/effects/ripple.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "frames": 4
+  },
+  "branch": {
+   "url": "assets/art/effects/branch.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "frames": 4
+  },
+  "bobber": {
+   "url": "assets/art/effects/bobber.png",
+   "frameWidth": 24,
+   "frameHeight": 24,
+   "frames": 2
+  },
+  "coin": {
+   "url": "assets/art/ui/coin.png",
+   "frameWidth": 16,
+   "frameHeight": 16,
+   "frames": 4
+  },
+  "button": {
+   "url": "assets/art/ui/button.png",
+   "frameWidth": 14,
+   "frameHeight": 14,
+   "frames": 4
+  }
+ },
+ "anchors": {
+  "falls": {
+   "x": 326,
+   "y": 120
+  },
+  "fallsFoot": {
+   "x": 352,
+   "y": 214
+  },
+  "hut": {
+   "deck": 62,
+   "stilts": [
+    4.0,
+    31.0,
+    65.0,
+    94.0
+   ],
+   "w": 192,
+   "h": 122
+  },
+  "angler": {
+   "idle": [
+    0,
+    3
+   ],
+   "fish": [
+    4,
+    7
+   ],
+   "land": [
+    8,
+    10
+   ],
+   "hurt": 11,
+   "tips": [
+    {
+     "x": 4,
+     "y": 24
+    },
+    {
+     "x": 4,
+     "y": 24
+    },
+    {
+     "x": 5,
+     "y": 25
+    },
+    {
+     "x": 5,
+     "y": 24
+    }
+   ]
+  },
+  "fish": {
+   "bass": {
+    "w": 63,
+    "h": 35
+   },
+   "bluegill": {
+    "w": 43,
+    "h": 34
+   },
+   "catfish": {
+    "w": 75,
+    "h": 23
+   },
+   "golden": {
+    "w": 96,
+    "h": 29
+   },
+   "perch": {
+    "w": 51,
+    "h": 27
+   },
+   "pike": {
+    "w": 87,
+    "h": 24
+   },
+   "trout": {
+    "w": 63,
+    "h": 30
+   }
+  }
+ }
+}

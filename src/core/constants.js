@@ -1,44 +1,57 @@
-// All art is pixel art: one art pixel is drawn as a PX x PX block on screen.
-export const PX = 4;
-
-// Game is laid out on a fixed-width portrait canvas and scaled to fit the phone.
-// Height stretches to fill taller phones so there are no empty bars.
+// The game is laid out on a fixed-width portrait canvas and scaled to fit the
+// phone. Height stretches to fill taller phones so there are no empty bars.
 export const W = 720;
-const rawH = Math.min(1600, Math.max(1280, (W * window.innerHeight) / window.innerWidth));
-export const H = Math.round(rawH / PX) * PX;
+export const H = Math.round(Math.min(1600, Math.max(1280, (W * window.innerHeight) / window.innerWidth)) / 6) * 6;
 
-// The same layout in art pixels.
-export const AW = W / PX;
-export const AH = H / PX;
+// All art is pixel art drawn at whole-number scales: the far backdrop at 2x,
+// everything near the angler at 3x.
+export const BG = 2;
+export const FG = 3;
 
-// Far shoreline where the lake begins. It sits a little under halfway down
-// the screen, as if the camera stands low on the shore at the base of the dock.
-export const WATER_Y = Math.round((H * 0.44) / PX) * PX;
-export const HORIZON = WATER_Y / PX;
-export const DOCK_Y = H - 180; // far edge of the dock
-export const DOCK_AY = DOCK_Y / PX;
+// The backdrop is wider than the screen; this is its left edge, in backdrop
+// pixels, so the pines and the waterfall sit in view.
+export const BACK_X = 150;
+
+// The lake, seen side-on: the surface line, the deck the angler stands on,
+// and the lakebed.
+export const SURFACE_Y = 612;
+export const DECK_Y = SURFACE_Y - 102;
+export const BED_Y = H - 96;
+
+// The fishing hut stands on stilts on the right; its walkway runs out over
+// the water toward the left, and the angler stands near its end.
+export const HUT_X = 400;
+export const ANGLER_X = 446;
 
 export const FONT = '"Pixelify Sans", "Courier New", monospace';
-export const INK = '#1a1a3a';
+export const INK = '#2a1a14';
 
 // Draw order, back to front.
 export const DEPTH = {
   SKY: 0,
   CLOUDS: 1,
   MOUNTAINS: 2,
-  MIST_FAR: 3,
-  FOREST: 4,
-  SHORE: 5,
-  WATER: 6,
-  WATER_LIFE: 7,
-  MIST_NEAR: 8,
-  BANKS: 9,
-  BANK_LIFE: 10,
-  DOCK: 11,
-  DOCK_LIFE: 12,
-  PLAYER: 13,
+  BIRDS: 2.5,
+  LAND: 3,
+  FALLS: 3.5,
+  SHORE_LIFE: 4,
+  MIST: 5,
+  DEEP: 6,
+  SURFACE: 7,
+  RAYS: 8,
+  BED: 9,
+  WEEDS: 10,
+  POSTS: 10.5,
+  FISH: 11,
+  BUBBLES: 12,
   LINE: 14,
-  BOBBER: 15,
+  PIER: 15,
+  BOAT: 16,
+  ANGLER: 17,
+  REEDS: 17.5,
+  BOBBER: 18,
+  SPLASH: 20,
+  AIR: 21,
   UI: 50,
   POPUP: 100,
 };
@@ -54,35 +67,24 @@ export const STATE = {
 
 export const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 export const lerp = (a, b, t) => a + (b - a) * t;
+export const webgl = (scene) => scene.sys.game.renderer.type === Phaser.WEBGL;
 
-// Things far out on the lake draw at a smaller pixel scale.
-export function pxScale(y) {
-  return y < WATER_Y + (DOCK_Y - WATER_Y) * 0.45 ? PX - 1 : PX;
-}
-
-// Outlined text that reads over sky, forest and water.
-export function textStyle(size, color = '#fbf3dc', extra = {}) {
+// Cream lettering with a dark brown outline, to sit on the wooden boards and
+// over the scene alike.
+export function textStyle(size, color = '#fff4d6', extra = {}) {
   return {
     fontFamily: FONT,
     fontSize: `${size}px`,
     color,
     align: 'center',
     stroke: INK,
-    strokeThickness: Math.max(4, Math.round(size / 7)),
+    strokeThickness: Math.max(4, Math.round(size / 6)),
     shadow: { offsetX: 0, offsetY: Math.max(3, Math.round(size / 12)), color: INK, blur: 0, stroke: true, fill: true },
     ...extra,
   };
 }
 
-// Window text: light lettering with a hard navy drop shadow, as on the
-// blue menu windows.
-export function inkStyle(size, color = '#ffffff', extra = {}) {
-  return {
-    fontFamily: FONT,
-    fontSize: `${size}px`,
-    color,
-    align: 'center',
-    shadow: { offsetX: Math.max(2, Math.round(size / 14)), offsetY: Math.max(2, Math.round(size / 14)), color: '#0a0a30', blur: 0, fill: true },
-    ...extra,
-  };
+// Plain dark lettering for the inside of a wooden board.
+export function boardStyle(size, color = '#4a2a18', extra = {}) {
+  return { fontFamily: FONT, fontSize: `${size}px`, color, align: 'center', ...extra };
 }
