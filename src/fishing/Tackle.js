@@ -34,7 +34,8 @@ export class Tackle {
     this.x = 0;
     this.y = 0;
     this.hookY = 0;
-    this.dip = 0; // how far a nibble pulls the float under, in px
+    this.dip = 0; // how far a fish pulls the float under, in px (less than 0 lifts it)
+    this.shake = 0; // how hard it trembles, in px
   }
 
   get visible() {
@@ -65,7 +66,7 @@ export class Tackle {
   // (the hook, or the mouth of a hooked fish).
   draw(tip, time, { tension = 0, flying = false, end = null } = {}) {
     const fy = flying ? this.y : SURFACE_Y + Math.round(Math.sin(time / 500) + this.dip);
-    this.bobber.setPosition(this.x, fy);
+    this.bobber.setPosition(this.x + (this.shake ? Phaser.Math.Between(-this.shake, this.shake) : 0), fy);
     this.alert.setPosition(this.x, fy - 13 + Math.round(Math.sin(time / 120) * 2));
     const g = this.line;
     g.clear();

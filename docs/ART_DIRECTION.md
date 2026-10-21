@@ -95,6 +95,36 @@ straight onto the grid at two sizes, never shrinking a bigger picture:
   the bluegill's dark ear, the perch's bars, the rainbow's pink band, the
   walleye's white tail tip, the pike's pale beans.
 
+## How each fish takes the bait
+
+`src/fish/Strike.js` gives every species the approach, nibble and strike
+it shows in the wild, and what each does to the float. All of it is
+movement on the grid: position, pauses, which way the fish faces and how
+fast its tail beats (a hurrying fish beats faster). Nothing is rotated.
+
+| Fish | Comes in | Nibbles | Takes it | The float |
+| --- | --- | --- | --- | --- |
+| Bluegill | short darts with pauses | 2–4 double pecks | sucks it in | jiggles, then dips |
+| Pumpkinseed | rises from below | 2–3 pecks | sucks it in | jiggles, then dips |
+| Yellow perch | with two schoolmates | 1–2 pecks | snaps and darts down; school scatters | dips hard |
+| Black crappie | rises from below | a tap | swims up with it | **lifts** instead of sinking |
+| White bass | the pack races past, wheels back | slashing passes | slashes through | jerks under |
+| Common carp | grubbing along the bottom, bubbles and silt | mouths it for a long moment | moves off with it | trembles, then slides away and sinks |
+| Smallmouth bass | stops a few lengths off to look, edges closer | a tap | lunges and turns for deep water | plunges |
+| Largemouth bass | already waiting by cover, barely moving | creeps closer | flares and engulfs it in a burst of bubbles | slams under and shakes |
+| Brook trout | holds in the current, slipping back and forth | snaps and drops back | snaps | quick dips |
+| Rainbow trout | cruises in fast | one snap | rolls on it with a flash of silver | dips hard |
+| Channel catfish | follows the scent from the bottom, head swinging | nudges with its whiskers | swims off with it | slides away and sinks |
+| Freshwater drum | roots along the bottom | crunches: a rattle of tugs | sucks it in | rattles, then dips |
+| Walleye | shadows it up out of the deep | maybe a tap | takes it so gently | barely dips, slides away |
+| Burbot | creeps along the bottom like an eel | mouths it | inhales it | trembles, then dips |
+| Northern pike | lying in ambush; never nibbles | — | rockets in, grabs it crossways and holds still | slams under |
+| Muskellunge | follows, then lazy figure eights | noses up and turns away | lunges from nowhere | plunges |
+| Lake sturgeon | vacuuming the bottom | mouths it, silt puffs | slow, heavy take | slides away and sinks deep |
+
+Add `?fish=walleye` (any species id) to the address to make that species
+bite every time while tuning.
+
 ## How each piece fits
 
 | Piece | Source pack | Size on grid | Outline | Motion |

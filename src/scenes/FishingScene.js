@@ -8,6 +8,8 @@ import { Angler } from '../player/Angler.js';
 import { Tackle } from '../fishing/Tackle.js';
 import { ReelFight } from '../fishing/ReelFight.js';
 import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
+import { Striker, strikeOf } from '../fish/Strike.js';
+import { FISH } from '../../data/fish/fish.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
 import { Hud } from '../ui/Hud.js';
 import { CatchPopup } from '../ui/CatchPopup.js';
@@ -67,28 +69,17 @@ export class FishingScene extends Phaser.Scene {
     return { x: f.x + (f.flipX ? half : -half), y: f.y + 1 };
   }
 
+  // The fish comes to the bait in its own way (see fish/Strike.js).
   spawnFish() {
-    const id = this.fish.id;
-    const fromLeft = this.tackle.x > 160 || Math.random() < 0.6;
-    const y = this.tackle.hookY + R(-20, 20);
-    this.fishSprite = this.add.sprite(fromLeft ? -70 : W * 0.55, y, `fish-${id}`).setDepth(DEPTH.FISH).setFlipX(fromLeft).play(`swim-${id}`);
-    if (!fromLeft) this.fishSprite.y = BED_Y - 10;
-    // it noses up to the bait and hangs there, fins working
-    const w = Math.floor(ART.anchors.fish[id].w / 2);
-    this.hover = { x: this.tackle.x + (fromLeft ? -w - 17 : w + 17), y: this.tackle.hookY + 1 };
-    this.tweens.add({ targets: this.fishSprite, x: this.hover.x, y: this.hover.y, duration: 2200, ease: 'Sine.easeOut' });
-    this.fishSprite.setFlipX(this.hover.x < this.tackle.x).setTint(depthTint(this.hover.y));
+    this.striker = new Striker(this, this.fish, this.tackle);
+    this.fishSprite = this.striker.sprite;
   }
 
   // A fish that got away bolts off.
   fleeFish() {
-    const f = this.fishSprite;
-    if (!f) return;
+    this.striker?.flee();
+    this.striker = null;
     this.fishSprite = null;
-    const dir = f.flipX ? -1 : 1;
-    f.setFlipX(dir > 0).anims.timeScale = 3;
-    bubbles(this, f.x, f.y, 3);
-    this.tweens.add({ targets: f, x: f.x + dir * 350, y: f.y + R(-20, 40), duration: 900, ease: 'Quad.easeIn', onComplete: () => f.destroy() });
   }
 
   // ---- state changes -------------------------------------------------------
@@ -97,10 +88,12 @@ export class FishingScene extends Phaser.Scene {
     this.state = STATE.IDLE;
     this.fight = null;
     this.fish = null;
-    if (this.fishSprite) this.fishSprite.destroy();
+    this.striker?.destroy();
+    this.striker = null;
     this.fishSprite = null;
     this.tackle.show(false);
     this.tackle.dip = 0;
+    this.tackle.shake = 0;
     this.meter.show(false);
     this.angler.idle();
     this.setHint('Swipe up to cast');
@@ -142,33 +135,35 @@ export class FishingScene extends Phaser.Scene {
   }
 
   startWaiting() {
-    this.fish = pickFish(this.castPower);
+    // ?fish=walleye in the address forces a species, for trying them out
+    const forced = FISH.find((f) => f.id === new URLSearchParams(window.location.search).get('fish'));
+    this.fish = forced || pickFish(this.castPower);
     const now = this.time.now;
-    this.biteAt = now + R(3600, 6500);
     this.time.delayedCall(900, () => this.state === STATE.WAITING && this.spawnFish());
-    // a couple of nibbles before the real bite keep you guessing
+    // The fish takes about two and a half seconds to arrive. Then come the
+    // fake-out nibbles that keep you guessing, as many as the species tends
+    // to make (a pike never nibbles, a bluegill pecks and pecks), each a
+    // second or so apart, and then the real bite.
+    const [lo, hi] = strikeOf(this.fish.id).nibbles;
     this.nibbleTimes = [];
-    for (let i = 0; i < R(0, 2); i++) this.nibbleTimes.push(R(now + 3300, this.biteAt - 500));
-    this.nibbleTimes.sort((a, b) => a - b);
+    let at = now + 3500 + R(0, 600);
+    for (let i = R(lo, hi); i > 0; i--) {
+      this.nibbleTimes.push(at);
+      at += R(800, 1400);
+    }
+    this.biteAt = at + R(300, 1200);
     this.nibbleUntil = 0;
-  }
-
-  // The fish darts in and pecks at the bait, tugging the float.
-  peck(hard) {
-    const f = this.fishSprite;
-    if (!f) return;
-    const m = this.mouth();
-    const dx = this.tackle.x - m.x;
-    this.tweens.add({ targets: f, x: f.x + dx * (hard ? 1 : 0.85), y: f.y + (this.tackle.hookY - m.y), duration: hard ? 120 : 160, yoyo: !hard, ease: 'Quad.easeOut' });
   }
 
   bite() {
     this.state = STATE.BITE;
     this.biteUntil = this.time.now + 1100 - this.fish.strength * 350;
-    this.peck(true);
-    this.tackle.dip = 8;
+    this.striker.strike();
     this.tackle.shout(true);
-    splash(this, this.tackle.x, 0.4);
+    // the float plunges for a hard taker; a soft taker barely stirs it
+    const d = this.striker.dip;
+    if (d >= 9) splash(this, this.tackle.x, 0.2 + d / 30);
+    else ripple(this, this.tackle.x);
     this.setHint('TAP!');
     try {
       navigator.vibrate?.(80);
@@ -187,6 +182,8 @@ export class FishingScene extends Phaser.Scene {
     this.far = { x: this.tackle.x, y: this.tackle.hookY };
     this.meter.show(true);
     this.angler.reel(false);
+    this.striker.hooked();
+    this.tackle.shake = 0;
     this.fishSprite.setFlipX(true);
     this.setHint('Hold to reel!\nLet go when the line pulls tight', 2200);
   }
@@ -270,13 +267,18 @@ export class FishingScene extends Phaser.Scene {
     if (this.state === STATE.WAITING) {
       if (this.nibbleTimes.length && time >= this.nibbleTimes[0]) {
         this.nibbleTimes.shift();
-        this.nibbleUntil = time + 380;
-        this.peck(false);
-        ripple(this, t.x);
+        const ms = this.striker?.nibble() ?? 300;
+        this.nibbleUntil = time + ms;
+        if (this.striker?.dip) ripple(this, t.x);
       }
-      t.dip = time < this.nibbleUntil ? 3 : 0;
+      this.striker?.update(time);
+      t.dip = this.striker?.dip ?? 0;
+      t.shake = this.striker?.shake ?? 0;
       if (time >= this.biteAt && this.fishSprite) this.bite();
     } else if (this.state === STATE.BITE) {
+      this.striker.hold(dt);
+      t.dip = this.striker.dip;
+      t.shake = this.striker.shake;
       if (time > this.biteUntil) this.lose('It got away...');
     } else if (this.state === STATE.REELING) {
       this.updateFight(time, dt);
