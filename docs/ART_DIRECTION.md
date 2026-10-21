@@ -70,7 +70,11 @@ we borrow is the thinking behind them.
    (`fonts()` in the build). Over the scene it wears the same dark outline
    as the sprites (`body`, and `head` for headings); on paper, in the
    journal, it's plain ink (`ink`), so it reads like print. Bold is the
-   same letters with every stroke a pixel wider (`head`, `ink-bold`).
+   same letters with every upright stroke doubled (`head`, `ink-bold`),
+   so the letters grow wider rather than filling in: the openings in m,
+   w, M, W, # and " stay open (letters made only of curves and diagonals,
+   like s and x, thicken a pixel wherever that doesn't close a gap). Every
+   glyph of every cut has been checked at size for legibility.
    Text is tinted, never resized off the grid; titles are 2x.
 
 9. **The hour sets the mood.** `src/environment/Daylight.js` multiplies the

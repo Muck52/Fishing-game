@@ -1028,8 +1028,8 @@ def font(name, ttf, size, outline=True, bold=False):
     """Bakes a TrueType pixel font into a bitmap font: white letters with
     a dark one-pixel outline and a drop shadow, ready to tint in game.
 
-    outline=False gives plain letters, for ink on a page; bold=True thickens
-    every stroke by a pixel to the right, the pixel-font way to embolden."""
+    outline=False gives plain letters, for ink on a page; bold=True doubles
+    every upright stroke, keeping the gaps between strokes open."""
     f = ImageFont.truetype(str(SRC / ttf), size)
     asc, desc = f.getmetrics()
     cell_h = asc + desc + 3
@@ -1051,8 +1051,30 @@ def font(name, ttf, size, outline=True, bold=False):
             m[cy:cy + 2, cx:cx + 2] = True
             adv = max(adv, 4)
         if bold:
-            m = m | np.roll(m, 1, 1)
-            adv += 1
+            # thicken each upright stroke by repeating its column, so the
+            # letter grows wider instead of smudging over its own gaps: the
+            # openings in m, w, # and " stay open. Columns that only cross a
+            # bar (the tops of o, n and m) are left single.
+            cols, extra = [], 0
+            for x in range(m.shape[1]):
+                cols.append(m[:, x])
+                col = m[:, x]
+                if (col[1:] & col[:-1]).any():  # a vertical stroke: two or more pixels running down
+                    cols.append(m[:, x])
+                    extra += 1
+            m = np.stack(cols, 1)[:, :w + extra] if cols else m
+            if extra == 0 and m.any():
+                # all diagonals and curves (s, x, v, z): thicken a pixel to
+                # the right wherever that doesn't close a gap
+                grow = np.roll(m, 1, 1) & ~np.roll(m, -1, 1)
+                grow[:, 0] = False
+                m = m | grow
+                extra = 1
+            adv += extra
+            w = max(1, adv) + 3
+            if m.shape[1] < w:
+                m = np.pad(m, ((0, 0), (0, w - m.shape[1])))
+            m = m[:, :w]
         out = np.zeros((cell_h, w, 4), np.uint8)
         ring = np.zeros_like(m)
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (0, 2), (1, 2), (-1, 2)]:
