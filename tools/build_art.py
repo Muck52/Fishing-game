@@ -394,8 +394,9 @@ def angler():
 
 
 # ---------------------------------------------------------------- wildlife
-CREATURES = ["deer", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "loon", "minnow"]
+CREATURES = ["deer", "buck", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "loon", "minnow"]
 BIRDS = ["gull", "sparrow", "mallard", "eagle", "loon"]  # all drawn in tools/characters/birds.py
+ANIMALS = ["deer", "buck", "fox", "hare", "bear"]  # animated from study 8 in tools/characters/land.py
 
 
 def wildlife():
@@ -408,9 +409,12 @@ def wildlife():
     sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
     table = {}
     import birds
+    import land
     for name in CREATURES:
         if name in BIRDS:
             strip, index, fw, fh = birds.sheet(name)
+        elif name in ANIMALS:
+            strip, index, fw, fh, _ = land.sheet(name)
         else:
             mod = importlib.import_module(name)
             strip, index = mod.sheet()
@@ -1017,16 +1021,16 @@ def journal():
 
 def olive():
     """Olive, the angler's dog: her own character, drawn and animated in
-    tools/characters/olive.py. Her sheet and its animation table go into the
-    manifest under her name, with where her paws stand and where the water
-    comes up to when she swims."""
+    tools/characters/land.py from study 8's design. Her sheet and its
+    animation table go into the manifest under her name, with where her
+    paws stand and where the water comes up to when she swims."""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
-    import olive as rig
-    strip, index = rig.sheet()  # also writes her json and previews
-    save(strip, "characters/olive/olive.png", key="olive", frame=(rig.FW, rig.FH), frames=strip.width // rig.FW, grade=False)
+    import land
+    strip, index, fw, fh, spec = land.sheet("olive", "olive")  # also writes her json and previews
+    save(strip, "characters/olive/olive.png", key="olive", frame=(fw, fh), frames=strip.width // fw, grade=False)
     manifest["anchors"]["olive"] = index
-    manifest["anchors"]["olive-at"] = {"feet": rig.FEET + 1, "waterline": rig.WATERLINE}
+    manifest["anchors"]["olive-at"] = {"feet": spec["ground"] + 1, "waterline": land.WATERLINE}
 
 
 # ---------------------------------------------------------------- fonts

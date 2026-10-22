@@ -1,6 +1,6 @@
 {
- "frameWidth": 40,
- "frameHeight": 32,
+ "frameWidth": 46,
+ "frameHeight": 42,
  "animations": {
   "walk": {
    "frames": [

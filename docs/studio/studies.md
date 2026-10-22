@@ -395,6 +395,15 @@ in `tools/characters/anatomy.py`), 60 degrees, so they agree.
 - Antler tines need room: spaced three pixels apart with their outline,
   closer they merge into a clump.
 
+**In the game (later):** after study 9, the designs were animated in
+`tools/characters/land.py` and replaced the old sprites: each leg swings
+through a stride by gait (the four-beat walk, the fox's trot, Olive's
+gallop), its foot held on the sand while it bears weight, so the walk
+steps come from the stride; the hare hops; idles come from the poses (ear
+flicks, drinking, sniffing, a raised nose, tail swishes); Olive leaps,
+swims and shakes. The buck now visits too. The old scripts and their
+Pixelorama projects are retired.
+
 ## Study 9: the birds (2026-10-22)
 
 **Why:** with the land animals redesigned, the birds were next: the gull,

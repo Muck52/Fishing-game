@@ -135,6 +135,16 @@ STYLES = {
 }
 
 
+def ground_drop(spec, style, pose="stand"):
+    """How far a pose is lowered to stand its lowest foot on the ground."""
+    st = STYLES[style]
+    p = spec["poses"][pose]
+    if "base" in p:
+        p = {**spec["poses"][p["base"]], **p}
+    feet = [j[0][1] + (j[-1][1] - j[0][1]) * st["legs"] for _, j, _ in p["legs"]]
+    return spec["ground"] - max(feet)
+
+
 def draw(spec, style="natural", pose="stand"):
     """An animal (spec, see tools/studio/study_creatures.py) in a style and
     pose, as a grid of ink letters (outline not yet added)."""
@@ -166,8 +176,10 @@ def draw(spec, style="natural", pose="stand"):
         top = joints[0][1]
         new = [(x, top + (y - top) * st["legs"]) for x, y in joints]
         legs.append((side, new, widths))
-    # the whole animal lowered so its lowest foot stands on the ground
-    drop = G - max(j[-1][1] for _, j, _ in legs)
+    # the whole animal lowered so its lowest foot stands on the ground (an
+    # animation frame can fix the drop, so lifting a foot doesn't move the
+    # body, and raise the animal off the ground, in the air)
+    drop = p.get("drop", G - max(j[-1][1] for _, j, _ in legs)) - p.get("air", 0)
     dx = spec.get("dx", 0)  # room on the left, for antlers reaching forward
     sh = lambda pts: [(x + dx, y + drop) for x, y in pts]  # noqa: E731
     legs = [(side, [(x + dx, y + drop) for x, y in j], w) for side, j, w in legs]

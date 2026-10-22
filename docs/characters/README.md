@@ -90,8 +90,11 @@ journal and the backpack, and from the research below.
 
 ## Editing in Pixelorama
 
-Every creature has a [Pixelorama](https://orama-interactive.itch.io/pixelorama)
-project, `assets/source/pixelorama/<name>.pxo`, kept in step by the build:
+Since studies 8 and 9, the land animals and the birds are drawn from shapes
+(`land.py`, `birds.py`) and have no Pixelorama projects; the touch-ups
+below belonged to the old drawings. The minnow still has one. A creature
+with a [Pixelorama](https://orama-interactive.itch.io/pixelorama)
+project has it at `assets/source/pixelorama/<name>.pxo`, kept in step by the build:
 
 - a locked **drawn** layer: what its script draws, rewritten each build;
 - a **touch-ups** layer for hand edits, kept between builds and laid over
@@ -113,10 +116,11 @@ has a pale ring of fur round its eye.
 | Creature | Real size → on the grid | Look | Animations |
 | --- | --- | --- | --- |
 | [Olive](olive.md) | 18 in at the shoulder, drawn 1.6x → 40 x 30 frame | black and white husky / cattle dog, coral bandana | idle, walk, run, leap, swim, shake |
-| White-tailed doe (`deer.py`) | 36 in at the shoulder → 18 px | tawny, white throat patch, muzzle band, eye ring, belly and tail edge; big ears; slender legs, dark hooves | walk (four-beat), idle (ear flick, drinks, tail flick) |
-| Red fox (`fox.py`) | 15 in, drawn 1.5x → 11 px | rusty, lighter back, white chin to chest, black stockings and ear backs, white-tipped brush | walk (the trot), idle (sniffing the ground, ear flick, tail swish) |
-| Snowshoe hare (`hare.py`) | sits 11 in, drawn 1.6x | cinnamon brown, darker back line, buff flanks, white belly, tail and feet, black-tipped ears | hop (moves only in the air), idle (nibbling, nose twitch, sits up alert, ear turns) |
-| Black bear (`bear.py`) | 33 in at the shoulder → 16 px | black, sheen on the back, tan muzzle, brown eyes, big ears, no hump | walk (the amble, head low), idle (lifts its nose to scent the air) |
+| White-tailed doe (`land.py`) | 36 in at the shoulder | tawny, white throat and muzzle band, white belly, big ears, slender legs, dark hooves | walk (four-beat), idle (ear flick, lowers her head to drink, tail flick) |
+| White-tailed buck (`land.py`) | as the doe, heavier neck | darker coat, hardened antlers curving forward, spaced tines | walk, idle (drinks, his head and antlers turned down together) |
+| Red fox (`land.py`) | 15 in, drawn 1.5x | rusty, white chin to chest and belly, black stockings and ear backs, white-tipped brush | walk (the trot), idle (ear flick, sniffing the ground, tail swish) |
+| Snowshoe hare (`land.py`) | sits 11 in, drawn 1.6x | brown, white belly, tail and feet, long ears | hop (moves only in the air), idle (nibbling, ear turn, sits up alert) |
+| Black bear (`land.py`) | 33 in at the shoulder | black, tan muzzle, round ears | walk (the amble), idle (lifts its nose to scent the air) |
 | Ring-billed gull (`birds.py`) | 4 ft wings | white, pale grey wings with black tips, yellow bill with a black ring | fly (four-frame beat), glide |
 | Song sparrow (`birds.py`) | 8 in wings, drawn 2x | brown, rufous cap, pale breast | fly (bounding: beats, then wings folded) |
 | Mallard (`birds.py`) | 3 ft wings | drake: green head, white collar, chestnut breast, grey sides, black stern; hen: mottled brown; both a blue speculum | fly (drake), hen |
@@ -127,8 +131,10 @@ has a pale ring of fur round its eye.
 Each script writes its sheet (`assets/art/characters/<name>.png`), its
 animation table (`<name>.json`, also in the manifest under
 `anchors.creatures`) and previews here (`<name>-sheet.png` and a GIF per
-animation). Run one on its own, e.g. `python3 tools/characters/fox.py`, or
-the whole art build. `python3 tools/characters/lineup.py` redraws the
+animation). Run them on their own (`python3 tools/characters/land.py`,
+`birds.py`, `minnow.py`) or the whole art build. In `land.py` each leg
+swings through a stride by gait (walk, trot, gallop), its foot fixed on the
+ground while it bears weight, which gives each walk frame its step. `python3 tools/characters/lineup.py` redraws the
 lineup above.
 
 ## Research

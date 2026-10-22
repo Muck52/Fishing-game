@@ -163,26 +163,32 @@
   },
   "deer": {
    "url": "assets/art/characters/deer.png",
-   "frameWidth": 40,
-   "frameHeight": 32,
+   "frameWidth": 46,
+   "frameHeight": 42,
+   "frames": 18
+  },
+  "buck": {
+   "url": "assets/art/characters/buck.png",
+   "frameWidth": 54,
+   "frameHeight": 54,
    "frames": 18
   },
   "fox": {
    "url": "assets/art/characters/fox.png",
-   "frameWidth": 36,
-   "frameHeight": 20,
+   "frameWidth": 42,
+   "frameHeight": 27,
    "frames": 14
   },
   "hare": {
    "url": "assets/art/characters/hare.png",
-   "frameWidth": 26,
-   "frameHeight": 18,
+   "frameWidth": 30,
+   "frameHeight": 37,
    "frames": 20
   },
   "bear": {
    "url": "assets/art/characters/bear.png",
-   "frameWidth": 38,
-   "frameHeight": 24,
+   "frameWidth": 46,
+   "frameHeight": 31,
    "frames": 14
   },
   "gull": {
@@ -385,8 +391,8 @@
   },
   "olive": {
    "url": "assets/art/characters/olive/olive.png",
-   "frameWidth": 40,
-   "frameHeight": 30,
+   "frameWidth": 42,
+   "frameHeight": 36,
    "frames": 36
   }
  },
@@ -615,6 +621,39 @@
      "loop": true
     }
    },
+   "buck": {
+    "walk": {
+     "frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "fps": 8,
+     "loop": true,
+     "step": 1
+    },
+    "idle": {
+     "frames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+     ],
+     "fps": 4,
+     "loop": true
+    }
+   },
    "fox": {
     "walk": {
      "frames": [
@@ -629,7 +668,16 @@
      ],
      "fps": 10,
      "loop": true,
-     "step": 2
+     "steps": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2
+     ]
     },
     "idle": {
      "frames": [
@@ -952,7 +1000,14 @@
     ],
     "fps": 14,
     "loop": true,
-    "step": 4
+    "steps": [
+     3,
+     4,
+     4,
+     4,
+     4,
+     4
+    ]
    },
    "leap": {
     "frames": [
@@ -990,8 +1045,8 @@
    }
   },
   "olive-at": {
-   "feet": 28,
-   "waterline": 18
+   "feet": 35,
+   "waterline": 22
   }
  },
  "palette": [

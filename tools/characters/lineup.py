@@ -12,7 +12,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import kit  # noqa: E402
 
-GROUND = ["olive", "deer", "fox", "hare", "bear"]
+GROUND = ["olive", "deer", "buck", "fox", "hare", "bear"]  # drawn in land.py
 SKY = ["eagle", "gull", "mallard", "sparrow", "loon", "minnow"]
 BIRDS = ["eagle", "gull", "mallard", "sparrow", "loon"]  # drawn in birds.py
 
@@ -21,6 +21,12 @@ def first(name):
     if name in BIRDS:
         import birds
         img = next(iter(birds.anims(name).values()))[0][0]
+        return img.crop(img.getbbox())
+    if name in GROUND:
+        import land
+        spec, a = land.anims(name)
+        key = "idle" if "idle" in a else next(iter(a))
+        img = land.render(spec, a[key][0][0])
         return img.crop(img.getbbox())
     m = importlib.import_module(name)
     a = m.animations()

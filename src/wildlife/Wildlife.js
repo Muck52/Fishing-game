@@ -1,6 +1,6 @@
 // The animals of the lake. Birds cross the sky, a loon fishes the shallows
 // and fish leap now and then;
-// every so often a deer, fox, hare or bear comes down to the bank, and
+// every so often a doe or buck, fox, hare or bear comes down to the bank, and
 // gets a field note.
 import { W, SURFACE_Y, DEPTH } from '../core/constants.js';
 import { FISH } from '../../data/fish/fish.js';
@@ -35,6 +35,7 @@ const BANK_Y = SURFACE_Y - 4; // where the far bank meets the water
 // the open sand beyond them (reach), where they can be seen.
 const VISITORS = {
   deer: { reach: 150, note: 'A white-tailed doe steps down to the water to drink.' },
+  buck: { reach: 150, note: 'A white-tailed buck lowers his antlers to drink.' },
   fox: { reach: 142, note: 'A red fox trots along the bank, nose to the ground.' },
   hare: { reach: 128, note: 'A snowshoe hare stops to nibble clover by the water.' },
   bear: { reach: 146, note: 'A black bear ambles out of the pines. Best keep your distance.' },

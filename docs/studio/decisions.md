@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The land animals are study 8's designs, animated
+
+Olive, the doe, buck, fox, hare and bear in the game are study 8's
+designs (C's proportions, B's eyes), moved by gait from their shapes. The
+buck joins the visitors.
+
 ## 2026-10-22: Birds fly in profile (study 9, version A)
 
 The gull, eagle, mallards and sparrow are redrawn in study 8's look and

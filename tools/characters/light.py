@@ -13,7 +13,7 @@ import colorsys
 from PIL import Image
 
 OUTLINE = (37, 19, 26)
-LAND = ["olive", "deer", "fox", "hare", "bear"]
+LAND = ["olive", "deer", "buck", "fox", "hare", "bear"]
 
 
 def hsv(c):

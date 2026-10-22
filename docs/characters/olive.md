@@ -25,13 +25,14 @@ Everything that is Olive lives under her name:
 
 | What | Where |
 | --- | --- |
-| Her drawing and animations (source) | `tools/characters/olive.py` |
+| Her drawing (source) | `tools/studio/study_creatures.py` (study 8: shape, colours, husky tail) |
+| Her animations | `tools/characters/land.py` |
 | Her sprite sheet and animation table | `assets/art/characters/olive/olive.png`, `olive.json` |
 | In the game's art | the `olive` sheet in `assets/art/manifest.json`; animations `olive-idle`, `olive-walk`, `olive-run`, `olive-leap`, `olive-swim`, `olive-shake`; anchors `olive-at` (where her paws stand, where the water comes up to) |
 | Her behaviour in the game | `src/characters/olive/Olive.js` |
 | This sheet and her previews | `docs/characters/` |
 
-Build her on her own with `python3 tools/characters/olive.py`; the full art
+Build her on her own with `python3 tools/characters/land.py`; the full art
 build (`python3 tools/build_art.py`) includes her.
 
 ## How she looks

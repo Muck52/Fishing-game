@@ -1,6 +1,6 @@
 {
- "frameWidth": 40,
- "frameHeight": 30,
+ "frameWidth": 42,
+ "frameHeight": 36,
  "animations": {
   "idle": {
    "frames": [
@@ -40,7 +40,14 @@
    ],
    "fps": 14,
    "loop": true,
-   "step": 4
+   "steps": [
+    3,
+    4,
+    4,
+    4,
+    4,
+    4
+   ]
   },
   "leap": {
    "frames": [
