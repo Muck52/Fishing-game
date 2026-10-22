@@ -471,6 +471,25 @@ through the detail pass at level B.
 - Placed spots read as a pattern (the hen's first mottling looked like a
   leopard's); a texture keyed to the body's interior reads as feathers.
 
+## Study 10: the fish (2026-10-22)
+
+**Why:** the seventeen species, painted by `tools/fish_art.py`, had fallen
+behind the cast: the art build snapped their colours to the old pack
+palette, their eye was one dark pixel, and at swimming size they showed
+only their one signature marking.
+
+**Versions** (`fish_art.STYLES`, `tools/studio/study_fish.py`), each
+building on the last:
+- **A**, their own painted colours (no palette snap) and the cast's eye.
+- **B**, A in the cast's proportions: deeper, rounder, blunter heads, a
+  thicker tail stalk.
+- **C**, B in full detail: every marking at swimming size, fin rays,
+  scale shimmer, the lateral line.
+
+Review page: `review/study10.html`.
+
+**Verdict:** waiting.
+
 <!--
 ## Study N: <subject> (<date>)
 

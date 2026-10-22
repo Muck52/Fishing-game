@@ -178,8 +178,27 @@ def _fin_height(shape, u, h, x):
     return h * max(0, math.sin(math.pi * u)) ** 0.7
 
 
-def paint(sid, total, card=False):
-    s = SPECIES[sid]
+# Study 10's looks (tools/studio/study_fish.py). Each is a set of changes
+# to every species: depth, snout, ped and nose scale the body plan (deeper,
+# blunter and rounder, a thicker tail stalk); eye "big" is the cast's eye
+# (2x2, dark with a catchlight); detail draws every marking at swimming
+# size, with fin rays, a lateral line and a shimmer of scales.
+STYLES = {
+    "A": {"eye": "big"},
+    "B": {"eye": "big", "depth": 1.12, "snout": 1.35, "ped": 1.15, "nose": 0.8, "cardeye": 1.3},
+    "C": {"eye": "big", "depth": 1.12, "snout": 1.35, "ped": 1.15, "nose": 0.8, "cardeye": 1.3, "detail": True},
+}
+
+
+def paint(sid, total, card=False, style=None):
+    st = STYLES.get(style, style or {}) if isinstance(style, str) or style else {}
+    s = dict(SPECIES[sid])
+    if st:
+        s["depth"] *= st.get("depth", 1)
+        s["snout"] = min(0.6, s["snout"] * st.get("snout", 1))
+        s["ped"] = min(0.6, s["ped"] * st.get("ped", 1))
+        s["nose"] *= st.get("nose", 1)
+    full = st.get("detail", False)
     tshape, tlen, theight = s["tail"]
     L = total / (1 + tlen)  # body length, nose to tail base
     D = s["depth"] * L
@@ -273,8 +292,8 @@ def paint(sid, total, card=False):
     ys, xs = np.nonzero(fins)
     for y, x in zip(ys, xs):
         c = topfin if (y < cy or x > x0 + L) else finc
-        if card and x % 3 == 0:
-            c = mix(finc, OUTLINE, 0.25)
+        if (card and x % 3 == 0) or (full and not card and x % 2 == 0):
+            c = mix(finc, OUTLINE, 0.25)  # the fin's rays
         img[y, x] = (*c, 235)
     # countershading in three bands, dithered where they meet
     for xi, tp in top.items():
@@ -316,7 +335,7 @@ def paint(sid, total, card=False):
     # ---- markings
     for m in s["marks"]:
         kind = m[0]
-        if small and kind not in SIGNATURE[sid]:
+        if small and kind not in SIGNATURE[sid] and not full:
             continue
         if kind == "bars":
             n, c, v0, v1 = m[1], m[2], m[3], m[4]
@@ -467,6 +486,18 @@ def paint(sid, total, card=False):
                 if y > cy and not fins[min(H - 1, y + 1), x]:
                     img[y, x, :3] = m[1]
 
+    if full:
+        # a shimmer of scales on the flank, and the lateral line along it
+        for xi in range(int(gill), int(L * 0.95)):
+            for y in range(int(vpos(xi, 0.3)), int(vpos(xi, 0.66)) + 1):
+                x = int(x0 + xi)
+                if y % 2 == 0 and (x + (y // 2) * 2) % 4 == 0 and body[y, x]:
+                    img[y, x, :3] = mix(tuple(int(v) for v in img[y, x, :3]), (255, 255, 240), 0.3)
+            if not any(m[0] == "lateral" for m in s["marks"]) and xi % 2 == 0:
+                y = int(round(vpos(xi, 0.36 + 0.08 * xi / L)))
+                if body[y, int(x0 + xi)]:
+                    img[y, int(x0 + xi), :3] = mix(tuple(int(v) for v in img[y, int(x0 + xi), :3]), back, 0.45)
+
     # pectoral fin, over the body behind the gill
     px_, py_ = gill + L * 0.03, vpos(gill + L * 0.03, 0.6)
     for k in range(max(2, int(L * 0.09))):
@@ -488,7 +519,7 @@ def paint(sid, total, card=False):
     if sid in ("golden", "pike", "muskie"):
         ex = L * 0.14
         ey = vpos(ex, 0.3)
-    r = max(1, D * (0.13 if s.get("bigeye") else 0.09)) if card else 0
+    r = max(1, D * (0.13 if s.get("bigeye") else 0.09) * st.get("cardeye", 1)) if card else 0
     if card:
         for dx in range(-int(r) - 1, int(r) + 2):
             for dy in range(-int(r) - 1, int(r) + 2):
@@ -496,6 +527,12 @@ def paint(sid, total, card=False):
                 if d <= r + 0.4:
                     paint_px(x0 + ex + dx, ey + dy, s["eye"] if d > r * 0.45 else (16, 16, 20))
         paint_px(x0 + ex - r * 0.4, ey - r * 0.4, (255, 255, 255))
+    elif st.get("eye") == "big":
+        # the cast's eye: two by two, dark, a catchlight at its top left
+        for dx in (0, 1):
+            for dy in (0, 1):
+                paint_px(x0 + ex + dx, ey + dy, (16, 16, 20))
+        paint_px(x0 + ex, ey, (247, 244, 238))
     else:
         paint_px(x0 + ex, ey, (16, 16, 20))
         if s.get("bigeye") or s["eye"][0] > 150:
