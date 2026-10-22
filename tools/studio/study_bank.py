@@ -69,6 +69,7 @@ class Canvas:
     def __init__(self, seed=1):
         self.g = [[None] * W for _ in range(H)]
         self.water = []  # functions (canvas grid, frame) drawing the water
+        self.front = set()  # rock in front of the water: the water is hidden there
         self.rnd = random.Random(seed)
         self.foot = (200, 214)
 
@@ -669,7 +670,7 @@ def render(c, R, time="day", frame=None):
     grid = [row[:] for row in c.g] if frame is None else [[None] * W for _ in range(H)]
 
     def g(x, y, mat, s):
-        if 0 <= x < W and 0 <= y < H:
+        if 0 <= x < W and 0 <= y < H and (x, y) not in c.front:
             grid[y][x] = (mat, s)
 
     for draw in c.water:

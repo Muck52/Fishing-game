@@ -129,9 +129,26 @@ rock round the falls looked like a slot; a ragged band a few pixels wide
 either side, with moss, reads as a gorge. Amber dots near the lip looked
 like dirt; amber as short streaks reads as thin water.
 
-**Verdict:** waiting on you.
+**Verdict:** A, the tiered cascade, but it sat flat on the rock: at the
+top, down its length and at the base, it didn't melt into the bluff.
+Revised: the bluff carries on left so the falls sits in the rock; the
+river comes down a notch worn into the bluff's top, between rock
+shoulders drawn in front of the lip; the ledges are the bluff's own,
+running on into the rock and fading out; each tier steps sideways; rock
+juts into the edges; the rock beside the water is wet, darker the closer
+it is, with moss; at the foot the splash boils behind boulders and the
+outflow runs between stones. It's in the game (`tools/scenery/bank.py`).
 
-**Learned:** (after the verdict)
+**Learned:**
+- Water has to go *into* the rock, not lie on it: put rock in front of it
+  (shoulders at the lip, juts along the edges, boulders at the foot) so
+  its outline is the rock's outline.
+- A ledge a waterfall drops over belongs to the whole cliff: run it on
+  into the rock either side and let it fade, and the water pours over it
+  with only a glassy bend, no dark band.
+- Nothing in nature is straight down: step each tier sideways.
+- Wet rock is darker the nearer the water, with green where the spray
+  falls.
 
 <!--
 ## Study N: <subject> (<date>)

@@ -2,6 +2,13 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The waterfall is study 3's version A, cut into the bluff
+
+A tiered cascade: the river through a notch in the bluff's top, down three
+of the bluff's own ledges, each tier stepping sideways, rock in front of
+its edges, wet dark rock and moss beside it, boulders at its foot and an
+outflow between stones to the lake.
+
 ## 2026-10-22: The far bank is study 2's version C
 
 The birch cove: a pebble beach where the animals come down, white birches

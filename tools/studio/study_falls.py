@@ -90,14 +90,16 @@ def notch(c, x0, x1, y, seed=0):
 
 # ---------------------------------------------------------------- the water
 
-def mouth(c, x0, x1, y, seed=0):
+def mouth(c, x0, x1, y, seed=0, river=True):
     """The river at the top, coming over the lip: a dark smooth band, a
-    bright glassy line where it bends over the edge, then the first white."""
+    bright glassy line where it bends over the edge, then the first white.
+    river=False: water pouring over a lower ledge, only the glassy bend."""
     def draw(g, f):
         rnd = random.Random(seed * 3 + f)
         for x in range(x0, x1 + 1):
-            g(x, y - 3, "deepwater", 1)
-            g(x, y - 2, "deepwater", 2 if (x + f) % 5 else 3)
+            if river:
+                g(x, y - 3, "deepwater", 1)
+                g(x, y - 2, "deepwater", 2 if (x + f) % 5 else 3)
             g(x, y - 1, "deepwater", 4 if (x - f) % 4 else 3)  # the glassy bend
             g(x, y, "whitewater", 3 if rnd.random() < 0.7 else 2)
     c.water.append(draw)
@@ -135,10 +137,10 @@ def curtain(c, top, bottom, y0, y1, seed=0, gaps=(), slope=0.0, churn=0.0):
                 band = (y - 3 * f - sag) % 12
                 if churn and rnd.random() < churn:
                     g(x, y, "whitewater", rnd.randrange(1, 4))
-                elif band == 0:
-                    g(x, y, "whitewater", 3)  # a band of light sagging across the sheet
-                elif band == 1:
-                    g(x, y, "whitewater", 2)
+                elif band == 0 and v > 1:
+                    g(x, y, "whitewater", 3)  # a band of light sagging across the sheet, broken by the streaks
+                elif band == 1 and v == 3:
+                    g(x, y, "whitewater", 3)
                 elif v < 3 and (y - y0) < 4 + (x * 7 % 5) * 2:
                     g(x, y, "tannin", 4 if v == 2 else 3)  # thin, glassy amber streaks just over the lip
                 elif edge:
@@ -217,22 +219,129 @@ def outflow(c, x0, x1, y0, y1, seed=0):
 
 # ---------------------------------------------------------------- the versions
 
+def front_rock(c, pts, mat="pink-granite", seed=0, moss=0.0):
+    """A piece of the bluff in front of the water (a shoulder at the notch,
+    a jut along the edge, a boulder at the foot): drawn into the bank and
+    listed so the water is hidden behind it."""
+    m = b.poly_mask(pts)
+    b.pillow(c, m, mat, seed=seed, flecks=len(m) > 60)
+    if len(m) > 400:
+        b.facets(c, m, mat, seed=seed)
+    rnd = random.Random(seed)
+    for x, y in m:
+        if (x, y - 1) not in m and rnd.random() < moss:
+            c.put(x, y, "moss", 3)
+            c.put(x, y + 1, "moss", 2)
+    c.front |= m
+
+
+def carve(c, pts):
+    """Cuts the bluff back where the river has worn its channel: the forest
+    behind shows through."""
+    for x, y in b.poly_mask(pts):
+        p = c.at(x, y)
+        if p and p[0] in ("pink-granite", "lichen", "moss", "basalt"):
+            c.put(x, y, "spruce-needles", 1 if (y // 9) % 2 == 0 else 0)
+
+
+def shelf(c, x0, x1, y, depth=5, seed=0):
+    """One of the bluff's own ledges, running into the rock either side of
+    the falls: a lit top edge, a calm face, a ragged shadow under the
+    overhang. It thins toward its ends and fades into the rock."""
+    rnd = random.Random(seed)
+    mid = (x0 + x1) / 2
+    for x in range(x0, x1 + 1):
+        u = abs(x - mid) / ((x1 - x0) / 2)  # 0 middle, 1 ends
+        d = max(1, round(depth * (1 - u ** 2)) + rnd.randrange(-1, 2))
+        yy = y + round(u * 2) + (1 if rnd.random() < 0.15 else 0)
+        if u > 0.85 and rnd.random() < 0.5:
+            continue
+        c.put(x, yy, "pink-granite", 4 if u < 0.6 else 3)
+        for k in range(1, d):
+            c.put(x, yy + k, "pink-granite", 3 if k == 1 and u < 0.5 else 2)
+        if u < 0.8:
+            c.put(x, yy + d, "pink-granite", 0 if rnd.random() < 0.7 else 1)
+
+
+def wet(c, region, reach=5, seed=0):
+    """The rock next to the water stays wet: darker the closer it is, a
+    glint here and there, moss and small ferns where the spray falls."""
+    rnd = random.Random(seed)
+    xs = {}
+    for x, y in region:
+        lo, hi = xs.get(y, (x, x))
+        xs[y] = (min(lo, x), max(hi, x))
+    for y, (lo, hi) in xs.items():
+        for x in list(range(lo - reach, lo)) + list(range(hi + 1, hi + reach + 1)):
+            p = c.at(x, y)
+            if not p or p[0] not in ("pink-granite", "basalt", "lichen"):
+                continue
+            d = min(abs(x - lo), abs(x - hi))
+            darker = 2 if d <= 2 else 1
+            c.put(x, y, p[0] if p[0] != "lichen" else "pink-granite", max(0, p[1] - darker))
+            if d <= 2 and rnd.random() < 0.03:
+                c.put(x, y, p[0], 4)
+            if d in (3, 4) and rnd.random() < 0.05:
+                b.blob(c, x, y, rnd.randrange(1, 3), "moss", steps=(3, 2, 1, 0), rnd=rnd, flat=0.7)
+
+
+def water_cells(c):
+    """Every pixel the water covers in any frame."""
+    cells = set()
+
+    def g(x, y, mat, s):
+        cells.add((x, y))
+    for draw in c.water:
+        for f in range(b.FRAMES):
+            draw(g, f)
+    return cells
+
+
 def falls_a(c):
-    """Tiered cascade: three drops down basalt ledges."""
-    gorge(c, (189, 205), (181, 213), 148, 284, seed=31)
-    notch(c, 188, 206, 150)
-    ledge(c, 180, 212, 186, seed=32)
-    ledge(c, 178, 214, 224, seed=33)
-    mouth(c, 189, 205, 150, seed=1)
-    curtain(c, (190, 204), (188, 206), 151, 186, seed=2)
-    splash(c, 197, 188, 9, seed=3, height=4)
-    curtain(c, (187, 207), (185, 209), 190, 224, seed=4)
-    splash(c, 197, 226, 11, seed=5, height=5)
-    curtain(c, (184, 210), (181, 213), 228, 278, seed=6)
-    splash(c, 197, 282, 15, seed=7)
-    pool(c, 197, POOL_Y + 2, 20, 5, seed=8)
-    outflow(c, (186, 208), (190, 218), BEACH + 1, 305, seed=9)
-    c.foot = (197, 280)
+    """Tiered cascade, cut into the bluff: the river comes down a notch worn
+    into the bluff's top, between rock shoulders that overlap it, and drops
+    down three of the bluff's own ledges, each tier stepping sideways and
+    widening; rock juts into its edges; at the foot it boils among
+    boulders into a pool, and runs out between stones to the lake."""
+    # the bluff is carried further left here, so the falls sits in the rock
+    buttress = [(170, 292), (168, 240), (172, 196), (182, 168), (192, 156), (200, 152), (200, 292)]
+    front_rock(c, buttress, seed=60)
+    c.front -= b.poly_mask(buttress)
+    # the channel the river has worn into the bluff's top
+    carve(c, [(186, 140), (216, 140), (212, 152), (206, 158), (196, 158), (190, 152)])
+    # the three tiers, each stepping sideways: the river over the lip, then
+    # down the ledges, foam where each lands
+    mouth(c, 194, 208, 158, seed=1)
+    curtain(c, (194, 208), (193, 210), 159, 189, seed=2)
+    splash(c, 201, 191, 9, seed=3, height=4)
+    mouth(c, 189, 207, 194, seed=21, river=False)
+    curtain(c, (189, 207), (187, 208), 194, 226, seed=4)
+    splash(c, 197, 229, 11, seed=5, height=5)
+    mouth(c, 190, 213, 232, seed=22, river=False)
+    curtain(c, (190, 213), (186, 215), 232, 276, seed=6)
+    splash(c, 200, 280, 14, seed=7, height=8)
+    pool(c, 200, 285, 16, 4, seed=8)
+    outflow(c, (195, 207), (192, 212), BEACH + 1, 305, seed=9)
+    wet(c, water_cells(c), seed=10)
+    # the ledges are the bluff's own: they run on into the rock either side
+    shelf(c, 178, 226, 191, seed=11)
+    shelf(c, 174, 228, 229, depth=6, seed=12)
+    # the shoulders of the notch, overlapping the ends of the lip
+    front_rock(c, [(184, 150), (190, 146), (196, 154), (196, 162), (192, 172), (186, 170)], seed=13, moss=0.3)
+    front_rock(c, [(206, 156), (212, 148), (220, 146), (222, 160), (214, 170), (208, 166)], seed=14, moss=0.3)
+    # rock jutting into the falls' edges, so they're never straight
+    front_rock(c, [(186, 176), (193, 174), (195, 182), (190, 186)], seed=15)
+    front_rock(c, [(208, 200), (212, 198), (213, 210), (209, 214)], seed=23)
+    front_rock(c, [(184, 204), (189, 202), (191, 212), (186, 216)], seed=24)
+    front_rock(c, [(211, 244), (216, 238), (219, 248), (213, 256)], seed=16)
+    front_rock(c, [(183, 252), (189, 248), (190, 260), (185, 264)], seed=17)
+    # boulders at the foot, the splash boiling up behind them
+    front_rock(c, [(176, 292), (178, 282), (186, 276), (193, 280), (195, 292)], "grey-gneiss", seed=18, moss=0.2)
+    front_rock(c, [(206, 292), (208, 280), (216, 276), (224, 281), (226, 292)], seed=19, moss=0.2)
+    # stones the outflow runs between on its way across the beach
+    for k, (x, y) in enumerate([(190, 298), (209, 296), (193, 304), (211, 303)]):
+        front_rock(c, [(x - 4, y + 3), (x - 3, y - 1), (x, y - 3), (x + 3, y - 1), (x + 4, y + 3)], "grey-gneiss", seed=30 + k)
+    c.foot = (200, 276)
 
 
 def falls_b(c):
