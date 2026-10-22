@@ -370,9 +370,9 @@ read.
 
 **Verdict:** C, cozy naturalist, with corrections: Olive's eyes didn't
 show and the deer lost her ears bending down. Checked every model and
-fixed: Olive's eye (a black pupil beside the brown and a catchlight; a
-grey rim round her and the bear's eyes was tried and taken back out, at
-your call), the drinking deer's ears (standing up and
+fixed: Olive's eye (the same design as every other animal's, a dark eye
+with a catchlight; a grey rim, then a brown eye with a black pupil, were
+tried and taken back out, at your call), the drinking deer's ears (standing up and
 back, clear of the neck), the fox's ears (black-backed), the hare's ears
 sitting up (parted). Added a buck beside the doe: hardened late-summer
 antlers, a heavier neck, a darker coat. His drinking head first had
@@ -381,8 +381,8 @@ head, ears and antlers are turned down together as one piece (`head_turn`
 in `tools/characters/anatomy.py`), 60 degrees, so they agree.
 
 **Learned:**
-- On a black coat a dark eye disappears: a black pupil and a catchlight
-  in it make it read.
+- One eye design for the whole cast; the catchlight is what reads, even
+  on a black coat.
 - Turn a head as one piece with everything on it (ears, antlers); drawn
   separately they point different ways.
 - Parts that fold against a body of the same colour vanish; turn them so
