@@ -1,0 +1,182 @@
+<title>Study 9 Birds</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single reading column like a field-station report, with full-bleed image plates and swatch strips drawn from the lake itself. */
+:root {
+  --bg: #eef1ec;
+  --panel: #e2e8e2;
+  --ink: #1b2826;
+  --muted: #566764;
+  --line: #c3cec7;
+  --accent: #a24f45;
+  --pine: #2d5747;
+  --display: "Pixelify Sans", "Courier New", monospace;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1918; --panel: #172423; --ink: #e2e9e4; --muted: #97a9a4; --line: #2a3b39;
+    --accent: #e29a8b; --pine: #86bba4; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1918; --panel: #172423; --ink: #e2e9e4; --muted: #97a9a4; --line: #2a3b39;
+  --accent: #e29a8b; --pine: #86bba4; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+main { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(32px, 7vw, 46px); letter-spacing: 0.5px; }
+h2 { font-size: 26px; color: var(--pine); }
+h3 { font-size: 19px; font-weight: 500; }
+p { margin: 0; max-width: 65ch; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 19px; }
+a { color: var(--accent); }
+figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+figure img { width: 100%; image-rendering: pixelated; border-radius: 4px; display: block; }
+figcaption { font-size: 14px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat { border-top: 3px solid var(--pine); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+.stat b { font-family: var(--display); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 14px; color: var(--muted); }
+ol.findings { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 12px; }
+ol.findings li::marker { font-family: var(--mono); color: var(--accent); }
+ol.findings b { font-weight: 600; }
+.meter { display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; align-items: center; font-size: 14px; }
+.meter .bars { display: flex; flex-direction: column; gap: 3px; }
+.bar { height: 10px; border-radius: 2px; background: var(--line); position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; }
+.bar.ours i { background: var(--pine); }
+.bar.pack i { background: var(--accent); }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.legend .l-ours::before { background: var(--pine); }
+.legend .l-pack::before { background: var(--accent); }
+.skies { display: flex; flex-direction: column; gap: 6px; }
+.sky { display: grid; grid-template-columns: 7.5em 1fr; align-items: center; gap: 12px; font-size: 14px; }
+.sky div { height: 30px; border-radius: 3px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.sw { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.sw .strip { display: flex; height: 34px; border-radius: 3px; overflow: hidden; }
+.sw .strip i { flex: 1; }
+.sw b { font-weight: 600; font-size: 15px; }
+.sw span { font-size: 13px; color: var(--muted); font-family: var(--mono); overflow-wrap: anywhere; }
+.lessons { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px 24px; }
+.lessons div { display: flex; flex-direction: column; gap: 4px; }
+.lessons h3 { color: var(--accent); }
+.lessons p { font-size: 15px; }
+ol.rules { margin: 0; padding: 0; list-style: none; counter-reset: r; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+ol.rules li { counter-increment: r; display: grid; grid-template-columns: 2.4em 1fr; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+ol.rules li::before { content: counter(r, decimal-leading-zero); font-family: var(--mono); color: var(--muted); font-size: 14px; padding-top: 3px; }
+.qs { display: flex; flex-direction: column; gap: 14px; }
+.q { background: var(--panel); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.q h3 { font-size: 18px; }
+.q ul { margin: 0; padding-left: 1.2em; font-size: 15px; display: flex; flex-direction: column; gap: 4px; }
+.q .rec { font-size: 14px; color: var(--pine); font-family: var(--mono); }
+.next { font-size: 15px; color: var(--muted); }
+code { font-family: var(--mono); font-size: 0.85em; }
+.viewer { display: flex; flex-direction: column; gap: 10px; }
+.viewer img { width: 100%; height: auto; image-rendering: pixelated; border-radius: 4px; display: block; aspect-ratio: 1200 / 296; background: var(--panel); }
+.pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick button { font: 600 14px var(--mono); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; min-width: 44px; }
+.pick button[aria-pressed="true"] { background: var(--pine); color: var(--bg); border-color: var(--pine); }
+.pick button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cap { font-size: 15px; min-height: 3em; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+.card { display: flex; flex-direction: column; gap: 6px; }
+.card h3 { color: var(--accent); }
+.card p { font-size: 15px; }
+.card ul { margin: 0; padding-left: 1.1em; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 3px; }
+.motion { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.motion figure img { aspect-ratio: 390 / 630; height: auto; }
+.wide { overflow-x: auto; }
+.wide img { max-width: none; width: 1824px; height: auto; image-rendering: pixelated; }
+@media (max-width: 520px) { .motion { grid-template-columns: repeat(2, 1fr); } }
+</style>
+
+<main>
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <span class="eyebrow">Reel It In · Study 9 · 22 Oct 2026</span>
+    <h1>The birds</h1>
+    <p class="lede">The gull, the bald eagle, the mallard drake and hen, the song sparrow, and the common loon, who joins them. They're redrawn the way study 8 settled the land animals: built from shapes, with C's proportions and B's big eyes with a catchlight, then finished with the selective edge and lit as one mass. This study is about how they fly.</p>
+  </header>
+
+  <section class="viewer">
+    <span class="eyebrow">In flight, close up (two wing positions each)</span>
+    <div class="pick" role="group" aria-label="Version">
+      <button data-v="now" aria-pressed="false">Now</button>
+      <button data-v="A" aria-pressed="false">A</button>
+      <button data-v="B" aria-pressed="false">B</button>
+      <button data-v="C" aria-pressed="true">C</button>
+    </div>
+    <img id="shot" src="study9/C-sky.png" alt="The birds in flight, version C" width="1288" height="192">
+    <p class="cap" id="cap"></p>
+    <div class="wide"><img id="game" src="study9/C-game.png" alt="Version C in the game at five times of day" width="1824" height="430"></div>
+    <p class="cap">In the game at dawn, morning, midday, dusk and night. Scroll sideways. Birds fly behind the land; the rest poses are the same in every version.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">The same in every version</span>
+    <h2>At rest</h2>
+    <img src="study9/rest.png" alt="The gull, eagle and sparrow on the beach; the mallards and the loon on the water" width="608" height="256">
+    <p class="cap">On the sand: the gull standing, the eagle perched, the sparrow on a cattail. On the water: the drake, the hen, and the loon, low in the water with its chequered back and white necklace, then going under.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">The three versions</span>
+    <h2>What each one tries</h2>
+    <div class="cards">
+      <div class="card"><h3>A &middot; Flapping in profile</h3><p>Every bird seen side-on like the animals on the beach: wings beating up and down beside the body.</p><ul><li>Matches the land animals' side view</li><li>The big birds look busy; eagles and gulls mostly soar</li></ul></div>
+      <div class="card"><h3>B &middot; Spread from below</h3><p>Both wings outstretched, the far one up behind and the near one down in front, as if passing over you.</p><ul><li>Big, graceful shapes for the eagle and gull</li><li>Small birds look stiff; the near wing can read as a leg</li></ul></div>
+      <div class="card"><h3>C &middot; A mix</h3><p>The eagle and gull soar spread (B), the mallards and sparrows flap in profile (A), the way each really flies.</p><ul><li>Each bird moves true to life</li><li>Two looks in one sky</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Honest notes</span>
+    <h2>What's still rough</h2>
+    <ol class="rules">
+      <li><b>Two wing positions only.</b> The study shows the two key poses; the in-between frames (and the glide hold) get drawn once you pick.</li>
+      <li><b>The loon is new.</b> It would swim the lake and dive, and its call at dusk could come with it later.</li>
+      <li><b>The eagle's yellow eye</b> is drawn like everyone's, as you asked for Olive: no special features in the eyes.</li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="eyebrow">Your call</span>
+    <h2>Pick one, or mix</h2>
+    <p>Tell me A, B or C, and anything about any one bird that feels off (a shape, a colour, a size). Then I'll animate them and the land animals together and put them in the game. Fish after that.</p>
+  </section>
+</main>
+<script>
+(function () {
+  var notes = {
+    now: "Now: the current birds, drawn seen from below with thin wings.",
+    A: "A: every bird flapping in profile, wings up and down.",
+    B: "B: every bird spread, far wing up behind, near wing down in front.",
+    C: "C: the eagle and gull soar spread; the mallards and sparrow flap in profile."
+  };
+  var v = "C";
+  var img = document.getElementById("shot"), game = document.getElementById("game"), cap = document.getElementById("cap");
+  function show() {
+    img.src = "study9/" + v + "-sky.png";
+    game.src = "study9/" + v + "-game.png";
+    img.alt = v === "now" ? "The birds as they are now" : "The birds in flight, version " + v;
+    game.alt = (v === "now" ? "Now" : "Version " + v) + " in the game at five times of day";
+    cap.textContent = notes[v];
+    document.querySelectorAll("[data-v]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.v === v); });
+  }
+  document.querySelectorAll("[data-v]").forEach(function (b) { b.addEventListener("click", function () { v = b.dataset.v; show(); }); });
+  show();
+})();
+</script>

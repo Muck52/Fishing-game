@@ -395,6 +395,25 @@ in `tools/characters/anatomy.py`), 60 degrees, so they agree.
 - Antler tines need room: spaced three pixels apart with their outline,
   closer they merge into a clump.
 
+## Study 9: the birds (2026-10-22)
+
+**Why:** with the land animals redesigned, the birds were next: the gull,
+eagle, mallards and sparrow, plus the common loon as a newcomer.
+
+**Versions:** all redrawn from shapes in study 8's look (C's proportions,
+B's big eyes with a catchlight, selective edge, lit as one mass), in
+`tools/studio/study_birds.py`. The study is how they fly:
+- **A**, flapping in profile, wings up and down beside the body.
+- **B**, spread from below, far wing up behind, near wing down in front.
+- **C**, a mix: the eagle and gull soar spread, the mallards and sparrow
+  flap in profile.
+
+Each bird also has a rest pose, the same in every version: the gull
+standing, the eagle perched, the sparrow on a cattail, the drake, hen and
+loon swimming (and the loon diving). Review page: `review/study9.html`.
+
+**Verdict:** waiting.
+
 <!--
 ## Study N: <subject> (<date>)
 
