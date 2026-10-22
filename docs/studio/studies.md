@@ -548,6 +548,23 @@ his own colours; the pack fisherman is retired.
   torso's front edge for the placket, its last row for the belt), so
   every pose and frame agrees.
 
+## Study 12: the hut (2026-10-22)
+
+**Why:** the hut was the pack's: flat pinkish boards, one tone each, its
+own outline, beside a redrawn angler.
+
+**Versions** (`tools/studio/study_hut.py`): redrawn from materials at the
+same size and layout (walkway at row 62, pilings, night panes), with a
+stovepipe, window, half-glazed door, lantern, life ring, rope, a net on
+the railing, cross-braced pilings and a new barrel:
+- **A**, weathered cedar board-and-batten, rusty tin roof.
+- **B**, barn-red clapboard, white trim, green shingles, flower box.
+- **C**, log cabin with chinking, cedar shakes.
+
+Review page: `review/study12.html`.
+
+**Verdict:** waiting.
+
 <!--
 ## Study N: <subject> (<date>)
 
