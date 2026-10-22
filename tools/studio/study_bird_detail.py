@@ -254,10 +254,10 @@ def parts_for(name, pose, level):
     return parts
 
 
-def draw(name, pose, level):
+def draw(name, pose, level, scale=None):
     spec = SPECS[name]
     p = spec["poses"]["rest" if pose == "perch" else pose]
-    k = 4 / 3 if level == "C" else 1
+    k = scale or (4 / 3 if level == "C" else 1)
     W, H = p["frame"]
     W, H = math.ceil(W * k), math.ceil(H * k)
     dx, dy = p.get("at", (0, 0))
@@ -291,7 +291,7 @@ def draw(name, pose, level):
         texture(g, TEXTURE.get(name, []))
     ex, ey = scaled(mv([p["eye"]]), pivot, sb.HEAD)[0]
     ex, ey = round(ex), round(ey)
-    big = spec.get("eye", 2)
+    big = spec.get("eye", 2) if k >= 0.6 else 1  # a one-pixel eye on a bird drawn small
     for x in range(ex, ex + big):
         for y in range(ey, ey + big):
             if 0 <= x < W and 0 <= y < H:
@@ -304,12 +304,13 @@ def colours(name):
     return {**sb.FACE, **SPECS[name]["colours"], **INKS.get(name, {}), **EXTRA_INKS.get(name, {})}
 
 
-def render(name, pose, level, water=None):
+def render(name, pose, level, water=None, scale=None):
     if level == "now":
         return sb.render(SPECS[name], pose, water=water if water is None else water)
-    g = outline(draw(name, pose, level))
-    if water is not None and level == "C":
-        water = round(water * 4 / 3)
+    g = outline(draw(name, pose, level, scale))
+    k = scale or (4 / 3 if level == "C" else 1)
+    if water is not None and k != 1:
+        water = round(water * k)
     img = image(g, colours(name), water=water)
     return lit(treat(img, img.width), img.width)
 

@@ -576,6 +576,24 @@ hut and barrel are retired.
 - Light thrown on a wall reads in pixel art as a dithered falloff kept on
   the surface, never a soft blur in the air.
 
+## Study 13: scale beside the angler (2026-10-22)
+
+**Why:** you wanted the animals at realistic sizes relative to the angler.
+
+**Measured** (`tools/studio/study_scale.py`, `studies/13-scale/sizes.json`):
+the angler is 39 px for 178 cm (0.22 px/cm). The deer, buck and bear were
+near true; Olive and the fox about 1.8 to 2x life size; the hare and gull
+about 2.9x; the sparrow 4x; the fish 3 to 4x.
+
+**Versions:** A true scale; B true with a readable floor (8 px plus half
+the true size, for anything under about 16 px); C gently compressed toward
+the deer's size (true x (170 cm / true)^0.4), in true order. Each animal
+redrawn at size from its shapes.
+
+Review page: `review/study13.html`.
+
+**Verdict:** waiting.
+
 <!--
 ## Study N: <subject> (<date>)
 

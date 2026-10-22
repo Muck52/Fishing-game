@@ -1,0 +1,785 @@
+[
+ {
+  "name": "olive",
+  "real_cm": [
+   95,
+   70
+  ],
+  "true_px": [
+   20.8,
+   15.3
+  ],
+  "now_px": [
+   32,
+   28
+  ],
+  "A": [
+   19,
+   17
+  ],
+  "B": [
+   19,
+   17
+  ],
+  "C": [
+   26,
+   23
+  ]
+ },
+ {
+  "name": "deer",
+  "real_cm": [
+   170,
+   150
+  ],
+  "true_px": [
+   37.2,
+   32.9
+  ],
+  "now_px": [
+   38,
+   38
+  ],
+  "A": [
+   35,
+   35
+  ],
+  "B": [
+   35,
+   35
+  ],
+  "C": [
+   36,
+   36
+  ]
+ },
+ {
+  "name": "buck",
+  "real_cm": [
+   185,
+   185
+  ],
+  "true_px": [
+   40.5,
+   40.5
+  ],
+  "now_px": [
+   39,
+   48
+  ],
+  "A": [
+   36,
+   46
+  ],
+  "B": [
+   36,
+   46
+  ],
+  "C": [
+   35,
+   44
+  ]
+ },
+ {
+  "name": "fox",
+  "real_cm": [
+   105,
+   55
+  ],
+  "true_px": [
+   23.0,
+   12.1
+  ],
+  "now_px": [
+   39,
+   24
+  ],
+  "A": [
+   21,
+   13
+  ],
+  "B": [
+   23,
+   14
+  ],
+  "C": [
+   30,
+   19
+  ]
+ },
+ {
+  "name": "hare",
+  "real_cm": [
+   45,
+   40
+  ],
+  "true_px": [
+   9.9,
+   8.8
+  ],
+  "now_px": [
+   26,
+   26
+  ],
+  "A": [
+   9,
+   9
+  ],
+  "B": [
+   12,
+   13
+  ],
+  "C": [
+   16,
+   17
+  ]
+ },
+ {
+  "name": "bear",
+  "real_cm": [
+   165,
+   90
+  ],
+  "true_px": [
+   36.2,
+   19.7
+  ],
+  "now_px": [
+   40,
+   21
+  ],
+  "A": [
+   37,
+   21
+  ],
+  "B": [
+   37,
+   21
+  ],
+  "C": [
+   43,
+   23
+  ]
+ },
+ {
+  "name": "gull",
+  "real_cm": [
+   46,
+   30
+  ],
+  "true_px": [
+   10.1,
+   6.6
+  ],
+  "now_px": [
+   29,
+   20
+  ],
+  "A": [
+   9,
+   7
+  ],
+  "B": [
+   14,
+   10
+  ],
+  "C": [
+   18,
+   12
+  ]
+ },
+ {
+  "name": "eagle",
+  "real_cm": [
+   35,
+   80
+  ],
+  "true_px": [
+   7.7,
+   17.5
+  ],
+  "now_px": [
+   20,
+   30
+  ],
+  "A": [
+   11,
+   17
+  ],
+  "B": [
+   11,
+   17
+  ],
+  "C": [
+   16,
+   23
+  ]
+ },
+ {
+  "name": "sparrow",
+  "real_cm": [
+   15,
+   13
+  ],
+  "true_px": [
+   3.3,
+   2.8
+  ],
+  "now_px": [
+   13,
+   10
+  ],
+  "A": [
+   3,
+   3
+  ],
+  "B": [
+   11,
+   9
+  ],
+  "C": [
+   9,
+   7
+  ]
+ },
+ {
+  "name": "mallard",
+  "real_cm": [
+   58,
+   25
+  ],
+  "true_px": [
+   12.7,
+   5.5
+  ],
+  "now_px": [
+   23,
+   10
+  ],
+  "A": [
+   12,
+   5
+  ],
+  "B": [
+   14,
+   6
+  ],
+  "C": [
+   20,
+   8
+  ]
+ },
+ {
+  "name": "loon",
+  "real_cm": [
+   80,
+   25
+  ],
+  "true_px": [
+   17.5,
+   5.5
+  ],
+  "now_px": [
+   33,
+   11
+  ],
+  "A": [
+   17,
+   6
+  ],
+  "B": [
+   17,
+   6
+  ],
+  "C": [
+   23,
+   8
+  ]
+ },
+ {
+  "name": "bluegill",
+  "real_cm": [
+   20,
+   null
+  ],
+  "true_px": [
+   4.4,
+   null
+  ],
+  "now_px": [
+   17,
+   null
+  ],
+  "A": [
+   4,
+   null
+  ],
+  "B": [
+   10,
+   null
+  ],
+  "C": [
+   10,
+   null
+  ]
+ },
+ {
+  "name": "pumpkinseed",
+  "real_cm": [
+   18,
+   null
+  ],
+  "true_px": [
+   3.9,
+   null
+  ],
+  "now_px": [
+   17,
+   null
+  ],
+  "A": [
+   4,
+   null
+  ],
+  "B": [
+   10,
+   null
+  ],
+  "C": [
+   10,
+   null
+  ]
+ },
+ {
+  "name": "perch",
+  "real_cm": [
+   25,
+   null
+  ],
+  "true_px": [
+   5.5,
+   null
+  ],
+  "now_px": [
+   20,
+   null
+  ],
+  "A": [
+   5,
+   null
+  ],
+  "B": [
+   11,
+   null
+  ],
+  "C": [
+   12,
+   null
+  ]
+ },
+ {
+  "name": "crappie",
+  "real_cm": [
+   25,
+   null
+  ],
+  "true_px": [
+   5.5,
+   null
+  ],
+  "now_px": [
+   20,
+   null
+  ],
+  "A": [
+   5,
+   null
+  ],
+  "B": [
+   11,
+   null
+  ],
+  "C": [
+   12,
+   null
+  ]
+ },
+ {
+  "name": "whitebass",
+  "real_cm": [
+   30,
+   null
+  ],
+  "true_px": [
+   6.6,
+   null
+  ],
+  "now_px": [
+   22,
+   null
+  ],
+  "A": [
+   7,
+   null
+  ],
+  "B": [
+   11,
+   null
+  ],
+  "C": [
+   13,
+   null
+  ]
+ },
+ {
+  "name": "carp",
+  "real_cm": [
+   60,
+   null
+  ],
+  "true_px": [
+   13.1,
+   null
+  ],
+  "now_px": [
+   32,
+   null
+  ],
+  "A": [
+   13,
+   null
+  ],
+  "B": [
+   15,
+   null
+  ],
+  "C": [
+   20,
+   null
+  ]
+ },
+ {
+  "name": "bass",
+  "real_cm": [
+   40,
+   null
+  ],
+  "true_px": [
+   8.8,
+   null
+  ],
+  "now_px": [
+   24,
+   null
+  ],
+  "A": [
+   9,
+   null
+  ],
+  "B": [
+   12,
+   null
+  ],
+  "C": [
+   16,
+   null
+  ]
+ },
+ {
+  "name": "largemouth",
+  "real_cm": [
+   45,
+   null
+  ],
+  "true_px": [
+   9.9,
+   null
+  ],
+  "now_px": [
+   27,
+   null
+  ],
+  "A": [
+   10,
+   null
+  ],
+  "B": [
+   13,
+   null
+  ],
+  "C": [
+   17,
+   null
+  ]
+ },
+ {
+  "name": "trout",
+  "real_cm": [
+   30,
+   null
+  ],
+  "true_px": [
+   6.6,
+   null
+  ],
+  "now_px": [
+   23,
+   null
+  ],
+  "A": [
+   7,
+   null
+  ],
+  "B": [
+   11,
+   null
+  ],
+  "C": [
+   13,
+   null
+  ]
+ },
+ {
+  "name": "rainbow",
+  "real_cm": [
+   50,
+   null
+  ],
+  "true_px": [
+   11.0,
+   null
+  ],
+  "now_px": [
+   26,
+   null
+  ],
+  "A": [
+   11,
+   null
+  ],
+  "B": [
+   13,
+   null
+  ],
+  "C": [
+   18,
+   null
+  ]
+ },
+ {
+  "name": "channelcat",
+  "real_cm": [
+   60,
+   null
+  ],
+  "true_px": [
+   13.1,
+   null
+  ],
+  "now_px": [
+   30,
+   null
+  ],
+  "A": [
+   13,
+   null
+  ],
+  "B": [
+   15,
+   null
+  ],
+  "C": [
+   20,
+   null
+  ]
+ },
+ {
+  "name": "drum",
+  "real_cm": [
+   50,
+   null
+  ],
+  "true_px": [
+   11.0,
+   null
+  ],
+  "now_px": [
+   26,
+   null
+  ],
+  "A": [
+   11,
+   null
+  ],
+  "B": [
+   13,
+   null
+  ],
+  "C": [
+   18,
+   null
+  ]
+ },
+ {
+  "name": "walleye",
+  "real_cm": [
+   50,
+   null
+  ],
+  "true_px": [
+   11.0,
+   null
+  ],
+  "now_px": [
+   29,
+   null
+  ],
+  "A": [
+   11,
+   null
+  ],
+  "B": [
+   13,
+   null
+  ],
+  "C": [
+   18,
+   null
+  ]
+ },
+ {
+  "name": "catfish",
+  "real_cm": [
+   50,
+   null
+  ],
+  "true_px": [
+   11.0,
+   null
+  ],
+  "now_px": [
+   28,
+   null
+  ],
+  "A": [
+   11,
+   null
+  ],
+  "B": [
+   13,
+   null
+  ],
+  "C": [
+   18,
+   null
+  ]
+ },
+ {
+  "name": "pike",
+  "real_cm": [
+   75,
+   null
+  ],
+  "true_px": [
+   16.4,
+   null
+  ],
+  "now_px": [
+   36,
+   null
+  ],
+  "A": [
+   16,
+   null
+  ],
+  "B": [
+   16,
+   null
+  ],
+  "C": [
+   23,
+   null
+  ]
+ },
+ {
+  "name": "muskie",
+  "real_cm": [
+   110,
+   null
+  ],
+  "true_px": [
+   24.1,
+   null
+  ],
+  "now_px": [
+   42,
+   null
+  ],
+  "A": [
+   24,
+   null
+  ],
+  "B": [
+   24,
+   null
+  ],
+  "C": [
+   29,
+   null
+  ]
+ },
+ {
+  "name": "golden",
+  "real_cm": [
+   150,
+   null
+  ],
+  "true_px": [
+   32.9,
+   null
+  ],
+  "now_px": [
+   44,
+   null
+  ],
+  "A": [
+   33,
+   null
+  ],
+  "B": [
+   33,
+   null
+  ],
+  "C": [
+   35,
+   null
+  ]
+ },
+ {
+  "name": "minnow",
+  "real_cm": [
+   7,
+   null
+  ],
+  "true_px": [
+   1.5,
+   null
+  ],
+  "now_px": [
+   12,
+   null
+  ],
+  "A": [
+   4,
+   null
+  ],
+  "B": [
+   9,
+   null
+  ],
+  "C": [
+   5,
+   null
+  ]
+ }
+]

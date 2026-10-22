@@ -228,7 +228,7 @@ def draw(spec, style="natural", pose="stand"):
     def put(x, y, ch):
         if 0 <= x < W and 0 <= y < H:
             g[y][x] = ch
-    if st["eye"] == "dot":
+    if st["eye"] == "dot" or spec.get("tiny_eye"):  # one pixel on an animal drawn small
         put(ex, ey, "E")
     elif st["eye"] == "catch":
         put(ex, ey, "E")
