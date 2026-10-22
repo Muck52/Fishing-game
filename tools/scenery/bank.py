@@ -7,8 +7,10 @@ granite bluff with its waterfall (study 3, version A, the tiered cascade):
 the river comes down a notch worn into the bluff's top and drops down
 three of the bluff's own ledges, among boulders at the foot, into a pool
 and out between stones to the lake. Above it (study 4, version B, the
-plateau river) the river winds toward us across the forested plateau in
-its own opening, with banks, gravel bars and trees on its far banks. The
+plateau river, as reworked: rim_river) the river runs along just behind
+the bluff's top edge, in from the right with a few easy, uneven bends,
+widening as it sweeps round and down into the lip; it has banks, gravel
+bars, trees on its far banks and a few spruce on the rim in front. The
 bluff's face has life on it: rain stains, branching cracks with green in
 them, and along its ledges grass, shrubs, saplings, boulders and hanging
 creepers (study_mountain.life). Drawn by the study's tools

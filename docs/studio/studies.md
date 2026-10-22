@@ -197,6 +197,15 @@ behind the trees. It's in the game (`tools/scenery/bank.py`).
 - Put the ground under it: water crossing the haze of a far ridge
   floats.
 
+**Follow-up, the river's line:** you felt the river angled too far into
+the background. It now runs along just behind the bluff's top edge
+(`rim_river()`), in from the right, the rim as its near bank, with a few
+easy bends of uneven size that swing toward you (lower, wider) and away
+(higher, thinner), widening as it sweeps round and down into the lip.
+The bends are drawn as a smooth curve through the points (a Catmull-Rom
+spline); straight segments between them read as a zig-zag, and evenly
+spaced ones as a sine wave.
+
 **Follow-up, life on the bluff:** you asked for texture on the bare side
 of the bluff: foliage, cracks, boulders, vines. Added (`life()` in
 `tools/studio/study_mountain.py`): dark rain stains running down from

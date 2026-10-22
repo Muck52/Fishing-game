@@ -67,8 +67,8 @@
  "sheets": {
   "falls": {
    "url": "assets/art/environments/falls.png",
-   "frameWidth": 62,
-   "frameHeight": 184,
+   "frameWidth": 141,
+   "frameHeight": 181,
    "frames": 4
   },
   "bed-seaweed-1": {
@@ -426,7 +426,7 @@
   },
   "falls": {
    "x": 333,
-   "y": 122
+   "y": 125
   },
   "fallsFoot": {
    "x": 350,

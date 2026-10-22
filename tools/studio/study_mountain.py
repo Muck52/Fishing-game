@@ -97,6 +97,22 @@ def ribbon(c, path, seed=0, glints=True):
     return cells
 
 
+def smooth(path):
+    """A line of points (x, y, width) as a smooth curve through them (a
+    Catmull-Rom spline), so the river's bends are curves, not corners."""
+    pts = []
+    ext = [path[0]] + list(path) + [path[-1]]
+    for i in range(1, len(ext) - 2):
+        p0, p1, p2, p3 = ext[i - 1], ext[i], ext[i + 1], ext[i + 2]
+        n = max(2, int(math.hypot(p2[0] - p1[0], p2[1] - p1[1]) * 2))
+        for j in range(n):
+            t = j / n
+            pts.append(tuple(0.5 * (2 * p1[d] + (-p0[d] + p2[d]) * t + (2 * p0[d] - 5 * p1[d] + 4 * p2[d] - p3[d]) * t * t
+                                    + (-p0[d] + 3 * p1[d] - 3 * p2[d] + p3[d]) * t ** 3) for d in range(3)))
+    pts.append(path[-1])
+    return pts
+
+
 def river(c, path, seed=0, bank_trees=True):
     """A river winding toward us through the forest, as it really sits: in
     its own opening, the forest stepping back from it. Each reach has a far
@@ -106,13 +122,7 @@ def river(c, path, seed=0, bank_trees=True):
     edge and the sky in its middle, paler further off; ripples of sky slide
     toward us; riffles of white where it bends. No tree stands in it."""
     rnd = random.Random(seed)
-    pts = []
-    for (ax, ay, aw), (bx, by, bw) in zip(path, path[1:]):
-        n = max(2, int(math.hypot(bx - ax, by - ay) * 2))
-        for j in range(n):
-            t = j / n
-            pts.append((ax + (bx - ax) * t, ay + (by - ay) * t, aw + (bw - aw) * t))
-    pts.append(path[-1])
+    pts = smooth(path)
     cells = {}
     for k, (x, y, w) in enumerate(pts):
         rx, ry = w / 2, max(1.0, w * 0.3)
@@ -249,15 +259,20 @@ def rows_over(c, x0, x1, ys, seed=0):
 
 
 def tree_over(c, x, base, h, seed, mat="spruce-needles"):
-    """A spruce standing in front of the water: it hides what it covers."""
-    before = {(xx, yy) for yy in range(base - h - 2, base + 2) for xx in range(x - h, x + h) if c.at(xx, yy)}
-    snap = {(xx, yy): c.at(xx, yy) for xx, yy in before}
-    b.spruce(c, x, base, h, mat, seed=seed, ratio=0.42)
-    for yy in range(base - h - 2, base + 2):
-        for xx in range(x - h, x + h):
-            p = c.at(xx, yy)
-            if p and p[0] in (mat, "white-pine-bark") and snap.get((xx, yy)) != p:
-                c.front.add((xx, yy))
+    """A spruce standing in front of the water: every pixel it draws hides
+    the water behind it."""
+    put = c.put
+    drawn = []
+
+    def record(px, py, m, st):
+        drawn.append((px, py))
+        put(px, py, m, st)
+    c.put = record
+    try:
+        b.spruce(c, x, base, h, mat, seed=seed, ratio=0.42)
+    finally:
+        c.put = put
+    c.front |= set(drawn)
 
 
 # ---------------------------------------------------------------- the bluff round the falls
@@ -339,6 +354,28 @@ def plateau(c):
     river(c, [(244, 122, 3), (220, 124, 4), (240, 129, 5), (210, 134, 6), (234, 141, 8), (206, 149, 11), (201, 157, 15)], seed=81)
     for k, (x, base, h) in enumerate([(262, 142, 22), (186, 152, 22), (249, 124, 12), (243, 125, 10)]):
         tree_over(c, x, base, h, seed=100 + k)  # the far end goes round behind the trees
+    common(c)
+
+
+def rim_river(c):
+    """The plateau river as it went into the game: rather than stacking back
+    into the distance, it runs along just behind the bluff's top edge,
+    coming in from the right with a few easy bends and curving down into
+    the notch at the top of the falls. The bluff's rim is its near bank;
+    a few spruce stand on the rim in front of it, and its far end goes
+    round behind the trees."""
+    sf.falls_a(c)
+    plateau_forest(c, 168, 336, lambda x: 112 + abs(x - 250) * 0.08, 172, seed=130)
+    slope_into(c, 176, 150, 199, 157, 226, 146)
+    # each bend swings toward us (lower, wider) and away (higher, thinner),
+    # the last one sweeping round and down into the lip
+    river(c, [(322, 126, 3), (310, 129, 4), (298, 127, 4), (282, 133, 6), (268, 131, 6), (252, 129, 5),
+              (238, 136, 8), (225, 138, 9), (213, 145, 12), (205, 151, 14), (201, 157, 15)], seed=81)
+    rim = lambda x: next(y for y in range(110, 200) if c.at(x, y) and c.at(x, y)[0] in ("pink-granite", "lichen"))  # noqa: E731
+    for k, (x, h) in enumerate([(252, 18), (290, 20), (326, 16)]):
+        tree_over(c, x, rim(x) + 1, h, seed=140 + k)  # on the rim, in front of the river
+    for k, (x, base, h) in enumerate([(320, 127, 12), (313, 126, 10), (186, 152, 22)]):
+        tree_over(c, x, base, h, seed=150 + k)  # the far end goes round behind the trees
     common(c)
 
 
@@ -543,7 +580,7 @@ def life(c, seed=200):
 
 
 def plateau_life(c):
-    plateau(c)
+    rim_river(c)
     life(c)
 
 
