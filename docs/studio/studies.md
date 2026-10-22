@@ -298,6 +298,38 @@ journal's fish cards keep the full outline.
 - An edge treatment can be tried on the finished sheets, so a study
   compares only the edges and not new drawings.
 
+## Study 7: the land animals (2026-10-22)
+
+**Why:** on the new beach, Olive, the deer, fox, hare and bear looked
+flat (big areas of one colour, lit only along their top and bottom rows)
+next to scenery lit as rounded masses; the visitors stopped among the
+cattails where you could hardly see them; and they floated on the sand.
+
+**Fixed for every version, in the game:** the visitors walk on through
+the cattails to stop on the open sand beyond them, and each has a soft
+shadow on the sand that goes where it goes (`src/wildlife/Wildlife.js`).
+
+**Versions** (`tools/studio/study_land.py`, images in
+[studies/07-land/](studies/07-land/), review page `review/study7.html`;
+a lighting pass over the finished sheets, drawing unchanged):
+- **A, lit as one mass:** light toward the upper left, shade away from
+  it, from each frame's silhouette.
+- **B, mass and fur:** A, plus interlocking edges where two coat colours
+  meet.
+- **C, sunlit fur:** B, plus a warm rim on the back and cool light
+  bounced up from the sand on the belly.
+
+**Along the way:** breaking the light and shade bands into a one-pixel
+checker made the deer look spotted like a fawn; fur edges only where two
+really different coat colours meet read as hair without the speckle.
+Studying in the game by calling the visitors in was too random (others
+wandered in, they'd left again); standing the cast on the sand directly
+gives a fair comparison.
+
+**Verdict:** waiting on you.
+
+**Learned:** (after the verdict)
+
 <!--
 ## Study N: <subject> (<date>)
 

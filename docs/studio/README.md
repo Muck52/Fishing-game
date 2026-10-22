@@ -15,7 +15,7 @@ Every session starts by reading it.
 | [audit.md](audit.md) | How every piece of art in the game measures up against the rules, and what to redo first. |
 | [research/](research/) | The research behind it all, with sources: pixel-art technique for each material, the real north-woods lake, and how other games keep their look cohesive. |
 | [audit/](audit/) | The audit's measurements (`audit.json`) and contact sheets. |
-| [review/](review/) | The review pages you open on your phone: `research.html` (review 1), `materials.html` (review 2), `study1.html` (study 1), `study2.html` (study 2), `study3.html` (study 3), `study4.html` (study 4), `study5.html` (study 5), `study6.html` (study 6). |
+| [review/](review/) | The review pages you open on your phone: `research.html` (review 1), `materials.html` (review 2), `study1.html` (study 1), `study2.html` (study 2), `study3.html` (study 3), `study4.html` (study 4), `study5.html` (study 5), `study6.html` (study 6), `study7.html` (study 7). |
 | [studies/](studies/) | Each study's images. |
 
 Tools: `tools/studio/audit.py` re-measures every image in the game.
@@ -40,7 +40,7 @@ Tools: `tools/studio/audit.py` re-measures every image in the game.
 1. Audit what we have. *(done: [audit.md](audit.md))*
 2. Research. *(done: [research/](research/))*
 3. Build the materials library. *(first version: [materials.md](materials.md))*
-4. Practice studies, one small subject at a time. *(Study 1, the sky and the hills: done, in the game. Study 2, the far bank: done, in the game. Study 3, the waterfall: done, in the game. Study 4, the bluff and its stream: done, in the game. Study 5, cattails at the shoreline: done, in the game. Study 6, the whole cast: done, in the game)*
+4. Practice studies, one small subject at a time. *(Study 1, the sky and the hills: done, in the game. Study 2, the far bank: done, in the game. Study 3, the waterfall: done, in the game. Study 4, the bluff and its stream: done, in the game. Study 5, cattails at the shoreline: done, in the game. Study 6, the whole cast: done, in the game. Study 7, the land animals: waiting on you)*
 5. Replace the pack art, piece by piece.
 
 New game modes are on hold; for now everything goes into the lake we have.

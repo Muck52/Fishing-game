@@ -30,11 +30,13 @@ const BANK_Y = SURFACE_Y - 4; // where the far bank meets the water
 // when its walk cycle advances a frame, by that frame's step, taken from
 // its gait when it was drawn, so its feet stay put on the ground instead of
 // sliding. The hare covers ground only in the air.
+// They come through the cattails along the left of the shore and stop on
+// the open sand beyond them (reach), where they can be seen.
 const VISITORS = {
-  deer: { reach: 125, note: 'A white-tailed doe steps down to the water to drink.' },
-  fox: { reach: 100, note: 'A red fox trots along the bank, nose to the ground.' },
-  hare: { reach: 75, note: 'A snowshoe hare stops to nibble clover by the water.' },
-  bear: { reach: 85, note: 'A black bear ambles out of the pines. Best keep your distance.' },
+  deer: { reach: 150, note: 'A white-tailed doe steps down to the water to drink.' },
+  fox: { reach: 142, note: 'A red fox trots along the bank, nose to the ground.' },
+  hare: { reach: 128, note: 'A snowshoe hare stops to nibble clover by the water.' },
+  bear: { reach: 146, note: 'A black bear ambles out of the pines. Best keep your distance.' },
 };
 // how far a creature moves on frame i of its walk
 const stepOf = (key, i) => {
@@ -82,13 +84,17 @@ export class Wildlife {
     const s = this.scene;
     const walk = `${key}-walk`;
     const a = s.add.sprite(-30, BANK_Y, key, 0).setOrigin(0.5, 1).setDepth(DEPTH.SHORE_LIFE);
-    const stop = v.reach + R(-15, 15);
+    // a soft shadow on the sand under it, going where it goes
+    const shadow = s.add.ellipse(a.x, BANK_Y - 1, Math.round(a.width * 0.7), 3, 0x2a2418, 0.35).setDepth(DEPTH.SHORE_LIFE - 0.1);
+    a.on('destroy', () => shadow.destroy());
+    const stop = v.reach + R(-12, 12);
     let dir = 1; // walking right, so turned to face right
     a.setFlipX(true).play(walk);
     const stand = () => a.play(`${key}-idle`);
     a.on('animationupdate', (anim, frame) => {
       if (anim.key !== walk) return;
       a.x += dir * stepOf(key, frame.index - 1);
+      shadow.x = a.x;
       if (dir > 0 && a.x >= stop) {
         dir = 0;
         // switching animation inside its own frame event confuses Phaser,
