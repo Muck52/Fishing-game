@@ -36,11 +36,13 @@ we borrow is the thinking behind them.
    `tools/palette.json`, with a few shades added for the creatures, so
    redrawing art never shifts it. This is what makes art from many packs
    and our own drawings look like one game.
-3. **Outlines say "this moves."** Characters, animals, fish, the boat, the
-   hut and props carry the shared dark outline (on the creatures it gives
-   way to a deep shade of the colour inside along the lit top edge of light
-   parts: a selective outline, see `docs/characters/README.md`). The backdrop, water and
-   lakebed have none, so actors always read in front of scenery.
+3. **Outlines say "this moves."** The angler, the boat, the hut and props
+   carry the shared dark outline. The animals and fish carry a selective
+   one (study 6): the dark line only underneath and on the shadow side,
+   the lit top and left edged in a shade of the animal's own colour, the
+   lines inside the body softened (`tools/characters/edges.py`, the art
+   build's last pass). The scenery has none, so actors always read in
+   front of it.
 4. **Light from above and behind.** Sun shafts slant down into the water,
    the surface twinkles, and depth darkens and cools everything. Glows are
    pixel sprites (`firefly`, `hut-lights`), never blurred.

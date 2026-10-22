@@ -1162,8 +1162,21 @@ def palette_pass():
         Image.fromarray(out).save(path, optimize=True)
 
 
+def edges():
+    """The last pass: every creature's and fish's outline made selective
+    (study 6, version B; tools/characters/edges.py), after the palette pass
+    so nothing re-darkens it. The angler and the journal's cards keep theirs."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
+    from edges import treat
+    for key, s in manifest["sheets"].items():
+        if key in CREATURES + ["olive"] or (key.startswith("fish-")):
+            path = ROOT / s["url"]
+            treat(Image.open(path), s["frameWidth"]).save(path, optimize=True)
+
+
 if __name__ == "__main__":
-    for step in (backdrop, lake, pier, angler, wildlife, fish, effects, ui, backpack, journal, olive, fonts, palette_pass):
+    for step in (backdrop, lake, pier, angler, wildlife, fish, effects, ui, backpack, journal, olive, fonts, palette_pass, edges):
         step()
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1) + "\n")
     print(f"{len(manifest['images'])} images, {len(manifest['sheets'])} sheets")

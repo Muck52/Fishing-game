@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The cast's edges are study 6's version B, selective
+
+Animals and fish: the dark outline only underneath and on the shadow
+side; the lit edges a shade of the animal's own colour; lines inside the
+body softened. Next, the groups: land animals, birds (with the loon), fish.
+
 ## 2026-10-22: The shallows are study 5's version C
 
 Clumps of our own cattails with bulrush and sedge, rooted in the shallows

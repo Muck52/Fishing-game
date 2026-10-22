@@ -57,9 +57,12 @@ art. Three pillars:
 
 ## 5. Lines and edges ✔
 
-- Actors (creatures, fish, the angler, props that move) wear the plum-black
-  outline `#25131a`, with a selective outline along the lit top of light
-  parts.
+- Animals and fish wear a selective outline (study 6): the plum-black
+  `#25131a` only underneath and on the shadow side, where the form turns
+  from the sun; on the lit top and left, a shade of the animal's own
+  colour; inside the body, a deep shade of the colour round it. Eyes and
+  small marks stay as drawn.
+- The angler and props that move wear the plum-black outline all round.
 - Scenery has no outline.
 - Scenery is never darker than the outline, nor more saturated than the
   creatures in front of it.

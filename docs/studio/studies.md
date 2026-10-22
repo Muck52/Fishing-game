@@ -286,9 +286,17 @@ only the outline pixels change, eyes and small marks kept):
 - **C, no line:** the edge is the animal's own colour, lit side, a step
   of shade on the other.
 
-**Verdict:** waiting on you.
+**Verdict:** B, selective. Every animal and fish is built with it now:
+the art build's last pass (`edges()`, using `tools/characters/edges.py`)
+treats each creature and fish sheet after the palette pass, so nothing
+re-darkens it. The angler (pack art, for the hut restyle) and the
+journal's fish cards keep the full outline.
 
-**Learned:** (after the verdict)
+**Learned:**
+- Light the cast from the same side as the scenery: a dark edge only
+  where the form turns from the sun.
+- An edge treatment can be tried on the finished sheets, so a study
+  compares only the edges and not new drawings.
 
 <!--
 ## Study N: <subject> (<date>)
