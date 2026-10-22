@@ -65,6 +65,13 @@ OUTFITS = {
                        "H": "#a83a32", "h": "#7e2a26", "Q": "#8a2e28", "q": "#6a221e", "A": "#5a3a26", "D": "#6a4630", "S": "#a8323a"},
            "hat": "watch", "buffalo": True, "beard": "trim", "build": "real", "details": True, "sleeves": "rolled",
            "braces": True, "wellies": True},
+    # study 11's pick: dock work (3), in dark brown rubber boots
+    "pick": {"colours": {"J": "#a8323a", "L": "#bc3e44", "l": "#d8c8b0", "X": "#25131a", "x": "#5a1e26", "a": "#7a2430", "j": "#4a1a22",
+                         "U": "#8a8e96", "u": "#6e727a", "w": "#e8dcc8", "s": "#2a2228", "T": "#7a5a3a", "t": "#9a7a52", "e": "#4a2e1e",
+                         "k": "#c8ccd0", "B": "#3a2619", "b": "#1e140d", "W": "#3a2619", "V": "#5a3e28", "n": "#e2d4b4",
+                         "H": "#a83a32", "h": "#7e2a26", "Q": "#8a2e28", "q": "#6a221e", "A": "#5a3a26", "D": "#6a4630", "S": "#a8323a"},
+             "hat": "watch", "buffalo": True, "beard": "trim", "build": "real", "details": True, "sleeves": "rolled",
+             "braces": True, "wellies": True},
     # study 11's pick: B's clothes, beanie and beard, in realistic proportions
     "B2": {"colours": {"S": "#a83a32", "J": "#a83a32", "j": "#4a2228", "T": "#3f5f8a", "B": "#4a3426", "H": "#943328",
                        "Q": "#6a241e", "A": "#5a3a26", "D": "#6a4630", "X": "#4a2228", "L": "#c4524a", "a": "#7a2a26"},

@@ -338,59 +338,21 @@ def rowboat():
 
 
 # ---------------------------------------------------------------- the angler
-LINE = {(167, 172, 186)}
-
-
-def no_line(frame):
-    """Removes the line hanging from the rod tip; the game draws its own."""
-    out = frame.copy()
-    px = out.load()
-    for y in range(27, 48):
-        for x in range(36, 48):
-            r, g, b, a = px[x, y]
-            if a and ((r, g, b) in LINE or (r, g, b) == OUTLINE and x >= 40):
-                px[x, y] = (0, 0, 0, 0)
-    return out
+ANGLER_LOOK = "pick"  # study 11: dock work, in dark brown rubber boots
 
 
 def angler():
-    cf = "craftpix-fishing"
-    idle = cut(load(f"{cf}/Fisherman_idle.png"), 48)
-    fish = [no_line(f) for f in cut(load(f"{cf}/Fisherman_fish.png"), 48)]
-    hook = cut(load(f"{cf}/Fisherman_hook.png"), 48)
-    hurt = cut(load(f"{cf}/Fisherman_hurt.png"), 48)
-    walk = cut(load(f"{cf}/Fisherman_walk.png"), 48)
-    turned = [flip(f) for f in idle + fish + hook[3:] + hurt[1:]]
-    # The fishing pose with the rod cut away (everything in front of his
-    # hands), so the game can draw a live rod that bends with the fight.
-    GRIP_X = 21
-    body = []
-    grips = []
-    for f in turned[4:8]:
-        b = f.copy()
-        bp = b.load()
-        for y in range(48):
-            for x in range(GRIP_X):
-                bp[x, y] = (0, 0, 0, 0)
-        ys = [y for y in range(20, 34) if f.getpixel((GRIP_X - 1, y))[3]]
-        grips.append({"x": GRIP_X, "y": round(sum(ys) / len(ys)) if ys else 27})
-        body.append(b)
-    frames = turned + body + [flip(f) for f in walk]
-    save(strip(frames), "characters/angler.png", frame=(48, 48), frames=len(frames), actor=True)
-    # rod tips of the fishing frames, in the turned (left-facing) frame
-    tips = []
-    for f in frames[4:8]:
-        px = f.load()
-        best = None
-        for y in range(20, 30):
-            for x in range(48):
-                if px[x, y][3]:
-                    if best is None or x < best[0]:
-                        best = (x, y)
-                    break
-        tips.append({"x": best[0], "y": best[1]})
-    manifest["anchors"]["angler"] = {"idle": [0, 3], "fish": [4, 7], "land": [8, 10], "hurt": 11, "body": [12, 15], "walk": [16, 21], "tips": tips, "grips": grips}
-    save(load(f"{cf}/Icons_16.png"), "ui/bucket.png")
+    """The angler, drawn from shapes in the cast's look (tools/studio/
+    study_angler.py): idle, fishing, landing, hurt, the fishing body with the
+    rod cut away (the game draws a live rod from his hands), walking; with
+    the rod tips and grip. Kept in his own colours."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "studio"))
+    import study_angler
+    strip, anchors = study_angler.sheet(ANGLER_LOOK)
+    save(strip, "characters/angler.png", frame=(48, 48), frames=strip.width // 48, grade=False)
+    manifest["anchors"]["angler"] = anchors
+    save(load("craftpix-fishing/Icons_16.png"), "ui/bucket.png")
 
 
 # ---------------------------------------------------------------- wildlife

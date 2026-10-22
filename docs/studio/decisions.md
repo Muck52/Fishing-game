@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The angler is study 11's dock worker
+
+Redrawn from shapes, realistically proportioned: a ribbed red knit cap,
+trimmed brown beard, a buffalo-check flannel with rolled sleeves and
+suspenders, brown canvas trousers, dark brown rubber knee boots.
+
 ## 2026-10-22: The fish are study 10's version C
 
 Their own colours (no longer snapped to the pack palette), the cast's eye

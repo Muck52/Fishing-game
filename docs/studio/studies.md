@@ -534,7 +534,19 @@ flannel (work boots), 2 shirt-jacket open over a waffle thermal (duck
 boots, patched cap), 3 dock work (suspenders, canvas trousers, rubber
 knee boots).
 
-**Verdict:** waiting.
+**Verdict:** 3, dock work, with the rubber boots in dark brown. In the game:
+the art build draws his sheet with `study_angler.sheet("pick")` and keeps
+his own colours; the pack fisherman is retired.
+
+**Learned:**
+- A whole-figure light pass suits fur and feathers; a smooth, tight cap
+  catches it like skin. Lit parts need to read as their material, so
+  some are kept out of it.
+- Proportions carry "realistic" more than detail: a fifth off the head,
+  shoulders over a waist and longer legs did more than anything drawn on.
+- Clothing details sit best when placed from the drawn shapes (the
+  torso's front edge for the placket, its last row for the belt), so
+  every pose and frame agrees.
 
 <!--
 ## Study N: <subject> (<date>)
