@@ -563,7 +563,18 @@ the railing, cross-braced pilings and a new barrel:
 
 Review page: `review/study12.html`.
 
-**Verdict:** waiting.
+**Verdict:** C, the log cabin, with lights that come on as it gets dark.
+In the game: the art build draws it with `study_hut` (look C); its lights
+are three layers that `Daylight.js` brings up in turn as the night deepens
+(the lantern first, flickering, then the window, then the door), and a
+dithered warm glow they throw on the logs grows with the dark. The pack
+hut and barrel are retired.
+
+**Learned:**
+- Split a building's lights into layers and they can tell the evening:
+  one lamp, then the next, as someone moves through the house.
+- Light thrown on a wall reads in pixel art as a dithered falloff kept on
+  the surface, never a soft blur in the air.
 
 <!--
 ## Study N: <subject> (<date>)

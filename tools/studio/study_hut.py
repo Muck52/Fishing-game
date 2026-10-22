@@ -63,8 +63,10 @@ class Pic:
     def __init__(self):
         self.img = Image.new("RGBA", (W, H))
         self.px = self.img.load()
-        self.lit = Image.new("RGBA", (W, H))
-        self.lp = self.lit.load()
+        # the lights after dark, one layer each, so they can come on in turn
+        self.layers = {k: Image.new("RGBA", (W, H)) for k in ("lantern", "window", "door")}
+        self.lps = {k: im.load() for k, im in self.layers.items()}
+        self.which = "window"
 
     def put(self, x, y, c, a=255):
         if 0 <= x < W and 0 <= y < H:
@@ -80,7 +82,14 @@ class Pic:
 
     def glow(self, x, y, warm):
         if 0 <= x < W and 0 <= y < H:
-            self.lp[x, y] = (*warm, 255)
+            self.lps[self.which][x, y] = (*warm, 255)
+
+    @property
+    def lit(self):
+        out = Image.new("RGBA", (W, H))
+        for im in self.layers.values():
+            out.alpha_composite(im)
+        return out
 
 
 def post(p, x0, x1, y0, y1, cols):
@@ -294,8 +303,11 @@ def hut(look):
     if look["wall"] != "logs":
         p.rect(60, 24, 61, DECK - 1, t1)
         p.rect(157, 24, 158, DECK - 1, t0)
+    p.which = "window"
     window(p, look, 70, 31, 92, 45)
+    p.which = "door"
     door(p, look, 106, 29, 122, DECK - 1)
+    p.which = "lantern"
     lantern(p, 97, 29)
     life_ring(p, 139, 38)
     rope(p, 150, 44)
@@ -323,7 +335,30 @@ def hut(look):
             if not solid[y][x] and any(0 <= x + dx < W and 0 <= y + dy < H and solid[y + dy][x + dx]
                                        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
                 px[x, y] = (*OUTLINE, 255)
+    hut.layers = p.layers
     return img, p.lit
+
+
+def halo(img, layers, reach=9):
+    """The warm light the lamps throw on the logs and the walkway round
+    them: strongest beside each light, falling away in dithered steps, only
+    on the hut itself (never on the air)."""
+    from PIL import ImageFilter  # noqa: F401
+    src = [(x, y) for im in layers.values() for y in range(H) for x in range(W) if im.getpixel((x, y))[3]]
+    hp = img.load()
+    out = Image.new("RGBA", (W, H))
+    op = out.load()
+    bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
+    for y in range(H):
+        for x in range(W):
+            if not hp[x, y][3] or hp[x, y][:3] == OUTLINE:
+                continue
+            d = min((abs(x - sx) + abs(y - sy) for sx, sy in src), default=99)
+            if 0 < d <= reach:
+                t = 1 - d / (reach + 1)
+                if t * 16 > bayer[(y & 3) * 4 + (x & 3)] + 0.5:
+                    op[x, y] = (110, 70, 30, 255) if t > 0.5 else (70, 44, 20, 255)
+    return out
 
 
 def barrel(look):
@@ -361,6 +396,9 @@ if __name__ == "__main__":
         img, lit = hut(look)
         img.save(d / "hut.png")
         lit.save(d / "hut-lights.png")
+        for k, im in hut.layers.items():
+            im.save(d / f"hut-light-{k}.png")
+        halo(img, hut.layers).save(d / "hut-glow.png")
         barrel(look).save(d / "barrel.png")
         bg = Image.new("RGBA", (W, H), (196, 178, 140, 255))
         bg.alpha_composite(img)

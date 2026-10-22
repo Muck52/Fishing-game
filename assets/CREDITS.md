@@ -6,7 +6,7 @@ Every image in the game is compiled from the packs below by
 
 | Pack | Author | License | Used for |
 | --- | --- | --- | --- |
-| [Fishing game assets](https://opengameart.org/content/fishing-game-assets-pixel-art) | CraftPix.net | OGA-BY 3.0 | fishing hut, posts, boat (rebuilt as a rowboat), barrel, water surface, bucket icon (the angler was theirs until study 11; he is now drawn by our own script) |
+| [Fishing game assets](https://opengameart.org/content/fishing-game-assets-pixel-art) | CraftPix.net | OGA-BY 3.0 | wet posts under the water, boat (rebuilt as a rowboat), water surface, bucket icon (the angler, the hut and the barrel were theirs until studies 11 and 12; they are now drawn by our own scripts) |
 | [Treasure Hunters](https://opengameart.org/content/treasure-hunters-demo) | Pixel Frog | CC-BY 4.0 | wooden boards and buttons, gold coin, splash, surface glints, bubbles |
 | [Fishing bobbles](https://opengameart.org/content/fishing-bobbles-spritesheet-24x24) | Nelson Yiap | CC-BY 3.0 | the float |
 | [Underwater diving pack](https://opengameart.org/content/underwater-diving-pack) | ansimuz | CC0 | underwater light |

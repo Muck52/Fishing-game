@@ -255,40 +255,28 @@ def lake():
 
 
 # ---------------------------------------------------------------- the pier
-def pier():
-    hut = flip(load("craftpix-fishing/Fishing_hut.png"))
-    save(hut, "environments/hut.png", actor=True)
-    # stilt columns, read off the bottom row of the turned hut
-    row = [hut.getpixel((x, 121))[3] > 0 for x in range(hut.width)]
-    stilts, x = [], 0
-    while x < hut.width:
-        if row[x]:
-            s = x
-            while x < hut.width and row[x]:
-                x += 1
-            stilts.append((s + x) / 2)
-        x += 1
-    manifest["anchors"]["hut"] = {"deck": 62, "stilts": stilts, "w": hut.width, "h": hut.height}
+HUT_LOOK = "C"  # study 12: the log cabin
 
-    # The hut's lights after dark: its window and doorway openings (the dark
-    # panes in the art) lit warm, drawn over the hut at night. Only the
-    # openings change, so the light sits exactly on the art.
-    lit = Image.new("RGBA", hut.size)
-    hp, lp = hut.load(), lit.load()
-    panes = {(61, 37, 59): (255, 210, 120), (86, 88, 123): (240, 170, 90)}
-    for y in range(14, 64):
-        for x in range(60, hut.width):
-            c = hp[x, y]
-            if c[3] and c[:3] in panes:
-                # brightest in the middle of each pane, a step darker at its edges
-                inner = all(hp[x + dx, y + dy][:3] == c[:3] for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)])
-                warm = panes[c[:3]]
-                lp[x, y] = (*(warm if inner else lerp(warm, (200, 110, 70), 0.5)), 255)
-    save(lit, "environments/hut-lights.png")
+
+def pier():
+    """The fishing hut, drawn from materials (tools/studio/study_hut.py):
+    the log cabin on its braced pilings, with its walkway, and its lights
+    after dark, one layer each (lantern, window, door) so they come on in
+    turn, and the warm glow they throw on the logs."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "studio"))
+    import study_hut
+    look = study_hut.LOOKS[HUT_LOOK]
+    hut, _ = study_hut.hut(look)
+    save(hut, "environments/hut.png", grade=False)
+    manifest["anchors"]["hut"] = {"deck": study_hut.DECK, "stilts": study_hut.STILTS, "w": hut.width, "h": hut.height}
+    for k, im in study_hut.hut.layers.items():
+        save(im, f"environments/hut-light-{k}.png", grade=False)
+    save(study_hut.halo(hut, study_hut.hut.layers), "environments/hut-glow.png", grade=False)
+    save(study_hut.barrel(look), "environments/barrel.png", grade=False)
     tiles = load("craftpix-fishing/Pier_Tiles.png")
     save(tiles.crop((66, 64, 74, 128)), "environments/post-wet.png")
     rowboat()
-    save(load("craftpix-fishing/Fishbarrel4.png"), "environments/barrel.png", actor=True)
     # the plants of the shallows are ours (study 5, version C), placed by
     # the game from this list (y is from the waterline)
     import shore

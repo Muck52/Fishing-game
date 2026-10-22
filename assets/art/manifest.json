@@ -32,9 +32,12 @@
   "lakebed": "assets/art/environments/lakebed.png",
   "shelf": "assets/art/environments/shelf.png",
   "hut": "assets/art/environments/hut.png",
-  "hut-lights": "assets/art/environments/hut-lights.png",
-  "post-wet": "assets/art/environments/post-wet.png",
+  "hut-light-lantern": "assets/art/environments/hut-light-lantern.png",
+  "hut-light-window": "assets/art/environments/hut-light-window.png",
+  "hut-light-door": "assets/art/environments/hut-light-door.png",
+  "hut-glow": "assets/art/environments/hut-glow.png",
   "barrel": "assets/art/environments/barrel.png",
+  "post-wet": "assets/art/environments/post-wet.png",
   "bucket": "assets/art/ui/bucket.png",
   "card-bluegill": "assets/art/fish/bluegill-card.png",
   "card-pumpkinseed": "assets/art/fish/pumpkinseed-card.png",
@@ -521,10 +524,12 @@
   "hut": {
    "deck": 62,
    "stilts": [
-    4.0,
-    31.0,
-    65.0,
-    94.0
+    4,
+    31,
+    65,
+    94,
+    128,
+    160
    ],
    "w": 192,
    "h": 122

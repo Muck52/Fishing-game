@@ -84,7 +84,16 @@ export class Daylight {
     }
     // lights that show through the dark: the hut's windows and doorway,
     // and fireflies over the reeds
-    this.lights = scene.add.image(pier.hutAt.x, pier.hutAt.y, 'hut-lights').setOrigin(0).setDepth(DEPTH.GLOW);
+    // they come on one by one as it gets dark: the lantern first, then the
+    // window, then the door; the glow they throw on the logs grows with
+    // the dark
+    const at = (key) => scene.add.image(pier.hutAt.x, pier.hutAt.y, key).setOrigin(0).setDepth(DEPTH.GLOW);
+    this.glow = at('hut-glow').setBlendMode('ADD');
+    this.lamps = [
+      { img: at('hut-light-lantern'), from: 0.15, flicker: true },
+      { img: at('hut-light-window'), from: 0.3 },
+      { img: at('hut-light-door'), from: 0.45 },
+    ];
     this.flies = scene.add.particles(0, 0, 'firefly', {
       emitZone: { type: 'random', source: new Phaser.Geom.Rectangle(0, SURFACE_Y - 70, 200, 66) },
       lifespan: { min: 2500, max: 5000 },
@@ -105,7 +114,14 @@ export class Daylight {
       for (const o of this.scene.children.list) if (o.depth === DEPTH.BIRDS && o.setTint) o.setTint(color);
     }
     this.lift.setAlpha(night);
-    this.lights.setAlpha(Phaser.Math.Clamp((night - 0.3) / 0.5, 0, 1)); // on from dusk
+    let lit = 0;
+    for (const l of this.lamps) {
+      let a = Phaser.Math.Clamp((night - l.from) / 0.25, 0, 1);
+      if (l.flicker && a > 0) a *= 0.85 + 0.15 * Math.random(); // the lantern's flame
+      l.img.setAlpha(a);
+      lit = Math.max(lit, a);
+    }
+    this.glow.setAlpha(lit * Phaser.Math.Clamp(night, 0, 1));
     this.flies.setVisible(night > 0.5);
   }
 }

@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The hut is study 12's log cabin
+
+Round logs and chinking, a cedar shake roof, braced pilings, a stovepipe,
+lantern, life ring, rope and a net on the railing. Its lights come on one
+by one as it gets dark, with a warm glow on the logs.
+
 ## 2026-10-22: The angler is study 11's dock worker
 
 Redrawn from shapes, realistically proportioned: a ribbed red knit cap,
