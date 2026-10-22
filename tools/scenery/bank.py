@@ -8,7 +8,10 @@ the river comes down a notch worn into the bluff's top and drops down
 three of the bluff's own ledges, among boulders at the foot, into a pool
 and out between stones to the lake. Above it (study 4, version B, the
 plateau river) the river winds toward us across the forested plateau in
-its own opening, with banks, gravel bars and trees on its far banks. Drawn by the study's tools
+its own opening, with banks, gravel bars and trees on its far banks. The
+bluff's face has life on it: rain stains, branching cracks with green in
+them, and along its ledges grass, shrubs, saplings, boulders and hanging
+creepers (study_mountain.life). Drawn by the study's tools
 (tools/studio/study_bank.py) from the materials library, in daylight; the
 game's time-of-day grade shades it.
 
@@ -25,4 +28,4 @@ import study_mountain as mountain  # noqa: E402
 
 def images():
     """(land, falls strip, anchors) for the art build."""
-    return s.images(s.version_c(mountain.plateau))
+    return s.images(s.version_c(mountain.plateau_life))

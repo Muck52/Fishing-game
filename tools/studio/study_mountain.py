@@ -362,7 +362,193 @@ def gorge(c):
     common(c)
 
 
+# ---------------------------------------------------------------- life on the rock
+
+GRANITE = ("pink-granite", "lichen")
+
+
+def rock_at(c, x, y):
+    p = c.at(x, y)
+    return p is not None and p[0] in GRANITE and (x, y) not in c.front
+
+
+def stains(c, xs, rnd):
+    """Dark streaks where water runs down the face after rain, starting
+    under a ledge and fading as they go."""
+    for x in xs:
+        y = next((y for y in range(120, 300) if rock_at(c, x, y)), None)
+        if y is None:
+            continue
+        y += rnd.randrange(4, 30)
+        for k in range(rnd.randrange(10, 34)):
+            for dx in (0, 1) if k < 12 else (0,):
+                if rock_at(c, x + dx, y + k) and (k < 8 or rnd.random() < 0.7):
+                    p = c.at(x + dx, y + k)
+                    c.put(x + dx, y + k, "pink-granite", max(0, p[1] - 1))
+            if rnd.random() < 0.15:
+                x += rnd.choice((-1, 1))
+
+
+def fissure(c, x, y, n, rnd, plants=True):
+    """A crack that wanders down the face and branches: a dark line with the
+    lit lip of the rock above and left of it, and something green growing
+    from it here and there."""
+    for k in range(n):
+        if not rock_at(c, x, y):
+            break
+        c.put(x, y, "pink-granite", 0)
+        if rock_at(c, x - 1, y - 1):
+            c.put(x - 1, y - 1, "pink-granite", 3)
+        if plants and rnd.random() < 0.06:
+            b.blob(c, x + rnd.choice((-1, 1)), y, rnd.randrange(1, 3), rnd.choice(("moss", "grass")),
+                   steps=(3, 2, 1, 0), rnd=rnd, flat=0.7)
+        if rnd.random() < 0.08 and n - k > 6:
+            fissure(c, x + rnd.choice((-1, 1)), y + 1, (n - k) // 2, rnd, plants)
+        y += 1
+        x += rnd.choice((-1, 0, 0, 0, 1))
+
+
+def ledges(c, x0, x1, y0, y1):
+    """The places on the face where something could rest or root: rock
+    with open air, or a lit ledge edge, just above it."""
+    out = []
+    for x in range(x0, x1):
+        for y in range(y0, y1):
+            p = c.at(x, y)
+            if rock_at(c, x, y) and p[1] >= 3 and rock_at(c, x, y + 2) and rock_at(c, x, y + 4):
+                out.append((x, y))
+    return out
+
+
+def boulder(c, x, y, w, mat, rnd):
+    """A boulder resting on a ledge, lit as one rounded mass, a dark line of
+    shadow under it."""
+    h = max(4, w * 2 // 3)
+    pts = [(x - w // 2, y), (x - w // 2 + 1, y - h + 2), (x - w // 4, y - h), (x + w // 4, y - h + 1), (x + w // 2, y - h // 2), (x + w // 2, y)]
+    m = b.poly_mask(pts)
+    b.pillow(c, m, mat, seed=x * 7 + y, flecks=False)
+    for xx in range(x - w // 2 - 1, x + w // 2 + 2):
+        if rock_at(c, xx, y + 1):
+            c.put(xx, y + 1, "pink-granite", 0)
+
+
+def tuft(c, x, y, rnd):
+    """Grass and sedge in a crack or on a ledge: a few blades, lit at the
+    tips on the sun's side."""
+    for k in range(rnd.randrange(3, 6)):
+        h = rnd.randrange(2, 5)
+        lean = rnd.choice((-1, 0, 1))
+        for j in range(h):
+            c.put(x + k - 2 + (lean if j > h // 2 else 0), y - j, "grass", 3 if j == h - 1 and k < 3 else 2 if j else 1)
+
+
+def shrub(c, x, y, rnd, mat="aspen-leaves"):
+    """A low bush rooted on a ledge: a few leaf clusters, darker at the root."""
+    for k in range(rnd.randrange(5, 9)):
+        b.blob(c, x + rnd.randrange(-7, 8), y - rnd.randrange(1, 7), rnd.randrange(2, 5), mat, steps=(3, 2, 1, 0), rnd=rnd, flat=0.8)
+    for k in range(-4, 5):
+        c.put(x + k, y, "floor", 1)
+
+
+def vine(c, x, y, n, rnd):
+    """A creeper hanging down the face from a ledge: a stem that sways a
+    pixel side to side, leaves in pairs and clusters along it, thinning to
+    a few at the tip."""
+    for k in range(n):
+        xx = x + round(1.5 * math.sin(k / 4 + x))
+        c.put(xx, y + k, "cedar-foliage", 0)
+        if k % 3 == 0 and rnd.random() < 1 - k / (n * 1.3):
+            side = 1 if (k // 3) % 2 else -1
+            c.put(xx + side, y + k, "cedar-foliage", 3 if side < 0 else 2)
+            c.put(xx + side * 2, y + k + 1, "cedar-foliage", 2 if side < 0 else 1)
+        if k % 7 == 2 and k < n - 4:
+            b.blob(c, xx + rnd.choice((-2, 2)), y + k, 2, "cedar-foliage", steps=(3, 2, 1, 0), rnd=rnd, flat=0.8)
+
+
+def sapling(c, x, y, h, rnd):
+    """A young spruce growing out of a crack, leaning out a little."""
+    b.spruce(c, x, y, h, "spruce-needles", seed=x * 11 + y, ratio=0.45, trunk=2)
+
+
+def life(c, seed=200):
+    """Brings the bare face of the bluff to life: rain stains under its
+    ledges, cracks that wander and branch with green in them, boulders
+    resting on its ledges, grass, shrubs and saplings rooted along them,
+    creepers hanging down from them, moss in its shade, and a little lichen."""
+    rnd = random.Random(seed)
+    stains(c, [rnd.randrange(214, 356) for _ in range(14)] + [rnd.randrange(170, 186) for _ in range(3)], rnd)
+    for _ in range(9):
+        x, y = rnd.randrange(216, 356), rnd.randrange(136, 250)
+        fissure(c, x, y, rnd.randrange(8, 24), rnd)
+    for _ in range(2):
+        fissure(c, rnd.randrange(170, 186), rnd.randrange(170, 260), rnd.randrange(10, 20), rnd)
+    # along each of the bluff's real ledges: its top edge and the tops of
+    # its stepped slabs, where soil gathers and things can root
+    lines = [[(214, 0), (362, 0)], [(212, 212), (236, 196), (300, 188), (362, 186)],
+             [(176, 262), (220, 248), (300, 244), (362, 240)]]
+    for li, line in enumerate(lines):
+        edge = []
+        for x in range(line[0][0], line[-1][0]):
+            if li == 0:
+                y = next((y for y in range(110, 200) if rock_at(c, x, y)), None)
+            else:
+                k = max(i for i in range(len(line) - 1) if line[i][0] <= x)
+                (ax, ay), (bx, by) = line[k], line[k + 1]
+                guess = round(ay + (by - ay) * (x - ax) / max(1, bx - ax))
+                y = next((y for y in range(guess - 3, guess + 5) if rock_at(c, x, y)), None)
+            if y is not None:
+                edge.append((x, y))
+        # a fringe of grass and moss in clumps along the edge
+        i = 0
+        while i < len(edge):
+            run = rnd.randrange(3, 14)
+            if rnd.random() < 0.65:
+                for x, y in edge[i:i + run]:
+                    c.put(x, y - 1, "grass", 2)
+                    c.put(x, y, "moss", 2)
+                    if rnd.random() < 0.4:
+                        c.put(x, y - 2, "grass", 3)
+            i += run + rnd.randrange(2, 8)
+        # then shrubs, boulders, saplings and tufts on it, creepers off it
+        last = -99
+        for x, y in edge:
+            if x - last < rnd.randrange(7, 13):
+                continue
+            last = x
+            r = rnd.random()
+            if r < 0.3:
+                shrub(c, x, y - 1, rnd, rnd.choice(("aspen-leaves", "cedar-foliage", "cedar-foliage")))
+            elif r < 0.42:
+                boulder(c, x, y, rnd.randrange(7, 13), rnd.choice(("grey-gneiss", "pink-granite")), rnd)
+            elif r < 0.52 and li > 0:
+                sapling(c, x, y, rnd.randrange(10, 17), rnd)
+            elif r < 0.8:
+                vine(c, x, y + 1, rnd.randrange(14, 38), rnd)
+            else:
+                tuft(c, x, y - 1, rnd)
+    # a few tufts and ferns in the cracks of the open face
+    for _ in range(10):
+        x, y = rnd.randrange(216, 356), rnd.randrange(140, 280)
+        if rock_at(c, x, y) and c.at(x, y)[1] == 0:
+            tuft(c, x, y, rnd)
+    # moss in the shade, a little lichen in the sun
+    for _ in range(40):
+        x, y = rnd.randrange(214, 358), rnd.randrange(136, 280)
+        p = c.at(x, y)
+        if rock_at(c, x, y) and p[1] <= 1:
+            b.blob(c, x, y, rnd.randrange(1, 3), "moss", steps=(2, 2, 1, 0), rnd=rnd, flat=0.6)
+        elif rock_at(c, x, y) and p[1] >= 3 and rnd.random() < 0.4:
+            c.put(x, y, "lichen", 2)
+            c.put(x + 1, y, "lichen", 1)
+
+
+def plateau_life(c):
+    plateau(c)
+    life(c)
+
+
 VERSIONS = {"A": ravine, "B": plateau, "C": gorge}
+LIFE = {"life": plateau_life}
 
 
 def export(name, fn):

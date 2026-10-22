@@ -197,6 +197,16 @@ behind the trees. It's in the game (`tools/scenery/bank.py`).
 - Put the ground under it: water crossing the haze of a far ridge
   floats.
 
+**Follow-up, life on the bluff:** you asked for texture on the bare side
+of the bluff: foliage, cracks, boulders, vines. Added (`life()` in
+`tools/studio/study_mountain.py`): dark rain stains running down from
+the ledges; cracks that wander and branch, with grass and moss in them;
+and along the bluff's real ledges (its top edge and the tops of its
+stepped slabs) a fringe of grass and moss with shrubs, spruce saplings,
+resting boulders and creepers hanging down. The first try scattered them
+over the open face, where they floated; plants and boulders need a ledge
+to sit on.
+
 <!--
 ## Study N: <subject> (<date>)
 
