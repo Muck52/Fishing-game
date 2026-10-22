@@ -163,11 +163,15 @@ def draw(spec, style="natural", pose="stand"):
         c.blob(sh(t[1]), t[0])
     c.blob(torso, "O")
     c.blob(sh(p["neck"]), "O")
+    for ch, joints, widths in p.get("antlers_far", []):
+        c.limb(head(joints), widths, ch)
     for ch, pts in p.get("ears_far", []):
         c.blob(head(pts, st["ears"]), ch)
     c.blob(head(p["head"]), "O")
     for ch, pts in p.get("ears", []):
         c.blob(head(pts, st["ears"]), ch)
+    for ch, joints, widths in p.get("antlers", []):
+        c.limb(head(joints), widths, ch)
     for ch, pts in p.get("marks", []):
         c.blob(sh(pts), ch, clip=True)
     for ch, pts in p.get("head_marks", []):
@@ -205,6 +209,16 @@ def draw(spec, style="natural", pose="stand"):
                 put(ex + dx, ey + dy, "E")
         put(ex, ey, "C")
         put(ex + 1, ey + 2, "B")  # a little blush under the eye
+    ring = spec.get("eye_ring")
+    if ring:
+        # on a dark coat the eye needs a lighter rim to be seen
+        eye = {(ex, ey), (ex, ey + 1), (ex + 1, ey + 1)}
+        for x0, y0 in eye:
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    x, y = x0 + dx, y0 + dy
+                    if (x, y) not in eye and 0 <= x < W and 0 <= y < H and g[y][x] in spec.get("coat", "O"):
+                        g[y][x] = ring
     put(nx, ny, "N")
     if st["eye"] == "big":
         put(nx, ny - 1, "N")

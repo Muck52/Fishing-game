@@ -368,9 +368,20 @@ legs spaced apart, or they merge into stumps. A sitting bear with its
 legs tucked inside its body is a black egg; legs set forward of the chest
 read.
 
-**Verdict:** waiting on you.
+**Verdict:** C, cozy naturalist, with corrections: Olive's eyes didn't
+show and the deer lost her ears bending down. Checked every model and
+fixed: Olive's and the bear's eyes (warmer, a catchlight and a soft grey
+rim against the black coat), the drinking deer's ears (standing up and
+back, clear of the neck), the fox's ears (black-backed), the hare's ears
+sitting up (parted). Added a buck beside the doe: hardened late-summer
+antlers, a heavier neck, a darker coat.
 
-**Learned:** (after the verdict)
+**Learned:**
+- On a black coat a dark eye disappears: give it a lighter rim.
+- Parts that fold against a body of the same colour vanish; turn them so
+  they stand clear of it, or give them a darker or lighter face.
+- Antler tines need room: spaced three pixels apart with their outline,
+  closer they merge into a clump.
 
 <!--
 ## Study N: <subject> (<date>)
