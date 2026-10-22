@@ -22,6 +22,10 @@ export class Lake {
   constructor(scene) {
     this.scene = scene;
     this.surface = scene.add.tileSprite(0, STRIP_TOP, W, 30, 'water-surface').setOrigin(0).setDepth(DEPTH.SURFACE);
+    // where the stream from the falls runs into the lake: the surface band's
+    // shoreline line opens up there, and the river's foam spreads and fades
+    const m = ART.anchors.mouth;
+    this.mouth = m ? scene.add.sprite(m.x, STRIP_TOP, 'river-mouth').setOrigin(0).setDepth(DEPTH.SURFACE + 0.05).play('river-mouth') : null;
     this.deep = scene.add.image(0, DEEP_TOP, 'underwater').setOrigin(0).setDepth(DEPTH.DEEP);
     // the deep image is tall enough for any phone; past it, the darkest blue
     scene.add.rectangle(0, DEEP_TOP + this.deep.height, W, H, 0x0e2238).setOrigin(0).setDepth(DEPTH.DEEP);
@@ -131,6 +135,7 @@ export class Lake {
     }
     this.surface.tilePositionX += (3 + wind * 9) * dt;
     this.surface.y = STRIP_TOP + Math.round(Math.sin(time / 900));
+    if (this.mouth) this.mouth.y = this.surface.y;
     for (const r of this.rays) r.setAlpha(0.13 + 0.07 * Math.sin(time / 1700 + r.phase));
 
     this.branch.x += (5 + wind * 10) * dt;

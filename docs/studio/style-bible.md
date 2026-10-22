@@ -7,6 +7,14 @@ The rules every piece of art in Reel It In follows. Built from the
 settled once we've tried it in a study and you've agreed. Settled rules
 are marked ✔; the rest are proposals.
 
+## Water: one family
+
+All the water in the game, from the river on the plateau to the bottom of
+the lake, is built from the lake's colours: deep #2c5c78, mid #4f738b,
+light #86a398, highlight #b0ecf0. White water's shadows are the lake's
+blue; deep water is the lake's deep colour; where two waters meet, the
+colours dither from one to the other. (Decided after study 4.)
+
 ## 1. Vision
 
 A quiet summer evening on a real north-woods lake, the kind you'd find in

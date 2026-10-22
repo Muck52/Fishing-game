@@ -142,7 +142,7 @@ def curtain(c, top, bottom, y0, y1, seed=0, gaps=(), slope=0.0, churn=0.0):
                 elif band == 1 and v == 3:
                     g(x, y, "whitewater", 3)
                 elif v < 3 and (y - y0) < 4 + (x * 7 % 5) * 2:
-                    g(x, y, "tannin", 4 if v == 2 else 3)  # thin, glassy amber streaks just over the lip
+                    g(x, y, "clear", 4 if v == 2 else 3)  # thin, glassy water just over the lip, the river's colour still
                 elif edge:
                     g(x, y, "whitewater", 1)
                 else:
@@ -189,7 +189,7 @@ def pool(c, cx, y, rx, ry, seed=0):
                 elif ring < 0.45 and d > 0.25:
                     g(xx, yy, "whitewater", 2 if yy < y else 1)
                 else:
-                    g(xx, yy, "deepwater", 1 if (xx + yy) % 7 else 2)
+                    g(xx, yy, "deepwater", 2 if (xx + yy) % 7 else 3)
     c.water.append(draw)
 
 
@@ -205,7 +205,13 @@ def outflow(c, x0, x1, y0, y1, seed=0):
             l = round(x0[0] + (x1[0] - x0[0]) * t)
             r = round(x0[1] + (x1[1] - x0[1]) * t)
             for x in range(l, r + 1):
-                g(x, y, "whitewater" if x in (l, r) and (x + y) % 2 else "deepwater", 1 if x > l + 1 else 3)
+                if y > y1 - 4:
+                    # the last rows take on the lake's surface colours,
+                    # dithered, so the outflow runs into the lake
+                    k = y - (y1 - 4)
+                    g(x, y, "clear", 2 if (x + y + f) % (5 - k) else 4)
+                else:
+                    g(x, y, "whitewater" if x in (l, r) and (x + y) % 2 else "deepwater", 2 if x > l + 1 else 3)
         for ph, u, n in riffles:
             y = y0 + (ph * 2 + 3 * f) % (y1 - y0 + 1)
             t = (y - y0) / max(1, y1 - y0)

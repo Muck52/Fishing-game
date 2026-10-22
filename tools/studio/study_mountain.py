@@ -203,7 +203,7 @@ def river(c, path, seed=0, bank_trees=True):
             elif (xx, yy + 1) not in cells:
                 g(xx, yy, "river", 2)
             else:
-                g(xx, yy, "river", 3 if far > 0.4 else 2)  # the sky in the middle, paler further off
+                g(xx, yy, "river", 3 if far > 0.15 or (xx + yy) % 5 else 2)  # the sky in the middle
         for k in bends:
             x, y, w = pts[k]
             for _ in range(2):

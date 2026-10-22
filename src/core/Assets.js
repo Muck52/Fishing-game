@@ -19,6 +19,7 @@ const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 // [key, texture, frames, frameRate, repeat]
 const ANIMS = [
   ['falls', 'falls', range(0, 3), 8, -1],
+  ['river-mouth', 'river-mouth', range(0, 3), 8, -1],
   ['angler-idle', 'angler', range(0, 3), 4, -1],
   ['angler-fish', 'angler', range(4, 7), 4, -1],
   ['angler-reel', 'angler', range(4, 7), 12, -1],

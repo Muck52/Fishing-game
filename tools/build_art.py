@@ -150,6 +150,9 @@ def backdrop():
     save(falls, "environments/falls.png", frame=tuple(at["frame"]), frames=4, grade=False)
     manifest["anchors"]["falls"] = at["falls"]
     manifest["anchors"]["fallsFoot"] = at["fallsFoot"]
+    river_mouth, at_mouth = bank.mouth()
+    save(river_mouth, "environments/river-mouth.png", frame=(at_mouth["w"], river_mouth.height), frames=4, grade=False)
+    manifest["anchors"]["mouth"] = at_mouth
     for img in (land, falls):
         shades |= {"#%02x%02x%02x" % p[:3] for p in img.getdata() if p[3]}
     fixed = json.loads((ROOT / "tools" / "palette.json").read_text())

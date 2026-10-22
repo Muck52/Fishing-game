@@ -206,6 +206,22 @@ The bends are drawn as a smooth curve through the points (a Catmull-Rom
 spline); straight segments between them read as a zig-zag, and evenly
 spaced ones as a sine wave.
 
+**Follow-up, one water:** you asked for the water's colours to blend
+where they meet, and with the theme. They'd been chosen piece by piece:
+a grey-green river, a brown-teal pool and outflow, amber streaks in the
+falls, a blue lake, and the lake's dark shoreline line cut straight
+across the outflow. Now every piece of the stream is built from the
+lake's own colours (deep #2c5c78, mid #4f738b, light #86a398, highlight
+#b0ecf0), used as they are rather than relit, so the time-of-day grade
+shades them all alike. The river's middle is the lake's light grey-green;
+the glassy water over each lip is the lake's pale teal; the falls' white
+water has the lake's blue in its shadows; the pool and outflow are the
+lake's deep colour, the outflow's last rows dithered into its surface
+colours; and where it meets the lake, a small animated river mouth opens
+the shoreline line and spreads the foam out on the lake (`mouth()` in
+`tools/scenery/bank.py`, played in `src/environment/Lake.js`).
+Rule: all water in the game comes from one family of colours.
+
 **Follow-up, life on the bluff:** you asked for texture on the bare side
 of the bluff: foliage, cracks, boulders, vines. Added (`life()` in
 `tools/studio/study_mountain.py`): dark rain stains running down from

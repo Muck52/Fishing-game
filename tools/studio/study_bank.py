@@ -37,6 +37,7 @@ W, H = 360, 324  # the screen's width; the bank image's height
 BACK_X = 150  # the bank image is 576 wide and drawn from x = -150
 SHORE = 302  # where the bank meets the water, and the animals stand
 FRAMES = 4
+WATER = {"whitewater", "deepwater", "clear", "river"}  # the lake's own colours, not relit
 
 
 def materials(time="day"):
@@ -46,13 +47,20 @@ def materials(time="day"):
     R["pink-granite"] = ramp("#b08a7e", 5)  # weathered: greyer than the fresh rock
     R["clear"] = ramp("#8cc4d6", 5)  # white-blue water
     R["spray"] = ramp("#e4f0f2", 4)  # its white water
-    # white water: aerated, it takes the sky's blue in its shadows
-    R["whitewater"] = ["#6f8a92", "#a9c0c4", "#d9e6e6", "#f7fbf8"]
-    # deep water at the foot: dark, a little tea-brown, the sky in its ripples
-    R["deepwater"] = ["#1e2a2a", "#2c3b38", "#3f5049", "#6b7f78", "#a9c4c8"]
-    # a forest river, calm: grey-green, the sky in its middle, the far bank's
-    # trees reflected dark along its far edge
-    R["river"] = ["#22312f", "#3a4f4c", "#5f7773", "#8fa8a4", "#c4d8d4"]
+    # All the water is one family, built from the lake's own colours (its
+    # surface band: deep #2c5c78, mid #4f738b, light #86a398, the sky's
+    # highlight #b0ecf0), so the river, the falls, the pool and the outflow
+    # run into the lake without a seam. These are used as they are, not
+    # relit: the lake isn't, and the time-of-day grade shades them all alike.
+    # white water: aerated, its shadows take the lake's blue
+    R["whitewater"] = ["#6f98a6", "#a9d0d6", "#dcf2f2", "#f6fcfa"]
+    # deep water: the pool at the foot, the outflow, the river at the lip
+    R["deepwater"] = ["#18374c", "#22506b", "#2c5c78", "#4f738b", "#b0ecf0"]
+    # ripples catching the sky
+    R["clear"] = ["#2c5c78", "#4f738b", "#86a398", "#a8dce2", "#b0ecf0"]
+    # a forest river, calm, in the lake's colours: the sky in its middle,
+    # the far bank's trees reflected dark along its far edge
+    R["river"] = ["#1f4560", "#2c5c78", "#4f738b", "#86a398", "#b0ecf0"]
     R["moss"] = ramp("#5a7438", 4)
     R["floor"] = ramp("#3f4a2e", 4)  # forest floor, needles and shade
     R["cedar-foliage"] = ramp("#56763c", 5)
@@ -668,6 +676,8 @@ def render(c, R, time="day", frame=None):
     def colour(mat, s):
         r_ = R[mat]
         s = max(0, min(len(r_) - 1, s))
+        if mat in WATER:
+            return (*rgb(r_[s]), 255)
         return (*rgb(lit(r_[s], s, len(r_), time)), 255)
 
     grid = [row[:] for row in c.g] if frame is None else [[None] * W for _ in range(H)]

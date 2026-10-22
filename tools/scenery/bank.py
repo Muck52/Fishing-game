@@ -31,3 +31,39 @@ import study_mountain as mountain  # noqa: E402
 def images():
     """(land, falls strip, anchors) for the art build."""
     return s.images(s.version_c(mountain.plateau_life))
+
+
+MOUTH_X, MOUTH_W, MOUTH_H = 189, 26, 6  # where the outflow meets the lake, on screen
+
+
+def mouth():
+    """Where the outflow runs into the lake: four frames laid over the top
+    of the lake's surface band, in its own colours, the band's dark
+    shoreline line opened up where the river comes in, and the river's
+    foam spreading out on the lake and fading."""
+    from PIL import Image
+    R = s.materials()
+    lake = {"hi": "#b0ecf0", "light": "#86a398"}
+    frames = []
+    for f in range(s.FRAMES):
+        img = Image.new("RGBA", (MOUTH_W, MOUTH_H))
+        px = img.load()
+        rnd = s.random.Random(f * 7 + 3)
+        for x in range(MOUTH_W):
+            edge = min(x, MOUTH_W - 1 - x)
+            if edge < 2:
+                continue  # the shoreline line stays at the ends
+            for y in range(MOUTH_H):
+                if y > edge + 1:
+                    continue
+                if y == 0:
+                    px[x, y] = (*s.rgb(lake["hi"]), 255)  # the line opened up
+                elif rnd.random() < 0.45 - y * 0.08 and edge > 3:
+                    px[x, y] = (*s.rgb(R["whitewater"][rnd.randrange(2, 4)]), 255)  # foam, spreading and fading
+                elif y < 3:
+                    px[x, y] = (*s.rgb(lake["hi"] if (x + f) % 3 else lake["light"]), 255)
+        frames.append(img)
+    out = Image.new("RGBA", (MOUTH_W * s.FRAMES, MOUTH_H))
+    for i, im in enumerate(frames):
+        out.paste(im, (i * MOUTH_W, 0))
+    return out, {"x": MOUTH_X, "w": MOUTH_W}
