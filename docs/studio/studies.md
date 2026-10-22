@@ -391,7 +391,7 @@ in `tools/characters/anatomy.py`), 60 degrees, so they agree.
 - A tail drawn as a solid shape reads as a plank; drawn as a tapering
   limb (thick at the root, thin to the tip) it reads as a tail. (Olive's,
   at your call; and curled forward over her back toward her head, like a
-  husky's.)
+  husky's, the tip held clear of her back with a gap of air.)
 - Antler tines need room: spaced three pixels apart with their outline,
   closer they merge into a clump.
 
