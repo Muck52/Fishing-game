@@ -129,8 +129,9 @@ class Canvas:
 STYLES = {
     # head scale, leg scale, torso roundness, ear scale, eye
     "natural": {"head": 1.0, "legs": 1.0, "round": 0.0, "ears": 1.0, "eye": "dot"},
-    "cozy": {"head": 1.32, "legs": 0.8, "round": 0.45, "ears": 1.15, "eye": "big"},
-    "between": {"head": 1.15, "legs": 0.9, "round": 0.22, "ears": 1.05, "eye": "catch"},
+    "cozy": {"head": 1.32, "legs": 0.8, "round": 0.45, "ears": 1.15, "eye": "big", "blush": True, "nose": 2},
+    # study 8's pick: C's proportions with B's big eyes, no blush
+    "between": {"head": 1.15, "legs": 0.9, "round": 0.22, "ears": 1.05, "eye": "big"},
 }
 
 
@@ -226,7 +227,8 @@ def draw(spec, style="natural", pose="stand"):
             for dy in (0, 1):
                 put(ex + dx, ey + dy, "E")
         put(ex, ey, "C")
-        put(ex + 1, ey + 2, "B")  # a little blush under the eye
+        if st.get("blush"):
+            put(ex + 1, ey + 2, "B")  # a little blush under the eye
     pupil = spec.get("pupil")
     if pupil and st["eye"] != "dot":
         put(ex + 1, ey + 1, pupil)  # a black pupil in the eye
@@ -242,6 +244,6 @@ def draw(spec, style="natural", pose="stand"):
                     if (x, y) not in eye and 0 <= x < W and 0 <= y < H and g[y][x] in spec.get("coat", "O"):
                         g[y][x] = ring
     put(nx, ny, "N")
-    if st["eye"] == "big":
+    if st.get("nose", 1) > 1:
         put(nx, ny - 1, "N")
     return g

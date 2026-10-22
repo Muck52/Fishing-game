@@ -370,9 +370,10 @@ read.
 
 **Verdict:** C, cozy naturalist, with corrections: Olive's eyes didn't
 show and the deer lost her ears bending down. Checked every model and
-fixed: Olive's eye (the same design as every other animal's, a dark eye
-with a catchlight; a grey rim, then a brown eye with a black pupil, were
-tried and taken back out, at your call), the drinking deer's ears (standing up and
+fixed: the eyes (B's big eyes with a catchlight on every animal, Olive
+included, without the blush; a grey rim, then a brown eye with a black
+pupil, were tried on Olive and taken back out, at your call), the
+drinking deer's ears (standing up and
 back, clear of the neck), the fox's ears (black-backed), the hare's ears
 sitting up (parted). Added a buck beside the doe: hardened late-summer
 antlers, a heavier neck, a darker coat. His drinking head first had
