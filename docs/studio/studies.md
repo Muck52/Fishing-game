@@ -269,6 +269,27 @@ rows in soft patches, breaking up at the edges, read as a mat.
 - A long leaf reads by its arc and its width low down; a 1 px straight
   line reads as grass.
 
+## Study 6: the whole cast (2026-10-22)
+
+**Why:** the scenery is now drawn without outlines, in the materials
+library's colours and light; the animals and fish still carry the shared
+plum-black outline round every part. Before going group by group (land
+animals, birds, fish), settle one edge treatment for everyone.
+
+**Versions** (`tools/studio/study_cast.py`, images in
+[studies/06-cast/](studies/06-cast/), review page `review/study6.html`;
+only the outline pixels change, eyes and small marks kept):
+- **A, coloured line:** the outline in a deep, cool shade of the colour
+  it holds in.
+- **B, selective:** the dark line only underneath and on the shadow side;
+  the lit edges a shade of the animal's own colour.
+- **C, no line:** the edge is the animal's own colour, lit side, a step
+  of shade on the other.
+
+**Verdict:** waiting on you.
+
+**Learned:** (after the verdict)
+
 <!--
 ## Study N: <subject> (<date>)
 
