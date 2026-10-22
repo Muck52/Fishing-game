@@ -100,7 +100,7 @@ Olive, the deer, fox, hare and bear on the far bank, the gulls, sparrows,
 mallards and the bald eagle in the sky, and the minnows are all drawn by
 the game's own scripts (`tools/characters/`) with one shared kit: side-on
 and lit from above, one palette and outline, real proportions on one scale,
-legs drawn through their joints, real gaits, birds seen from below. The
+legs drawn through their joints, real gaits, birds in profile (study 9). The
 rules and the research behind each animal are in
 [docs/characters/README.md](characters/README.md).
 

@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: Birds fly in profile (study 9, version A)
+
+The gull, eagle, mallards and sparrow are redrawn in study 8's look and
+fly side-on, wings beating up and down beside the body, like the animals
+on the beach. The common loon joins them, swimming and diving on the lake.
+
 ## 2026-10-22: The land animals are lit as one mass (study 7, version A)
 
 Olive, the deer, fox, hare and bear: light toward the upper left, shade

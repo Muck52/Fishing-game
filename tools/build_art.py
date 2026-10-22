@@ -394,7 +394,8 @@ def angler():
 
 
 # ---------------------------------------------------------------- wildlife
-CREATURES = ["deer", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "minnow"]
+CREATURES = ["deer", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "loon", "minnow"]
+BIRDS = ["gull", "sparrow", "mallard", "eagle", "loon"]  # all drawn in tools/characters/birds.py
 
 
 def wildlife():
@@ -406,10 +407,15 @@ def wildlife():
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
     table = {}
+    import birds
     for name in CREATURES:
-        mod = importlib.import_module(name)
-        strip, index = mod.sheet()
-        save(strip, f"characters/{name}.png", key=name, frame=(mod.FW, mod.FH), frames=strip.width // mod.FW, grade=False)
+        if name in BIRDS:
+            strip, index, fw, fh = birds.sheet(name)
+        else:
+            mod = importlib.import_module(name)
+            strip, index = mod.sheet()
+            fw, fh = mod.FW, mod.FH
+        save(strip, f"characters/{name}.png", key=name, frame=(fw, fh), frames=strip.width // fw, grade=False)
         table[name] = index
     manifest["anchors"]["creatures"] = table
 

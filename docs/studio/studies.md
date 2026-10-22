@@ -412,7 +412,24 @@ Each bird also has a rest pose, the same in every version: the gull
 standing, the eagle perched, the sparrow on a cattail, the drake, hen and
 loon swimming (and the loon diving). Review page: `review/study9.html`.
 
-**Verdict:** waiting.
+**Verdict:** A, flapping in profile, for every bird.
+
+**In the game:** the birds' sheets now come from `tools/characters/birds.py`
+(the old kit-drawn gull, eagle, mallard and sparrow scripts and their
+Pixelorama projects are retired). Each wingbeat is four frames: up, level,
+down, level, the level frame morphed halfway between up and down. The gull
+and eagle glide on level wings; the sparrow bounds, wings folded between
+bursts. They get the selective edge and are lit as one mass, like the land
+animals. The loon swims in low on the lake, dives, comes up further on and
+dives out of sight.
+
+**Learned:**
+- Side-on suits this game's camera: the birds now match the animals on
+  the beach instead of being the one thing seen from a different angle.
+- An in-between frame can be morphed: resample both outlines to the same
+  number of points round their smooth curve and meet halfway.
+- Swimming birds want their waterline on the surface and the rows below it
+  seen through the water, the way Olive swims.
 
 <!--
 ## Study N: <subject> (<date>)

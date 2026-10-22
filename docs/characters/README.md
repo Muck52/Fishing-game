@@ -41,11 +41,16 @@ journal and the backpack, and from the research below.
    which is also what reads best at small sizes; the bear ambles, the legs
    on one side swinging nearly together; the hare's hind feet land ahead of
    its front feet. The body dips or lifts a pixel as the legs pass under it.
-7. **Birds are seen from below.** That's how you see a bird crossing the
-   sky: the body in profile, the far wing reaching up behind it, the near
-   wing down in front. Gulls and the eagle beat and glide; ducks beat fast
-   and never glide; sparrows fly in bounds, a burst of beats then wings
-   shut. On the downstroke the body lifts a pixel.
+7. **Birds fly in profile** (study 9, version A), seen side-on like the
+   animals on the beach: the wings beat up and down beside the body, four
+   frames to a beat (up, level, down, level; the level frame morphed
+   halfway between the two), drawn from shapes in `birds.py` in study 8's
+   look. Gulls and the eagle beat and glide on level wings; ducks beat
+   fast and never glide; sparrows fly in bounds, a burst of beats then
+   wings shut. The loon swims low and dives.
+
+   (Before study 9 the birds were seen from below, as described next; the
+   kit's wing tools are kept for reference.)
 
    Each wing is built like a real one (`feathered_wing` in the kit): an
    arm from shoulder to wrist and a hand from wrist to tip, the bones along
@@ -112,10 +117,11 @@ has a pale ring of fur round its eye.
 | Red fox (`fox.py`) | 15 in, drawn 1.5x → 11 px | rusty, lighter back, white chin to chest, black stockings and ear backs, white-tipped brush | walk (the trot), idle (sniffing the ground, ear flick, tail swish) |
 | Snowshoe hare (`hare.py`) | sits 11 in, drawn 1.6x | cinnamon brown, darker back line, buff flanks, white belly, tail and feet, black-tipped ears | hop (moves only in the air), idle (nibbling, nose twitch, sits up alert, ear turns) |
 | Black bear (`bear.py`) | 33 in at the shoulder → 16 px | black, sheen on the back, tan muzzle, brown eyes, big ears, no hump | walk (the amble, head low), idle (lifts its nose to scent the air) |
-| Ring-billed gull (`gull.py`) | 4 ft wings | white, pale grey wings with black tips, yellow bill with a black ring | fly (beat), glide |
-| Song sparrow (`sparrow.py`) | 8 in wings, drawn 2x | streaky brown, pale breast | fly (bounding) |
-| Mallard (`mallard.py`) | 3 ft wings | drake: green head, white collar, chestnut breast, grey sides, black stern; hen: mottled brown; both a blue speculum | fly (drake), hen |
-| Bald eagle (`eagle.py`) | 6 1/2 ft wings | dark brown, white head and tail, yellow bill and feet, fingered wingtips | fly (slow beats), glide |
+| Ring-billed gull (`birds.py`) | 4 ft wings | white, pale grey wings with black tips, yellow bill with a black ring | fly (four-frame beat), glide |
+| Song sparrow (`birds.py`) | 8 in wings, drawn 2x | brown, rufous cap, pale breast | fly (bounding: beats, then wings folded) |
+| Mallard (`birds.py`) | 3 ft wings | drake: green head, white collar, chestnut breast, grey sides, black stern; hen: mottled brown; both a blue speculum | fly (drake), hen |
+| Bald eagle (`birds.py`) | 6 1/2 ft wings | dark brown, white head and tail, yellow bill and feet | fly (slow beats), glide |
+| Common loon (`birds.py`) | 3 ft long | black head, dagger bill, white necklace, black back chequered white, low in the water | swim, dive |
 | Shiner minnow (`minnow.py`) | 3 in | olive back, silver sides, dark stripe, white belly | swim |
 
 Each script writes its sheet (`assets/art/characters/<name>.png`), its

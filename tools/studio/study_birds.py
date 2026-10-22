@@ -93,6 +93,36 @@ def gull_parts(wings):
     return wings[0] + body + wings[1]
 
 
+def resample(pts, n=40):
+    """A closed shape as n points evenly spaced round its smooth outline."""
+    import math
+    from anatomy import spline
+    c = spline(pts)
+    c = c + [c[0]]
+    d = [0.0]
+    for a, b in zip(c, c[1:]):
+        d.append(d[-1] + math.dist(a, b))
+    out, j = [], 0
+    for i in range(n):
+        t = d[-1] * i / n
+        while d[j + 1] < t:
+            j += 1
+        f = (t - d[j]) / ((d[j + 1] - d[j]) or 1)
+        out.append((c[j][0] + (c[j + 1][0] - c[j][0]) * f, c[j][1] + (c[j + 1][1] - c[j][1]) * f))
+    return out
+
+
+def between(up, down, t=0.5):
+    """The wing halfway through its beat (level with the back), made by
+    morphing the near wing (and its dark tip) from up to down; the far
+    wing, just showing above the back on the downstroke, is kept."""
+    near = []
+    for a, b in zip(up[1], down[1]):
+        pa, pb = resample(a[2]), resample(b[2])
+        near.append((a[0], a[1], [(x + (u - x) * t, y + (v - y) * t) for (x, y), (u, v) in zip(pa, pb)]))
+    return (down[0], near)
+
+
 GULL_W = {
     "flap-up": ([], [("flat", "G", [(13, 12), (15, 8), (18, 4.4), (22, 1.2), (24, 1.8), (21, 6), (19, 10), (17, 12.6)]),
                      ("mark", "K", [(20, 0.4), (25, 0.4), (23, 4), (20, 3.4)])]),
@@ -108,6 +138,7 @@ GULL_W = {
                [("flat", "W", [(13.6, 14.6), (15.4, 18.6), (18.4, 22.6), (21.4, 24.6), (22.4, 23.4), (20.4, 19.4), (18.6, 15.4), (17.6, 13.4)]),
                 ("mark", "K", [(19.4, 21.4), (23, 21.6), (22.6, 25), (19.4, 24.6)])]),
 }
+GULL_W["flap-mid"] = between(GULL_W["flap-up"], GULL_W["flap-down"])
 
 GULL = {
     "colours": {"W": "#faffff", "G": "#b2d0d0", "g": "#86a398", "K": "#33323d", "Y": "#ffd84a"},
@@ -145,6 +176,7 @@ EAGLE_W = {
                [("flat", "O", [(16, 19), (19, 24), (23, 29), (28, 32), (29.4, 30.4), (26, 25.6), (22.6, 21), (21, 18.6)]),
                 ("mark", "S", [(25, 28.4), (30, 29), (29.4, 33), (25.4, 32.4)])]),
 }
+EAGLE_W["flap-mid"] = between(EAGLE_W["flap-up"], EAGLE_W["flap-down"])
 
 EAGLE = {
     "colours": {"O": "#4a3528", "S": "#33241c", "W": "#f4f1ea", "Y": "#f0b030", "y": "#e8b030"},
@@ -183,6 +215,7 @@ MALLARD_W = {
                [("flat", "O", [(9.6, 11.4), (11.4, 14), (14.4, 16.4), (16.6, 17), (16.4, 15.4), (13.6, 13), (12.4, 11)]),
                 ("mark", "Q", [(10.6, 12.4), (13.4, 13), (13, 14.4), (10.6, 14)])]),
 }
+MALLARD_W["flap-mid"] = between(MALLARD_W["flap-up"], MALLARD_W["flap-down"])
 SWIM = [("body", "O", [(7, 5), (11, 3.6), (16, 4), (20, 5.6), (21, 7), (18, 8.6), (12, 9.2), (8, 8.6), (6, 7)]),
         ("flat", "T", [(19, 5.2), (23, 4.2), (23.6, 6), (20, 7.4)]),
         ("mark", "U", [(5.6, 5.4), (9.4, 5.2), (10, 8.6), (6.4, 8.6)]),
@@ -221,6 +254,8 @@ SPARROW_W = {
     "stroke": ([("flat", "S", [(7, 5.4), (9, 4), (11, 3.4), (11, 4.4), (9, 5.8)])],
                [("flat", "S", [(6, 7), (7.4, 8.6), (9.4, 9.6), (10, 9), (8.4, 7.6), (7.6, 6.6)])]),
 }
+SPARROW_W["flap-mid"] = between(SPARROW_W["flap-up"], SPARROW_W["flap-down"])
+SPARROW_W["fold"] = ([], [("flat", "S", [(5.4, 5.4), (8.6, 5), (11, 6.2), (8.6, 7.2), (6, 7)])])
 SPARROW = {
     "eye": 1,
     "colours": {"O": "#8a6a4a", "S": "#5a4230", "W": "#d8c8a8", "R": "#9a5a3a", "Y": "#c8a060", "y": "#a07850", "B": "#6b8040", "b": "#5a3a22"},

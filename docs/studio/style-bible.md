@@ -114,7 +114,7 @@ cloth, metal (aluminium boats, galvanized dock pipe), rope.
 
 As in [docs/characters/README.md](../characters/README.md) and the fish
 section of the art direction: real proportions on one scale, silhouette
-first, one signature feature, birds seen from below, real gaits, the
+first, one signature feature, birds in profile (study 9), real gaits, the
 finishing passes.
 
 ## 10. Animation

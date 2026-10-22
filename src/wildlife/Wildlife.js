@@ -1,4 +1,5 @@
-// The animals of the lake. Birds cross the sky and fish leap now and then;
+// The animals of the lake. Birds cross the sky, a loon fishes the shallows
+// and fish leap now and then;
 // every so often a deer, fox, hare or bear comes down to the bank, and
 // gets a field note.
 import { W, SURFACE_Y, DEPTH } from '../core/constants.js';
@@ -49,7 +50,7 @@ export class Wildlife {
     this.scene = scene;
     this.note = onNote;
     const now = scene.time.now;
-    this.next = { visitor: now + 4000, birds: now + 1500, jump: now + 6000, eagle: now + 9000 };
+    this.next = { visitor: now + 4000, birds: now + 1500, jump: now + 6000, eagle: now + 9000, loon: now + 20000 };
     this.last = null;
   }
 
@@ -70,6 +71,10 @@ export class Wildlife {
     if (time > n.eagle) {
       this.eagle();
       n.eagle = time + R(30000, 50000);
+    }
+    if (time > n.loon) {
+      this.loon();
+      n.loon = time + R(45000, 75000);
     }
   }
 
@@ -152,6 +157,37 @@ export class Wildlife {
     s.tweens.add({ targets: e, x: W + 45, duration: 15000, onComplete: () => e.destroy() });
     s.tweens.add({ targets: e, y: e.y + 25, duration: 3500, yoyo: true, repeat: 1, ease: 'Sine.easeInOut' });
     this.note('A bald eagle circles high over the lake.');
+  }
+
+  // A common loon swims in low on the water, dives, comes up further on,
+  // and dives again out of sight.
+  loon() {
+    const s = this.scene;
+    const t = ART.anchors.creatures.loon;
+    const fh = ART.sheets.loon.frameHeight;
+    const top = SURFACE_Y + 13 - fh; // its waterline on the surface
+    const b = s.add.sprite(-25, top, 'loon', t.swim.frames[0]).setOrigin(0.5, 0).setDepth(DEPTH.SURFACE + 0.1).setFlipX(true);
+    const bob = s.tweens.add({ targets: b, y: top + 1, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    const dive = (then) => {
+      bob.pause();
+      b.setFrame(t.dive.frames[0]);
+      s.tweens.add({ targets: b, y: top + 8, alpha: 0, duration: 700, ease: 'Quad.easeIn', onComplete: then });
+      s.time.delayedCall(350, () => b.active && splash(s, b.x, 0.3));
+    };
+    const surface = (x) => {
+      b.setPosition(x, top + 4).setFrame(t.swim.frames[0]).setAlpha(0);
+      s.tweens.add({ targets: b, y: top, alpha: 1, duration: 500, onComplete: () => bob.resume() });
+    };
+    s.tweens.add({
+      targets: b, x: R(60, 110), duration: 12000,
+      onComplete: () => dive(() => s.time.delayedCall(R(4000, 7000), () => {
+        if (!b.active) return;
+        surface(b.x + R(30, 60));
+        s.tweens.add({ targets: b, x: b.x + 20, duration: 6000, delay: 500,
+          onComplete: () => dive(() => { bob.remove(); b.destroy(); }) });
+      })),
+    });
+    this.note('A common loon fishes the shallows, then slips under.');
   }
 
   // A fish clears the water and drops back with a splash.
