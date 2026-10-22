@@ -1,0 +1,1585 @@
+{
+ "times": {
+  "dawn": {
+   "key": [
+    1.06,
+    0.9,
+    0.84
+   ],
+   "sky": [
+    0.66,
+    0.7,
+    0.92
+   ],
+   "gain": 0.92,
+   "sky_bands": [
+    "#3a4a78",
+    "#635c83",
+    "#8b6f8f",
+    "#b4819a",
+    "#ce929f",
+    "#daa29d",
+    "#e6b29c",
+    "#f2c29a"
+   ]
+  },
+  "day": {
+   "key": [
+    1.02,
+    1.0,
+    0.95
+   ],
+   "sky": [
+    0.86,
+    0.92,
+    1.04
+   ],
+   "gain": 1.0,
+   "sky_bands": [
+    "#3e7cc4",
+    "#4c87ca",
+    "#5a93cf",
+    "#689ed5",
+    "#7bacdb",
+    "#94bce1",
+    "#adcde8",
+    "#c6ddee"
+   ]
+  },
+  "golden": {
+   "key": [
+    1.12,
+    0.96,
+    0.74
+   ],
+   "sky": [
+    0.8,
+    0.86,
+    1.02
+   ],
+   "gain": 0.97,
+   "sky_bands": [
+    "#5a86b8",
+    "#8392a3",
+    "#ab9e8f",
+    "#d4aa7a",
+    "#eab371",
+    "#edba73",
+    "#f1c176",
+    "#f4c878"
+   ]
+  },
+  "dusk": {
+   "key": [
+    1.04,
+    0.74,
+    0.64
+   ],
+   "sky": [
+    0.56,
+    0.58,
+    0.84
+   ],
+   "gain": 0.8,
+   "sky_bands": [
+    "#4a4f80",
+    "#735775",
+    "#9b5e6a",
+    "#c4665f",
+    "#dc7157",
+    "#e47f52",
+    "#ec8c4d",
+    "#f49a48"
+   ]
+  },
+  "night": {
+   "key": [
+    0.5,
+    0.58,
+    0.82
+   ],
+   "sky": [
+    0.24,
+    0.28,
+    0.46
+   ],
+   "gain": 1.0,
+   "sky_bands": [
+    "#05070f",
+    "#070a16",
+    "#0a0e1c",
+    "#0c1123",
+    "#0f162a",
+    "#131b31",
+    "#182139",
+    "#1c2640"
+   ]
+  }
+ },
+ "materials": {
+  "dock-wood": {
+   "what": "Weathered dock and hut wood",
+   "rule": "Silver-grey cedar after a season or two. Planks: lit bevel on top, shadow under, the seam darkest; grain on only a few; a stained board now and then.",
+   "ramp": [
+    "#3e3937",
+    "#645e59",
+    "#8a857c",
+    "#a7a498",
+    "#c4c3b5"
+   ],
+   "lit": {
+    "dawn": [
+     "#26252f",
+     "#46414a",
+     "#6d6264",
+     "#938078",
+     "#bfa18c"
+    ],
+    "day": [
+     "#353439",
+     "#5a585b",
+     "#82807b",
+     "#a4a194",
+     "#c8c3ac"
+    ],
+    "golden": [
+     "#303036",
+     "#555152",
+     "#81756a",
+     "#a89577",
+     "#d5b682"
+    ],
+    "dusk": [
+     "#1c1a25",
+     "#362f38",
+     "#584649",
+     "#7b5c54",
+     "#a3735d"
+    ],
+    "night": [
+     "#0f1019",
+     "#1e2131",
+     "#33394f",
+     "#49536f",
+     "#627194"
+    ]
+   }
+  },
+  "cedar": {
+   "what": "Fresh cedar",
+   "rule": "New boards and trim before they grey: warm red-tan, same plank rule.",
+   "ramp": [
+    "#4c1e17",
+    "#7a4129",
+    "#a8703f",
+    "#be9754",
+    "#d3bf6c"
+   ],
+   "lit": {
+    "dawn": [
+     "#2e1313",
+     "#552d22",
+     "#855233",
+     "#a87642",
+     "#ce9e53"
+    ],
+    "day": [
+     "#411c18",
+     "#6e3d2a",
+     "#9e6c3f",
+     "#ba9452",
+     "#d7bf67"
+    ],
+    "golden": [
+     "#3b1917",
+     "#683826",
+     "#9c6336",
+     "#c08942",
+     "#e5b24e"
+    ],
+    "dusk": [
+     "#220e0f",
+     "#42201a",
+     "#6c3b25",
+     "#8c552e",
+     "#b07137"
+    ],
+    "night": [
+     "#12080b",
+     "#251717",
+     "#3e3028",
+     "#534c3d",
+     "#6a6f59"
+    ]
+   }
+  },
+  "algae-wood": {
+   "what": "Wood at the waterline",
+   "rule": "Green-black where posts and planks stay wet.",
+   "ramp": [
+    "#222016",
+    "#3e3e2a",
+    "#6a6a4b",
+    "#a5a27d"
+   ],
+   "lit": {
+    "dawn": [
+     "#151513",
+     "#2d2c23",
+     "#5a513c",
+     "#a18661"
+    ],
+    "day": [
+     "#1d1d17",
+     "#393b2a",
+     "#66674a",
+     "#a8a277"
+    ],
+    "golden": [
+     "#1a1b16",
+     "#373626",
+     "#685f3d",
+     "#b3975a"
+    ],
+    "dusk": [
+     "#0f0f0f",
+     "#241f1a",
+     "#4b3a2a",
+     "#896040"
+    ],
+    "night": [
+     "#08090a",
+     "#141818",
+     "#2c3334",
+     "#525e66"
+    ]
+   }
+  },
+  "barn-red": {
+   "what": "Barn-red paint",
+   "rule": "The hut's trim and door; flat paint, soft highlight.",
+   "ramp": [
+    "#400b13",
+    "#741c1b",
+    "#a14633",
+    "#c67c54"
+   ],
+   "lit": {
+    "dawn": [
+     "#270710",
+     "#551416",
+     "#893629",
+     "#c16741"
+    ],
+    "day": [
+     "#370a14",
+     "#6a1b1b",
+     "#9c4432",
+     "#ca7c50"
+    ],
+    "golden": [
+     "#320913",
+     "#661818",
+     "#9e3f29",
+     "#d7733c"
+    ],
+    "dusk": [
+     "#1d050d",
+     "#430e11",
+     "#71261d",
+     "#a5492b"
+    ],
+    "night": [
+     "#0f0309",
+     "#260b10",
+     "#432224",
+     "#634845"
+    ]
+   }
+  },
+  "forest-green": {
+   "what": "Forest-green paint",
+   "rule": "The other trim colour.",
+   "ramp": [
+    "#14211a",
+    "#263c2d",
+    "#45684a",
+    "#77a476"
+   ],
+   "lit": {
+    "dawn": [
+     "#0c1516",
+     "#1c2a25",
+     "#3b503b",
+     "#74885b"
+    ],
+    "day": [
+     "#111e1b",
+     "#23392d",
+     "#436549",
+     "#79a470"
+    ],
+    "golden": [
+     "#101c1a",
+     "#213428",
+     "#445d3c",
+     "#819955"
+    ],
+    "dusk": [
+     "#090f11",
+     "#161e1c",
+     "#31392a",
+     "#63613c"
+    ],
+    "night": [
+     "#05090c",
+     "#0c171a",
+     "#1d3234",
+     "#3c5f61"
+    ]
+   }
+  },
+  "white-pine-bark": {
+   "what": "White pine bark",
+   "rule": "Grey-brown with a purple cast, long furrowed plates; stripes widest mid-trunk.",
+   "ramp": [
+    "#282021",
+    "#413735",
+    "#5a4f4a",
+    "#83786e",
+    "#aca495"
+   ],
+   "lit": {
+    "dawn": [
+     "#18151c",
+     "#2d262c",
+     "#473a3c",
+     "#745e57",
+     "#a88873"
+    ],
+    "day": [
+     "#221d22",
+     "#3a3436",
+     "#554c4a",
+     "#80766b",
+     "#afa48e"
+    ],
+    "golden": [
+     "#1f1b21",
+     "#372f31",
+     "#54463f",
+     "#846d56",
+     "#bb996b"
+    ],
+    "dusk": [
+     "#120f16",
+     "#231b21",
+     "#3a2a2c",
+     "#60433d",
+     "#8f614c"
+    ],
+    "night": [
+     "#0a090f",
+     "#14141d",
+     "#21222f",
+     "#393d50",
+     "#565f7a"
+    ]
+   }
+  },
+  "red-pine-bark": {
+   "what": "Red pine bark, upper",
+   "rule": "Thin, flaky orange-red bark high on the trunk; glows in evening sun.",
+   "ramp": [
+    "#571314",
+    "#8d3324",
+    "#c2643a",
+    "#d18d4f",
+    "#e0b566"
+   ],
+   "lit": {
+    "dawn": [
+     "#350c11",
+     "#63231e",
+     "#994a2f",
+     "#b96e3f",
+     "#da964f"
+    ],
+    "day": [
+     "#4b1115",
+     "#7f3025",
+     "#b6603a",
+     "#cd8a4d",
+     "#e4b561"
+    ],
+    "golden": [
+     "#441014",
+     "#782c21",
+     "#b55832",
+     "#d3803e",
+     "#f3a949"
+    ],
+    "dusk": [
+     "#27090d",
+     "#4d1917",
+     "#7c3522",
+     "#9a4f2c",
+     "#ba6b34"
+    ],
+    "night": [
+     "#150509",
+     "#2b1214",
+     "#482b25",
+     "#5b473a",
+     "#706954"
+    ]
+   }
+  },
+  "red-pine-plates": {
+   "what": "Red pine bark, lower",
+   "rule": "Thick grey-brown to reddish plates low on the trunk.",
+   "ramp": [
+    "#371717",
+    "#582e27",
+    "#7a4e3a",
+    "#9b7553",
+    "#bca16f"
+   ],
+   "lit": {
+    "dawn": [
+     "#210f13",
+     "#3e2020",
+     "#61392f",
+     "#895b42",
+     "#b78556"
+    ],
+    "day": [
+     "#2f1518",
+     "#4f2b28",
+     "#734b3a",
+     "#987351",
+     "#c0a169"
+    ],
+    "golden": [
+     "#2b1317",
+     "#4b2724",
+     "#724532",
+     "#9c6a41",
+     "#cc9650"
+    ],
+    "dusk": [
+     "#190b0f",
+     "#301719",
+     "#4e2922",
+     "#72422e",
+     "#9c5f39"
+    ],
+    "night": [
+     "#0d060b",
+     "#1b1015",
+     "#2d2225",
+     "#433b3d",
+     "#5e5d5b"
+    ]
+   }
+  },
+  "birch-bark": {
+   "what": "Paper birch bark",
+   "rule": "Chalk white with short black horizontal marks, a pink curl now and then.",
+   "ramp": [
+    "#66605e",
+    "#a49e98",
+    "#e2ddd2",
+    "#e9e7db",
+    "#f0efe3"
+   ],
+   "lit": {
+    "dawn": [
+     "#3e3e50",
+     "#736d7e",
+     "#b3a3aa",
+     "#ceb5ad",
+     "#eac6af"
+    ],
+    "day": [
+     "#585862",
+     "#94959b",
+     "#d4d4d1",
+     "#e4e2d5",
+     "#f5efd8"
+    ],
+    "golden": [
+     "#4f505d",
+     "#8c888c",
+     "#d2c3b3",
+     "#ebd2ac",
+     "#ffdfa3"
+    ],
+    "dusk": [
+     "#2e2d3f",
+     "#594e60",
+     "#91757c",
+     "#ab8179",
+     "#c88d74"
+    ],
+    "night": [
+     "#181b2b",
+     "#323854",
+     "#545f86",
+     "#6575a0",
+     "#788bba"
+    ]
+   }
+  },
+  "white-pine-needles": {
+   "what": "White pine needles",
+   "rule": "Soft blue-green in flat horizontal tiers with gaps; dark crescent under, light on top.",
+   "ramp": [
+    "#22302c",
+    "#384e44",
+    "#4f6b5a",
+    "#6e9076",
+    "#90b592"
+   ],
+   "lit": {
+    "dawn": [
+     "#151f25",
+     "#273638",
+     "#3f4f49",
+     "#61715d",
+     "#8c9671"
+    ],
+    "day": [
+     "#1d2c2e",
+     "#324945",
+     "#4a675a",
+     "#6c8d73",
+     "#93b58b"
+    ],
+    "golden": [
+     "#1a282c",
+     "#30433f",
+     "#4a5e4d",
+     "#6f835d",
+     "#9ca969"
+    ],
+    "dusk": [
+     "#0f161e",
+     "#1e272b",
+     "#333835",
+     "#515141",
+     "#786b4b"
+    ],
+    "night": [
+     "#080d14",
+     "#111c25",
+     "#1d2e3a",
+     "#304956",
+     "#486978"
+    ]
+   }
+  },
+  "spruce-needles": {
+   "what": "Spruce and fir needles",
+   "rule": "Darker, a sharp spire of short tiers, upper tiers shading the ones below.",
+   "ramp": [
+    "#152420",
+    "#243a31",
+    "#33503f",
+    "#547c5e",
+    "#78a87c"
+   ],
+   "lit": {
+    "dawn": [
+     "#0d171b",
+     "#192829",
+     "#283b33",
+     "#4a614a",
+     "#758b60"
+    ],
+    "day": [
+     "#122121",
+     "#203732",
+     "#304d3f",
+     "#527a5b",
+     "#7aa876"
+    ],
+    "golden": [
+     "#101e20",
+     "#1f322d",
+     "#2f4736",
+     "#55704a",
+     "#829c59"
+    ],
+    "dusk": [
+     "#091116",
+     "#141d1f",
+     "#212a25",
+     "#3e4534",
+     "#64633f"
+    ],
+    "night": [
+     "#050a0f",
+     "#0b151b",
+     "#132228",
+     "#253f45",
+     "#3c6166"
+    ]
+   }
+  },
+  "aspen-leaves": {
+   "what": "Aspen and birch leaves",
+   "rule": "Round clusters; detail at the edges, calm inside; gold in fall.",
+   "ramp": [
+    "#27451a",
+    "#4c702e",
+    "#7a9a45",
+    "#a1b35b",
+    "#c9cc74"
+   ],
+   "lit": {
+    "dawn": [
+     "#182c16",
+     "#354d26",
+     "#617138",
+     "#8e8c48",
+     "#c4a95a"
+    ],
+    "day": [
+     "#223f1b",
+     "#44692f",
+     "#739445",
+     "#9eaf58",
+     "#cdcc6e"
+    ],
+    "golden": [
+     "#1e3a1a",
+     "#41602a",
+     "#72883b",
+     "#a2a247",
+     "#dabe53"
+    ],
+    "dusk": [
+     "#112011",
+     "#29381d",
+     "#4e5129",
+     "#766432",
+     "#a7793b"
+    ],
+    "night": [
+     "#09130c",
+     "#172819",
+     "#2d422c",
+     "#465a42",
+     "#64765f"
+    ]
+   }
+  },
+  "grass": {
+   "what": "Shore grass",
+   "rule": "Short 1 px blades, thicker near, 1-2 px clusters far.",
+   "ramp": [
+    "#213717",
+    "#48642d",
+    "#78904a",
+    "#afbc6f"
+   ],
+   "lit": {
+    "dawn": [
+     "#142313",
+     "#354725",
+     "#666e3b",
+     "#ab9c56"
+    ],
+    "day": [
+     "#1c3318",
+     "#425f2d",
+     "#748c49",
+     "#b2bc69"
+    ],
+    "golden": [
+     "#1a2e17",
+     "#3f5728",
+     "#76813c",
+     "#beaf50"
+    ],
+    "dusk": [
+     "#0f1a0f",
+     "#29331c",
+     "#544f2a",
+     "#926f39"
+    ],
+    "night": [
+     "#080f0b",
+     "#18261a",
+     "#324534",
+     "#586d5b"
+    ]
+   }
+  },
+  "cattail": {
+   "what": "Cattail blades",
+   "rule": "Long leaning blades; heads in the shared brown.",
+   "ramp": [
+    "#273a19",
+    "#526932",
+    "#849550",
+    "#bac075"
+   ],
+   "lit": {
+    "dawn": [
+     "#182515",
+     "#3c4a29",
+     "#717240",
+     "#b59f5a"
+    ],
+    "day": [
+     "#22351a",
+     "#4b6333",
+     "#80914e",
+     "#bec06f"
+    ],
+    "golden": [
+     "#1e3019",
+     "#485b2d",
+     "#828641",
+     "#cab354"
+    ],
+    "dusk": [
+     "#111b11",
+     "#2f351f",
+     "#5d522d",
+     "#9b723c"
+    ],
+    "night": [
+     "#09100c",
+     "#1b281d",
+     "#374838",
+     "#5d6f60"
+    ]
+   }
+  },
+  "cattail-head": {
+   "what": "Cattail heads",
+   "rule": "2-3 px dark brown heads.",
+   "ramp": [
+    "#28140c",
+    "#5a3a22",
+    "#ac8b59"
+   ],
+   "lit": {
+    "dawn": [
+     "#180d0a",
+     "#472b1c",
+     "#a87345"
+    ],
+    "day": [
+     "#22120c",
+     "#553822",
+     "#af8b55"
+    ],
+    "golden": [
+     "#1f110c",
+     "#54331d",
+     "#bb8140"
+    ],
+    "dusk": [
+     "#120908",
+     "#3a1f14",
+     "#8f522e"
+    ],
+    "night": [
+     "#0a0606",
+     "#211916",
+     "#565149"
+    ]
+   }
+  },
+  "pink-granite": {
+   "what": "Pink granite",
+   "rule": "Big clean planes chiselled from a blob, a few dark flecks, lichen on top, algae at the waterline.",
+   "ramp": [
+    "#5a3b3d",
+    "#926661",
+    "#c99a8a",
+    "#d6b49b",
+    "#e4cdac"
+   ],
+   "lit": {
+    "dawn": [
+     "#372634",
+     "#664650",
+     "#9f7170",
+     "#bd8d7b",
+     "#deaa85"
+    ],
+    "day": [
+     "#4d363f",
+     "#836063",
+     "#bd9489",
+     "#d2b097",
+     "#e9cda3"
+    ],
+    "golden": [
+     "#46313c",
+     "#7d5859",
+     "#bb8876",
+     "#d8a37a",
+     "#f8bf7b"
+    ],
+    "dusk": [
+     "#281b29",
+     "#4f333d",
+     "#815152",
+     "#9e6556",
+     "#be7958"
+    ],
+    "night": [
+     "#16111c",
+     "#2d2435",
+     "#4a4258",
+     "#5d5b71",
+     "#72778d"
+    ]
+   }
+  },
+  "grey-gneiss": {
+   "what": "Grey gneiss",
+   "rule": "The other shore rock; same rule.",
+   "ramp": [
+    "#3e3e3d",
+    "#646463",
+    "#8a8a88",
+    "#a7a7a5",
+    "#c4c4c2"
+   ],
+   "lit": {
+    "dawn": [
+     "#262834",
+     "#464552",
+     "#6d666e",
+     "#938383",
+     "#bfa296"
+    ],
+    "day": [
+     "#35393f",
+     "#5a5e65",
+     "#828487",
+     "#a4a4a0",
+     "#c8c4b8"
+    ],
+    "golden": [
+     "#30343c",
+     "#55565b",
+     "#817a74",
+     "#a89782",
+     "#d5b78b"
+    ],
+    "dusk": [
+     "#1c1d29",
+     "#36323f",
+     "#584951",
+     "#7b5e5b",
+     "#a37463"
+    ],
+    "night": [
+     "#0f111c",
+     "#1e2436",
+     "#333b57",
+     "#495478",
+     "#62729f"
+    ]
+   }
+  },
+  "basalt": {
+   "what": "Basalt",
+   "rule": "Dark, weathering rusty.",
+   "ramp": [
+    "#212122",
+    "#363637",
+    "#4a4a4c",
+    "#767679",
+    "#a3a2a5"
+   ],
+   "lit": {
+    "dawn": [
+     "#14151d",
+     "#26252e",
+     "#3b363e",
+     "#685c60",
+     "#9f8680"
+    ],
+    "day": [
+     "#1c1e23",
+     "#313338",
+     "#46474c",
+     "#747476",
+     "#a6a29d"
+    ],
+    "golden": [
+     "#1a1c22",
+     "#2e2e33",
+     "#454141",
+     "#776b5f",
+     "#b19776"
+    ],
+    "dusk": [
+     "#0f0f17",
+     "#1d1b23",
+     "#2f272d",
+     "#574243",
+     "#886054"
+    ],
+    "night": [
+     "#080910",
+     "#10131e",
+     "#1b2031",
+     "#333c58",
+     "#525e87"
+    ]
+   }
+  },
+  "lichen": {
+   "what": "Sunburst lichen",
+   "rule": "Small orange clusters on shore rock.",
+   "ramp": [
+    "#652104",
+    "#e07a1f",
+    "#f0b54f"
+   ],
+   "lit": {
+    "dawn": [
+     "#3d1503",
+     "#b15a19",
+     "#ea963d"
+    ],
+    "day": [
+     "#571e04",
+     "#d3751f",
+     "#f5b54b"
+    ],
+    "golden": [
+     "#4e1c04",
+     "#d16c1a",
+     "#ffa939"
+    ],
+    "dusk": [
+     "#2d0f03",
+     "#8f4012",
+     "#c86b28"
+    ],
+    "night": [
+     "#180902",
+     "#533414",
+     "#786941"
+    ]
+   }
+  },
+  "sand": {
+   "what": "Sand",
+   "rule": "Wavy hard-edged ripples, a few 'c' marks, cool shadow to warm light.",
+   "ramp": [
+    "#5a463b",
+    "#917a61",
+    "#c8b48a",
+    "#d6cd9b",
+    "#e3dfac"
+   ],
+   "lit": {
+    "dawn": [
+     "#372d32",
+     "#655450",
+     "#9e8470",
+     "#bda07b",
+     "#ddb985"
+    ],
+    "day": [
+     "#4d403d",
+     "#827363",
+     "#bcad89",
+     "#d2c997",
+     "#e8dfa3"
+    ],
+    "golden": [
+     "#463a3a",
+     "#7c6959",
+     "#ba9f76",
+     "#d8ba7a",
+     "#f7d07b"
+    ],
+    "dusk": [
+     "#282028",
+     "#4f3d3d",
+     "#805f52",
+     "#9e7356",
+     "#bd8458"
+    ],
+    "night": [
+     "#16141b",
+     "#2c2b35",
+     "#4a4d58",
+     "#5d6871",
+     "#72818d"
+    ]
+   }
+  },
+  "cobble": {
+   "what": "Cobble",
+   "rule": "Rounded stones in grey, pink and black; only a few shaded.",
+   "ramp": [
+    "#3f3735",
+    "#726861",
+    "#9f958a",
+    "#c6bfaf"
+   ],
+   "lit": {
+    "dawn": [
+     "#26232d",
+     "#534950",
+     "#88726e",
+     "#c19e87"
+    ],
+    "day": [
+     "#363337",
+     "#686262",
+     "#9a9187",
+     "#cabfa6"
+    ],
+    "golden": [
+     "#312e34",
+     "#645a57",
+     "#9c8670",
+     "#d7b27e"
+    ],
+    "dusk": [
+     "#1c1a24",
+     "#42353c",
+     "#70524e",
+     "#a5715a"
+    ],
+    "night": [
+     "#0f0f18",
+     "#252838",
+     "#424861",
+     "#636f90"
+    ]
+   }
+  },
+  "muck": {
+   "what": "Lake-bottom muck",
+   "rule": "Flat dark brown-black, a few soft lumps; the quietest texture.",
+   "ramp": [
+    "#1a140f",
+    "#2f281d",
+    "#5b533b",
+    "#9c996e"
+   ],
+   "lit": {
+    "dawn": [
+     "#100d0d",
+     "#221c18",
+     "#4e402f",
+     "#987f55"
+    ],
+    "day": [
+     "#161210",
+     "#2b261d",
+     "#58513a",
+     "#9f9968"
+    ],
+    "golden": [
+     "#14110f",
+     "#29231a",
+     "#594b30",
+     "#a98e4f"
+    ],
+    "dusk": [
+     "#0c090a",
+     "#1b1412",
+     "#402e21",
+     "#825b38"
+    ],
+    "night": [
+     "#060607",
+     "#0f0f11",
+     "#262829",
+     "#4e595a"
+    ]
+   }
+  },
+  "lake-clear": {
+   "what": "Clear lake water",
+   "rule": "Green-teal shallows to dark teal: flat bands of varied height, ordered dither only at the joins.",
+   "ramp": [
+    "#121e2e",
+    "#1d3544",
+    "#294f5b",
+    "#397275",
+    "#4f948d",
+    "#67b29e"
+   ],
+   "lit": {
+    "dawn": [
+     "#0b1327",
+     "#142439",
+     "#1f394a",
+     "#2f565e",
+     "#47756f",
+     "#64937a"
+    ],
+    "day": [
+     "#0f1c30",
+     "#1a3245",
+     "#264b5b",
+     "#366e73",
+     "#4e9288",
+     "#69b296"
+    ],
+    "golden": [
+     "#0e192e",
+     "#182d40",
+     "#254550",
+     "#376661",
+     "#51876d",
+     "#70a671"
+    ],
+    "dusk": [
+     "#080e1f",
+     "#0f1a2c",
+     "#192937",
+     "#273e43",
+     "#3c544d",
+     "#566951"
+    ],
+    "night": [
+     "#040815",
+     "#081224",
+     "#0e2037",
+     "#17344f",
+     "#234d69",
+     "#346782"
+    ]
+   }
+  },
+  "snow": {
+   "what": "Snow and ice (for winter)",
+   "rule": "White through cyan to deep blue; zig-zag snow on top surfaces.",
+   "ramp": [
+    "#67686d",
+    "#a6aaaf",
+    "#e6edf2",
+    "#eaf3f5",
+    "#eff8f8"
+   ],
+   "lit": {
+    "dawn": [
+     "#3f435c",
+     "#747591",
+     "#b6aec4",
+     "#cfbec2",
+     "#e9cdc0"
+    ],
+    "day": [
+     "#596071",
+     "#95a0b2",
+     "#d8e4f1",
+     "#e5eeee",
+     "#f4f8ec"
+    ],
+    "golden": [
+     "#50576c",
+     "#8e92a1",
+     "#d6d1cf",
+     "#ecdcc0",
+     "#ffe7b2"
+    ],
+    "dusk": [
+     "#2e3049",
+     "#5a546f",
+     "#937d8f",
+     "#ac8887",
+     "#c7937f"
+    ],
+    "night": [
+     "#191d32",
+     "#333c60",
+     "#55669b",
+     "#667bb3",
+     "#7890cb"
+    ]
+   }
+  },
+  "aluminium": {
+   "what": "Aluminium (boats, dock legs)",
+   "rule": "Metal: cool pale lights, warm deep darks, lines of reflection, rivets.",
+   "ramp": [
+    "#4a5051",
+    "#797f83",
+    "#a8aeb4",
+    "#bcc0c7",
+    "#d2d3da"
+   ],
+   "lit": {
+    "dawn": [
+     "#2d3445",
+     "#55586c",
+     "#858092",
+     "#a6969d",
+     "#cdafa8"
+    ],
+    "day": [
+     "#404a54",
+     "#6d7785",
+     "#9ea7b3",
+     "#b8bcc2",
+     "#d6d3cf"
+    ],
+    "golden": [
+     "#394350",
+     "#676d79",
+     "#9c9a9a",
+     "#beae9c",
+     "#e4c49c"
+    ],
+    "dusk": [
+     "#212536",
+     "#423f53",
+     "#6c5c6b",
+     "#8a6c6e",
+     "#af7d70"
+    ],
+    "night": [
+     "#121625",
+     "#252d48",
+     "#3e4b73",
+     "#526191",
+     "#697ab3"
+    ]
+   }
+  },
+  "canvas": {
+   "what": "Canvas and cloth",
+   "rule": "Soft shadows, no highlight; folds from pinch points.",
+   "ramp": [
+    "#4c3f34",
+    "#897a62",
+    "#b6ac88",
+    "#d3d0a6"
+   ],
+   "lit": {
+    "dawn": [
+     "#2e292c",
+     "#645651",
+     "#9b846c",
+     "#ceac80"
+    ],
+    "day": [
+     "#413a36",
+     "#7d7363",
+     "#b0a785",
+     "#d7d09e"
+    ],
+    "golden": [
+     "#3b3533",
+     "#786a58",
+     "#b39b6e",
+     "#e5c277"
+    ],
+    "dusk": [
+     "#221d23",
+     "#4f3e3d",
+     "#805e4d",
+     "#b07b55"
+    ],
+    "night": [
+     "#121218",
+     "#2d2e39",
+     "#4b535f",
+     "#6a7988"
+    ]
+   }
+  },
+  "rope": {
+   "what": "Rope and line",
+   "rule": "A regular diagonal step, light and dark every 2 px.",
+   "ramp": [
+    "#513928",
+    "#94774d",
+    "#c1ad6f",
+    "#dad48c"
+   ],
+   "lit": {
+    "dawn": [
+     "#312522",
+     "#6c543f",
+     "#a58559",
+     "#d5b06c"
+    ],
+    "day": [
+     "#46342a",
+     "#87714e",
+     "#bba86d",
+     "#ded485"
+    ],
+    "golden": [
+     "#3f3028",
+     "#826745",
+     "#be9c5a",
+     "#edc564"
+    ],
+    "dusk": [
+     "#241a1b",
+     "#553c30",
+     "#885f3f",
+     "#b57e48"
+    ],
+    "night": [
+     "#131012",
+     "#302d2d",
+     "#50534e",
+     "#6d7b73"
+    ]
+   }
+  },
+  "black-fur": {
+   "what": "Black fur (Olive, the bear)",
+   "rule": "Clumps, not strands; inner lines in darker fur, never black.",
+   "ramp": [
+    "#17161b",
+    "#25242c",
+    "#33323d",
+    "#605c6e",
+    "#91889e"
+   ],
+   "lit": {
+    "dawn": [
+     "#0e0e17",
+     "#1a1924",
+     "#282531",
+     "#554857",
+     "#8d717a"
+    ],
+    "day": [
+     "#14141c",
+     "#21222d",
+     "#30303d",
+     "#5e5a6b",
+     "#948896"
+    ],
+    "golden": [
+     "#12121b",
+     "#201f29",
+     "#2f2c34",
+     "#615356",
+     "#9e7f71"
+    ],
+    "dusk": [
+     "#0a0a12",
+     "#14121c",
+     "#211a24",
+     "#47343d",
+     "#795151"
+    ],
+    "night": [
+     "#06060c",
+     "#0b0d18",
+     "#131627",
+     "#2a2e50",
+     "#484f82"
+    ]
+   }
+  },
+  "white-fur": {
+   "what": "White fur",
+   "rule": "Same rule; shade cools toward blue-grey.",
+   "ramp": [
+    "#696362",
+    "#aaa29f",
+    "#eae2dc",
+    "#efeae3",
+    "#f4f2e9"
+   ],
+   "lit": {
+    "dawn": [
+     "#404053",
+     "#777084",
+     "#b9a6b2",
+     "#d3b7b4",
+     "#eec8b4"
+    ],
+    "day": [
+     "#5a5b66",
+     "#9998a2",
+     "#dcd9db",
+     "#eae5dd",
+     "#f9f2dd"
+    ],
+    "golden": [
+     "#515361",
+     "#918b93",
+     "#dac7bc",
+     "#f1d4b2",
+     "#ffe1a7"
+    ],
+    "dusk": [
+     "#2f2e42",
+     "#5c5064",
+     "#967782",
+     "#b0837d",
+     "#cb8f77"
+    ],
+    "night": [
+     "#191c2d",
+     "#343a57",
+     "#57618d",
+     "#6876a6",
+     "#7a8cbf"
+    ]
+   }
+  },
+  "tawny-fur": {
+   "what": "Tawny fur (deer, hare)",
+   "rule": "Same rule.",
+   "ramp": [
+    "#4c2b27",
+    "#7b5242",
+    "#a9805f",
+    "#bea274",
+    "#d4c48c"
+   ],
+   "lit": {
+    "dawn": [
+     "#2e1c21",
+     "#563937",
+     "#865e4d",
+     "#a87f5c",
+     "#cfa26c"
+    ],
+    "day": [
+     "#412829",
+     "#6f4d43",
+     "#9f7b5f",
+     "#ba9f71",
+     "#d8c485"
+    ],
+    "golden": [
+     "#3b2427",
+     "#69463d",
+     "#9d7151",
+     "#c0935b",
+     "#e6b764"
+    ],
+    "dusk": [
+     "#22141a",
+     "#43292a",
+     "#6c4438",
+     "#8c5b40",
+     "#b07448"
+    ],
+    "night": [
+     "#120c12",
+     "#261d24",
+     "#3f373d",
+     "#535255",
+     "#6a7273"
+    ]
+   }
+  },
+  "feather-grey": {
+   "what": "Pale feathers (gull)",
+   "rule": "Rows as single clusters overlapping toward the body, split by one shadow line.",
+   "ramp": [
+    "#4f545a",
+    "#808b91",
+    "#b2c4c8",
+    "#c1d5d6",
+    "#d0e3e1"
+   ],
+   "lit": {
+    "dawn": [
+     "#30364c",
+     "#596078",
+     "#8d90a2",
+     "#aaa7a9",
+     "#cbbcae"
+    ],
+    "day": [
+     "#444d5e",
+     "#738394",
+     "#a7bcc7",
+     "#bdd1d0",
+     "#d4e3d6"
+    ],
+    "golden": [
+     "#3d4659",
+     "#6d7786",
+     "#a6adab",
+     "#c3c1a8",
+     "#e2d3a2"
+    ],
+    "dusk": [
+     "#23273c",
+     "#46455c",
+     "#726776",
+     "#8e7776",
+     "#ad8673"
+    ],
+    "night": [
+     "#131829",
+     "#273150",
+     "#425480",
+     "#546c9c",
+     "#6884b8"
+    ]
+   }
+  },
+  "fish-olive": {
+   "what": "Fish back (olive)",
+   "rule": "Scales by suggestion: a few arcs in the mid tones, ends plain.",
+   "ramp": [
+    "#293925",
+    "#485c3e",
+    "#6c7f58",
+    "#919f74",
+    "#b8bf91"
+   ],
+   "lit": {
+    "dawn": [
+     "#19251f",
+     "#323f33",
+     "#555d47",
+     "#807c5c",
+     "#b39e70"
+    ],
+    "day": [
+     "#233426",
+     "#41563f",
+     "#667a58",
+     "#8e9c71",
+     "#bcbf8a"
+    ],
+    "golden": [
+     "#203025",
+     "#3d4f39",
+     "#65704b",
+     "#92905b",
+     "#c8b268"
+    ],
+    "dusk": [
+     "#121a19",
+     "#272e27",
+     "#454334",
+     "#6b5940",
+     "#99714a"
+    ],
+    "night": [
+     "#0a1011",
+     "#162122",
+     "#283738",
+     "#3f5055",
+     "#5c6f77"
+    ]
+   }
+  }
+ }
+}

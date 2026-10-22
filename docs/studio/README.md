@@ -11,6 +11,7 @@ Every session starts by reading it.
 | [style-bible.md](style-bible.md) | The rules we've agreed on: palette, light, outlines, scale, materials. A draft until we settle each part. |
 | [decisions.md](decisions.md) | Every decision, with the date and why, so nothing gets argued twice. |
 | [studies.md](studies.md) | The practice log: each study's subject, references, versions, your verdict, and what we learned. |
+| [materials.md](materials.md) | The materials library: a ramp per material, its light at each time of day, and a texture sample. |
 | [audit.md](audit.md) | How every piece of art in the game measures up against the rules, and what to redo first. |
 | [research/](research/) | The research behind it all, with sources: pixel-art technique for each material, the real north-woods lake, and how other games keep their look cohesive. |
 | [audit/](audit/) | The audit's measurements (`audit.json`) and contact sheets. |
@@ -37,9 +38,7 @@ Tools: `tools/studio/audit.py` re-measures every image in the game.
 
 1. Audit what we have. *(done: [audit.md](audit.md))*
 2. Research. *(done: [research/](research/))*
-3. Build the materials library: for each material, a hue-shifted ramp, a
-   texture pattern and a test sheet. Wood, water, stone, foliage, bark,
-   sand, snow and ice, fur, feathers, fish scales, cloth, metal, rope.
+3. Build the materials library. *(first version: [materials.md](materials.md))*
 4. Practice studies, one small subject at a time.
 5. Replace the pack art, piece by piece.
 

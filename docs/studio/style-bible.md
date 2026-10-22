@@ -127,24 +127,8 @@ Every pack asset is tracked as **pack-original → recoloured → redrawn →
 approved**. A half-restyled game looks worse than either style, so the plan
 is to finish the restyle, not stop halfway.
 
-## Open questions for you
+## Decided in review 1
 
-These change what we draw, so they're yours to call:
-
-1. **What kind of lake?** A *clear* lake (green-teal water, you can see the
-   bottom) or a *tannin* lake (root-beer brown water, amber shallows, very
-   dark and mirror-like)? Both are typical up north; clear reads better for
-   watching fish.
-2. **The hut.** A fishing hut on stilts isn't really a north-woods thing (it's
-   more Gulf Coast). Keep it as is, keep it but restyle it (gable roof,
-   silver-grey wood, barn-red or green trim, dock on pipe legs), or swap it
-   for a weathered boathouse on a crib at the end of the dock?
-3. **Seasons.** Stay in summer, or follow the real calendar the way the light
-   follows the clock (gold aspen in October, the hare turning white, snow)?
-4. **Time of day.** Today one tint is laid over everything. The research
-   points to a palette for each time of day (dawn, day, golden hour, dusk,
-   night) that each material is drawn in, so the light changes the colours
-   rather than tinting them. It's more work but a big step in quality.
-5. **New wildlife.** The common loon is *the* bird of these lakes (Minnesota's
-   state bird). Add it, and others (heron, kingfisher, osprey, painted
-   turtle, beaver)?
+A **clear lake**; the **hut restyled** for the north woods; **summer**,
+built for seasons; **a palette for each time of day**; the **common loon**
+first. Details in [decisions.md](decisions.md).

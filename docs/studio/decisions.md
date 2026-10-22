@@ -2,6 +2,21 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The five calls from review 1
+
+1. **A clear lake.** Green-teal water you can see the bottom and the fish
+   through, darkening fast with depth. Watching fish is the game.
+2. **Restyle the hut.** Keep our hut, but make it belong up north: gable
+   roof, silver-grey weathered wood, barn-red or forest-green trim, the dock
+   on galvanized pipe legs, algae-dark where the wood meets the water.
+3. **Summer, built for seasons.** The lake stays in summer for now; materials
+   and scenes are built so seasons (fall gold, winter white) can follow the
+   real calendar later.
+4. **Palettes for the time of day.** Instead of one tint over everything,
+   each time of day (dawn, day, golden hour, dusk, night) has its own light,
+   and every material is drawn in it, so the light changes the colours.
+5. **The common loon** joins the wildlife first.
+
 ## 2026-10-22: Research before new modes
 
 New game modes are on hold. The work goes into the game we have: research,
