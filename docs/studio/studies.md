@@ -456,7 +456,15 @@ dives out of sight.
 Also: the sparrow now perches on top of its cattail; the eagle's tail
 hangs behind its legs. Review page: `review/study9b.html`.
 
-**Verdict:** waiting.
+**Verdict:** B. In the game: `tools/characters/birds.py` draws every frame
+through the detail pass at level B.
+
+**Learned:**
+- Detail on a small moving sprite comes cheapest from structure, worked
+  out from the shape (feather bands along and across a wing), not placed
+  by hand per frame, so every frame of a beat agrees.
+- Placed spots read as a pattern (the hen's first mottling looked like a
+  leopard's); a texture keyed to the body's interior reads as feathers.
 
 <!--
 ## Study N: <subject> (<date>)

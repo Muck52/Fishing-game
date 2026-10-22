@@ -45,7 +45,8 @@ journal and the backpack, and from the research below.
    animals on the beach: the wings beat up and down beside the body, four
    frames to a beat (up, level, down, level; the level frame morphed
    halfway between the two), drawn from shapes in `birds.py` in study 8's
-   look. Gulls and the eagle beat and glide on level wings; ducks beat
+   look, with study 9b's detail: feather bands on each wing, field marks,
+   feather texture. Gulls and the eagle beat and glide on level wings; ducks beat
    fast and never glide; sparrows fly in bounds, a burst of beats then
    wings shut. The loon swims low and dives.
 

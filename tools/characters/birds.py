@@ -1,6 +1,8 @@
 """The birds' sheets, from study 9's drawings (tools/studio/study_birds.py,
 version A: every bird seen in profile, wings beating up and down beside
-the body, in study 8's look).
+the body, in study 8's look) with study 9b's detail (version B, in
+tools/studio/study_bird_detail.py): wings laid out in feather bands from
+their shape, field marks and body feather texture.
 
 Each wingbeat is four frames: wings up, level (morphed halfway between up
 and down), down, level again. The gull and eagle glide on wings held
@@ -21,13 +23,19 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / "studio"))
 import study_birds as sb  # noqa: E402
+import study_bird_detail as bd  # noqa: E402
 from kit import outline, image, preview, ART  # noqa: E402
 
 BEAT = ["flap-up", "flap-mid", "flap-down", "flap-mid"]
 
 
+DETAIL = "B"  # study 9b's pick
+NAMES = {id(sb.GULL): "gull", id(sb.EAGLE): "eagle", id(sb.MALLARD): "mallard", id(sb.HEN): "hen", id(sb.SPARROW): "sparrow", id(sb.LOON): "loon"}
+
+
 def frame(spec, pose, water=None):
-    return image(outline(sb.draw(spec, pose)), {**sb.FACE, **spec["colours"]}, water=water)
+    name = NAMES[id(spec)]
+    return image(outline(bd.draw(name, pose, DETAIL)), bd.colours(name), water=water)
 
 
 def anims(name):

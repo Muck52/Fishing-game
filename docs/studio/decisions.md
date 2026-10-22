@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The birds carry study 9b's detail (version B)
+
+Feathered wings, field marks and body feather texture, at the size they
+were. The sparrow perches on top of its cattail; the eagle's tail hangs
+behind its legs.
+
 ## 2026-10-22: The land animals are study 8's designs, animated
 
 Olive, the doe, buck, fox, hare and bear in the game are study 8's
