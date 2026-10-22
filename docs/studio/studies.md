@@ -326,9 +326,17 @@ Studying in the game by calling the visitors in was too random (others
 wandered in, they'd left again); standing the cast on the sand directly
 gives a fair comparison.
 
-**Verdict:** waiting on you.
+**Verdict:** A, lit as one mass. The land animals are built that way
+now: the art build's last pass lights them (`tools/characters/light.py`)
+after making their edges selective.
 
-**Learned:** (after the verdict)
+**Learned:**
+- Light the animals the way the scenery is lit, as one rounded mass from
+  the upper left, and they belong to it.
+- Light worked out from each frame's own silhouette moves with the body;
+  texture laid on a fixed grid would crawl as it walks.
+- An animal has to be seen to be enjoyed: stage it in the open, give it
+  a shadow to stand on.
 
 <!--
 ## Study N: <subject> (<date>)

@@ -63,6 +63,8 @@ art. Three pillars:
   colour; inside the body, a deep shade of the colour round it. Eyes and
   small marks stay as drawn.
 - The angler and props that move wear the plum-black outline all round.
+- Land animals are lit as one mass, like the scenery (study 7): light
+  toward the upper left, shade away from it, from each frame's silhouette.
 - Scenery has no outline.
 - Scenery is never darker than the outline, nor more saturated than the
   creatures in front of it.

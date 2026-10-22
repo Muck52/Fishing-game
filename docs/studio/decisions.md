@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The land animals are lit as one mass (study 7, version A)
+
+Olive, the deer, fox, hare and bear: light toward the upper left, shade
+away from it, worked out from each frame's silhouette. The visitors stop
+on the open sand past the cattails, each with a soft shadow.
+
 ## 2026-10-22: The cast's edges are study 6's version B, selective
 
 Animals and fish: the dark outline only underneath and on the shadow

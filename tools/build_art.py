@@ -1164,15 +1164,22 @@ def palette_pass():
 
 def edges():
     """The last pass: every creature's and fish's outline made selective
-    (study 6, version B; tools/characters/edges.py), after the palette pass
-    so nothing re-darkens it. The angler and the journal's cards keep theirs."""
+    (study 6, version B; tools/characters/edges.py), and the land animals
+    lit as one mass (study 7, version A; tools/characters/light.py), after
+    the palette pass so nothing re-darkens them. The angler and the
+    journal's cards keep theirs."""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
     from edges import treat
+    from light import LAND, lit
     for key, s in manifest["sheets"].items():
         if key in CREATURES + ["olive"] or (key.startswith("fish-")):
             path = ROOT / s["url"]
-            treat(Image.open(path), s["frameWidth"]).save(path, optimize=True)
+            img = treat(Image.open(path), s["frameWidth"])
+            if key in LAND:
+                # the land animals lit as one mass, like the scenery (study 7, version A)
+                img = lit(img, s["frameWidth"])
+            img.save(path, optimize=True)
 
 
 if __name__ == "__main__":
