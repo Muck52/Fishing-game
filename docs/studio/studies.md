@@ -370,14 +370,21 @@ read.
 
 **Verdict:** C, cozy naturalist, with corrections: Olive's eyes didn't
 show and the deer lost her ears bending down. Checked every model and
-fixed: Olive's and the bear's eyes (warmer, a catchlight and a soft grey
-rim against the black coat), the drinking deer's ears (standing up and
+fixed: Olive's eye (a black pupil beside the brown and a catchlight; a
+grey rim round her and the bear's eyes was tried and taken back out, at
+your call), the drinking deer's ears (standing up and
 back, clear of the neck), the fox's ears (black-backed), the hare's ears
 sitting up (parted). Added a buck beside the doe: hardened late-summer
-antlers, a heavier neck, a darker coat.
+antlers, a heavier neck, a darker coat. His drinking head first had
+antlers pointing one way and a head pointing another; now his standing
+head, ears and antlers are turned down together as one piece (`head_turn`
+in `tools/characters/anatomy.py`), 60 degrees, so they agree.
 
 **Learned:**
-- On a black coat a dark eye disappears: give it a lighter rim.
+- On a black coat a dark eye disappears: a black pupil and a catchlight
+  in it make it read.
+- Turn a head as one piece with everything on it (ears, antlers); drawn
+  separately they point different ways.
 - Parts that fold against a body of the same colour vanish; turn them so
   they stand clear of it, or give them a darker or lighter face.
 - Antler tines need room: spaced three pixels apart with their outline,

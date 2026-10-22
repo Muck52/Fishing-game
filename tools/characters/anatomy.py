@@ -141,6 +141,23 @@ def draw(spec, style="natural", pose="stand"):
     p = dict(spec["poses"][pose])
     if "base" in p:
         p = {**spec["poses"][p["base"]], **p}
+    if "head_turn" in p:
+        # the head of another pose, with its ears and antlers, turned as one
+        # piece about the top of the neck and set on this pose's neck, so
+        # everything on the head points the way the head does
+        angle, src = p["head_turn"]
+        q = spec["poses"][src]
+        a = math.radians(angle)
+        (sx, sy), (tx, ty) = q["pivot"], p["pivot"]
+
+        def turn(pts):
+            return [(tx + (x - sx) * math.cos(a) - (y - sy) * math.sin(a), ty + (x - sx) * math.sin(a) + (y - sy) * math.cos(a)) for x, y in pts]
+        p["head"] = turn(q["head"])
+        p["eye"], p["nose"] = turn([q["eye"]])[0], turn([q["nose"]])[0]
+        for key in ("ears", "ears_far", "head_marks"):
+            p[key] = [(ch, turn(pts)) for ch, pts in q.get(key, [])]
+        for key in ("antlers", "antlers_far"):
+            p[key] = [(ch, turn(j), w) for ch, j, w in q.get(key, [])]
     W, H, G = spec["frame"][0], spec["frame"][1], spec["ground"]
     c = Canvas(W, H)
     legs = []
@@ -150,10 +167,11 @@ def draw(spec, style="natural", pose="stand"):
         legs.append((side, new, widths))
     # the whole animal lowered so its lowest foot stands on the ground
     drop = G - max(j[-1][1] for _, j, _ in legs)
-    sh = lambda pts: [(x, y + drop) for x, y in pts]  # noqa: E731
-    legs = [(side, [(x, y + drop) for x, y in j], w) for side, j, w in legs]
+    dx = spec.get("dx", 0)  # room on the left, for antlers reaching forward
+    sh = lambda pts: [(x + dx, y + drop) for x, y in pts]  # noqa: E731
+    legs = [(side, [(x + dx, y + drop) for x, y in j], w) for side, j, w in legs]
     pivot = p["pivot"]
-    pivot = (pivot[0], pivot[1] + drop)
+    pivot = (pivot[0] + dx, pivot[1] + drop)
     head = lambda pts, extra=1.0: scaled(sh(pts), pivot, st["head"] * extra)  # noqa: E731
     torso = rounder(sh(p["torso"]), st["round"])
     for side, j, w in legs:
@@ -209,6 +227,10 @@ def draw(spec, style="natural", pose="stand"):
                 put(ex + dx, ey + dy, "E")
         put(ex, ey, "C")
         put(ex + 1, ey + 2, "B")  # a little blush under the eye
+    pupil = spec.get("pupil")
+    if pupil and st["eye"] != "dot":
+        put(ex + 1, ey + 1, pupil)  # a black pupil in the eye
+        put(ex + 1, ey, pupil)
     ring = spec.get("eye_ring")
     if ring:
         # on a dark coat the eye needs a lighter rim to be seen
