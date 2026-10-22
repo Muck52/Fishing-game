@@ -14,6 +14,7 @@ Every session starts by reading it.
 | [audit.md](audit.md) | How every piece of art in the game measures up against the rules, and what to redo first. |
 | [research/](research/) | The research behind it all, with sources: pixel-art technique for each material, the real north-woods lake, and how other games keep their look cohesive. |
 | [audit/](audit/) | The audit's measurements (`audit.json`) and contact sheets. |
+| [review/](review/) | The review pages (`research.html`: review 1, published as a page you can open on your phone). |
 
 Tools: `tools/studio/audit.py` re-measures every image in the game.
 
