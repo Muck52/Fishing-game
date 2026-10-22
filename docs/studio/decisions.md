@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The river above the falls is study 4's version B, tuned
+
+The plateau river: it winds toward us across the forested plateau in its
+own opening, with banks, gravel bars, its far banks' trees and their
+reflections, into the notch at the top of the falls.
+
 ## 2026-10-22: The waterfall is study 3's version A, cut into the bluff
 
 A tiered cascade: the river through a notch in the bluff's top, down three

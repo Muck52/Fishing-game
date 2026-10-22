@@ -176,9 +176,26 @@ ripples sliding toward you), and it sits in the forest only when rows of
 trees stand in front of it. Too many rows hid it to scattered sparkles;
 two sparse rows let it wind back between them.
 
-**Verdict:** waiting on you.
+**Verdict:** B, the plateau river, but it ran into the trees with no sign
+of a natural stream: no banks, trees standing in the water, its far
+reaches floating in the far ridge's haze. Tuned: the forest rises behind
+the bluff so the river crosses forested ground; it runs in its own
+opening of sedge meadow; each reach has a far bank (gravel at the water,
+grass above, its trees standing on it, hiding only the reaches further
+off) and a dark, wet near bank; gravel bars on the inside of the bends;
+the water reflects the far bank's trees as a dark band along its far edge
+and the sky in its middle, in a calm grey-green; its far end goes round
+behind the trees. It's in the game (`tools/scenery/bank.py`).
 
-**Learned:** (after the verdict)
+**Learned:**
+- A river makes its own opening: the forest steps back from it, and it
+  has banks you can see. Trees stand on its banks, never in it.
+- Trees on a reach's far bank hide only the reaches further off; that's
+  what lays it back into the distance.
+- Water reflects what's across from it: a dark band of the far bank's
+  trees along its far edge, the sky in its middle.
+- Put the ground under it: water crossing the haze of a far ridge
+  floats.
 
 <!--
 ## Study N: <subject> (<date>)

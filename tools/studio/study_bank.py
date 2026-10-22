@@ -50,6 +50,9 @@ def materials(time="day"):
     R["whitewater"] = ["#6f8a92", "#a9c0c4", "#d9e6e6", "#f7fbf8"]
     # deep water at the foot: dark, a little tea-brown, the sky in its ripples
     R["deepwater"] = ["#1e2a2a", "#2c3b38", "#3f5049", "#6b7f78", "#a9c4c8"]
+    # a forest river, calm: grey-green, the sky in its middle, the far bank's
+    # trees reflected dark along its far edge
+    R["river"] = ["#22312f", "#3a4f4c", "#5f7773", "#8fa8a4", "#c4d8d4"]
     R["moss"] = ramp("#5a7438", 4)
     R["floor"] = ramp("#3f4a2e", 4)  # forest floor, needles and shade
     R["cedar-foliage"] = ramp("#56763c", 5)

@@ -40,7 +40,7 @@ Tools: `tools/studio/audit.py` re-measures every image in the game.
 1. Audit what we have. *(done: [audit.md](audit.md))*
 2. Research. *(done: [research/](research/))*
 3. Build the materials library. *(first version: [materials.md](materials.md))*
-4. Practice studies, one small subject at a time. *(Study 1, the sky and the hills: done, in the game. Study 2, the far bank: done, in the game. Study 3, the waterfall: done, in the game. Study 4, the bluff and its stream: waiting on you)*
+4. Practice studies, one small subject at a time. *(Study 1, the sky and the hills: done, in the game. Study 2, the far bank: done, in the game. Study 3, the waterfall: done, in the game. Study 4, the bluff and its stream: done, in the game)*
 5. Replace the pack art, piece by piece.
 
 New game modes are on hold; for now everything goes into the lake we have.

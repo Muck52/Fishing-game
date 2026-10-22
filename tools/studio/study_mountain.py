@@ -97,6 +97,133 @@ def ribbon(c, path, seed=0, glints=True):
     return cells
 
 
+def river(c, path, seed=0, bank_trees=True):
+    """A river winding toward us through the forest, as it really sits: in
+    its own opening, the forest stepping back from it. Each reach has a far
+    bank (a lit strip of gravel and grass, the far bank's trees standing on
+    it) and a near bank (dark, wet); gravel bars on the inside of the bends;
+    the water reflects the far bank's trees as a dark band along its far
+    edge and the sky in its middle, paler further off; ripples of sky slide
+    toward us; riffles of white where it bends. No tree stands in it."""
+    rnd = random.Random(seed)
+    pts = []
+    for (ax, ay, aw), (bx, by, bw) in zip(path, path[1:]):
+        n = max(2, int(math.hypot(bx - ax, by - ay) * 2))
+        for j in range(n):
+            t = j / n
+            pts.append((ax + (bx - ax) * t, ay + (by - ay) * t, aw + (bw - aw) * t))
+    pts.append(path[-1])
+    cells = {}
+    for k, (x, y, w) in enumerate(pts):
+        rx, ry = w / 2, max(1.0, w * 0.3)
+        for yy in range(int(y - ry - 1), int(y + ry + 2)):
+            for xx in range(int(x - rx - 1), int(x + rx + 2)):
+                if ((xx - x) / max(rx, 0.5)) ** 2 + ((yy - y) / ry) ** 2 <= 1:
+                    far = 1 - k / len(pts)
+                    if (xx, yy) not in cells or cells[(xx, yy)] < far:
+                        cells[(xx, yy)] = far
+    near = lambda p, r: any((p[0] + dx, p[1] + dy) in cells for dx in range(-r, r + 1) for dy in range(-r // 2, r // 2 + 1))  # noqa: E731
+    xs = [p[0] for p in cells]
+    ys = [p[1] for p in cells]
+    # the opening the river runs through: a strip of sedge meadow either side
+    for yy in range(min(ys) - 3, max(ys) + 4):
+        for xx in range(min(xs) - 8, max(xs) + 9):
+            if (xx, yy) in cells or not near((xx, yy), 6):
+                continue
+            p = c.at(xx, yy)
+            if p and p[0] in ROCK:
+                continue
+            # darker the further from the water, where the forest's shade begins
+            c.put(xx, yy, "floor" if not near((xx, yy), 3) else "grass", 2 if (xx * 3 + yy * 5) % 7 else 1)
+    # the banks
+    for (xx, yy), far in cells.items():
+        if (xx, yy - 1) not in cells:  # the far bank: gravel at the water, grass above
+            c.put(xx, yy - 1, "sand", 3)
+            if (xx, yy - 2) not in cells:
+                c.put(xx, yy - 2, "grass", 3 if rnd.random() < 0.5 else 2)
+        if (xx, yy + 1) not in cells:  # the near bank: dark and wet
+            c.put(xx, yy + 1, "floor", 0)
+            if (xx, yy + 2) not in cells:
+                c.put(xx, yy + 2, "grass", 1)
+    # gravel bars on the inside of the bends
+    for k in range(3, len(pts) - 3):
+        before, after = pts[k][0] - pts[k - 3][0], pts[k + 3][0] - pts[k][0]
+        if before * after < 0 and rnd.random() < 0.5:
+            x, y, w = pts[k]
+            side = 1 if before > 0 else -1  # the bend turns back; the bar is on the side it turns from
+            bx = round(x - side * (w / 2 + 2))
+            for dx in range(-3, 4):
+                for dy in range(0, 2):
+                    if (bx + dx, round(y) + dy) not in cells:
+                        c.put(bx + dx, round(y) + dy, "sand", 3 if dy == 0 else 2)
+    # the trees on each far bank, standing back from the water a little;
+    # they hide the reaches further off, never their own
+    if bank_trees:
+        tops = sorted({(xx, yy) for (xx, yy) in cells if (xx, yy - 1) not in cells}, key=lambda p: p[0])
+        x_last = -99
+        for xx, yy in tops:
+            if xx - x_last < rnd.randrange(5, 10):
+                continue
+            far = cells[(xx, yy)]
+            h = round(8 + 14 * (1 - far)) + rnd.randrange(-2, 3)
+            base = yy - 3
+            snap = {(px, py): c.at(px, py) for px in range(xx - h, xx + h) for py in range(base - h - 2, base + 2)}
+            b.spruce(c, xx, base, h, "spruce-needles", seed=seed + xx * 7, ratio=0.42, trunk=2)
+            for (px, py), was in snap.items():
+                if c.at(px, py) != was:
+                    if (px, py) in cells:
+                        c.front.add((px, py))
+            x_last = xx
+
+    bends = set()
+    for k in range(2, len(pts) - 2):
+        if (pts[k + 2][0] - pts[k][0]) * (pts[k][0] - pts[k - 2][0]) < 0:
+            bends.add(k)
+
+    def draw(g, f):
+        rnd2 = random.Random(seed * 11 + f)
+        for (xx, yy), far in cells.items():
+            depth = 0
+            while (xx, yy - depth - 1) in cells:
+                depth += 1
+            if depth < 2:
+                g(xx, yy, "river", 1 if depth == 0 else 2)  # the far bank's trees, reflected
+            elif (yy - 3 * f) % 6 == 0 and (xx * 3 + yy) % 7 < 2:
+                g(xx, yy, "river", 4)  # a ripple of sky, sliding toward us
+            elif (xx, yy + 1) not in cells:
+                g(xx, yy, "river", 2)
+            else:
+                g(xx, yy, "river", 3 if far > 0.4 else 2)  # the sky in the middle, paler further off
+        for k in bends:
+            x, y, w = pts[k]
+            for _ in range(2):
+                g(round(x + rnd2.uniform(-w / 3, w / 3)), round(y + rnd2.uniform(0, w * 0.2)), "whitewater", 3)
+    c.water.append(draw)
+    return cells
+
+
+def plateau_forest(c, x0, x1, top, bottom, seed=0):
+    """Raises the green forest behind the bluff's top, so the river crosses
+    forested ground rather than the haze of the far ridge: row under row of
+    treetops from `top` (a function of x) down to `bottom`, behind the rock."""
+    rnd = random.Random(seed)
+    for x in range(x0, x1):
+        t = int(top(x))
+        for y in range(t, bottom):
+            p = c.at(x, y)
+            if p and p[0] in ROCK:
+                break
+            c.put(x, y, "spruce-needles", 1 if ((y - t) // 9) % 2 == 0 else 2)
+    for k in range(4):
+        x = x0
+        while x < x1:
+            base = int(top(x)) + 9 * k + rnd.randrange(0, 3)
+            if not (c.at(x, base) and c.at(x, base)[0] in ROCK):
+                b.spruce(c, x, base, rnd.randrange(9, 18 - k * 2), "spruce-needles", seed=seed + x * 3 + k,
+                         ratio=0.42, trunk=0, steps=(3, 2, 1 if k % 2 == 0 else 2, 0), flat=True)
+            x += rnd.randrange(3, 6)
+
+
 def rapid(c, x0, x1, y, h, seed=0):
     """A small drop in the stream: a short white curtain and a puff of foam."""
     sf.mouth(c, x0, x1, y, seed=seed, river=False)
@@ -207,11 +334,11 @@ def ravine(c):
 
 def plateau(c):
     sf.falls_a(c)
+    plateau_forest(c, 168, 286, lambda x: 110 + abs(x - 228) * 0.18, 168, seed=130)
     slope_into(c, 176, 150, 199, 157, 226, 146)
-    ribbon(c, [(246, 119, 3), (216, 121, 4), (244, 126, 5), (206, 132, 7), (236, 140, 9), (204, 149, 12), (201, 157, 16)], seed=81)
-    rows_over(c, 196, 254, [129, 144], seed=89)
-    for k, (x, base, h) in enumerate([(258, 140, 22), (188, 150, 22), (232, 152, 24)]):
-        tree_over(c, x, base, h, seed=100 + k)
+    river(c, [(244, 122, 3), (220, 124, 4), (240, 129, 5), (210, 134, 6), (234, 141, 8), (206, 149, 11), (201, 157, 15)], seed=81)
+    for k, (x, base, h) in enumerate([(262, 142, 22), (186, 152, 22), (249, 124, 12), (243, 125, 10)]):
+        tree_over(c, x, base, h, seed=100 + k)  # the far end goes round behind the trees
     common(c)
 
 
