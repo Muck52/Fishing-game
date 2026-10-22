@@ -440,6 +440,24 @@ dives out of sight.
 - Swimming birds want their waterline on the surface and the rows below it
   seen through the water, the way Olive swims.
 
+## Study 9b: the birds, in detail (2026-10-22)
+
+**Why:** you felt the birds hadn't had much detail in study 9.
+
+**Versions** (`tools/studio/study_bird_detail.py`):
+- **A**, feathered wings: coverts, flight feathers with a notched trailing
+  edge, primaries, worked out from each wing's shape (so every frame of the
+  beat gets it), with the gull's mirrors, the eagle's fingers, the
+  mallards' speculum and the sparrow's wing bars.
+- **B**, A plus field marks and body feather texture (scallops, streaks,
+  flecks).
+- **C**, B a third larger.
+
+Also: the sparrow now perches on top of its cattail; the eagle's tail
+hangs behind its legs. Review page: `review/study9b.html`.
+
+**Verdict:** waiting.
+
 <!--
 ## Study N: <subject> (<date>)
 
