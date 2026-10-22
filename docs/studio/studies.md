@@ -499,6 +499,24 @@ colours (no palette snap). The old kit-drawn minnow is retired.
 - A detail pass written once as a rule (every marking, fin rays, a
   shimmer, the lateral line) carries all seventeen species at once.
 
+## Study 11: the angler (2026-10-22)
+
+**Why:** the angler was the last pack character on screen: a one-pixel
+face, his own outline and colours, a stiff stance.
+
+**Versions** (`tools/studio/study_angler.py`): redrawn from shapes in the
+cast's look (C's head, the cast's eye, selective edge, lit as one mass),
+rigged once as the game's 22-frame sheet with rod tips and grip, in three
+outfits:
+- **A**, the old-timer: bucket hat, fishing vest, chambray, khakis, grey
+  beard.
+- **B**, flannel and beanie: red buffalo check, beanie, jeans, brown beard.
+- **C**, rain jacket and cap: yellow jacket, ball cap, grey trousers.
+
+Review page: `review/study11.html`.
+
+**Verdict:** waiting.
+
 <!--
 ## Study N: <subject> (<date>)
 

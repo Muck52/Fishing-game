@@ -1,0 +1,174 @@
+<title>Study 11 Angler</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single reading column like a field-station report, with full-bleed image plates and swatch strips drawn from the lake itself. */
+:root {
+  --bg: #eef1ec;
+  --panel: #e2e8e2;
+  --ink: #1b2826;
+  --muted: #566764;
+  --line: #c3cec7;
+  --accent: #a24f45;
+  --pine: #2d5747;
+  --display: "Pixelify Sans", "Courier New", monospace;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1918; --panel: #172423; --ink: #e2e9e4; --muted: #97a9a4; --line: #2a3b39;
+    --accent: #e29a8b; --pine: #86bba4; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1918; --panel: #172423; --ink: #e2e9e4; --muted: #97a9a4; --line: #2a3b39;
+  --accent: #e29a8b; --pine: #86bba4; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+main { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(32px, 7vw, 46px); letter-spacing: 0.5px; }
+h2 { font-size: 26px; color: var(--pine); }
+h3 { font-size: 19px; font-weight: 500; }
+p { margin: 0; max-width: 65ch; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 19px; }
+a { color: var(--accent); }
+figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+figure img { width: 100%; image-rendering: pixelated; border-radius: 4px; display: block; }
+figcaption { font-size: 14px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat { border-top: 3px solid var(--pine); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+.stat b { font-family: var(--display); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 14px; color: var(--muted); }
+ol.findings { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 12px; }
+ol.findings li::marker { font-family: var(--mono); color: var(--accent); }
+ol.findings b { font-weight: 600; }
+.meter { display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; align-items: center; font-size: 14px; }
+.meter .bars { display: flex; flex-direction: column; gap: 3px; }
+.bar { height: 10px; border-radius: 2px; background: var(--line); position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; }
+.bar.ours i { background: var(--pine); }
+.bar.pack i { background: var(--accent); }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.legend .l-ours::before { background: var(--pine); }
+.legend .l-pack::before { background: var(--accent); }
+.skies { display: flex; flex-direction: column; gap: 6px; }
+.sky { display: grid; grid-template-columns: 7.5em 1fr; align-items: center; gap: 12px; font-size: 14px; }
+.sky div { height: 30px; border-radius: 3px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.sw { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.sw .strip { display: flex; height: 34px; border-radius: 3px; overflow: hidden; }
+.sw .strip i { flex: 1; }
+.sw b { font-weight: 600; font-size: 15px; }
+.sw span { font-size: 13px; color: var(--muted); font-family: var(--mono); overflow-wrap: anywhere; }
+.lessons { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px 24px; }
+.lessons div { display: flex; flex-direction: column; gap: 4px; }
+.lessons h3 { color: var(--accent); }
+.lessons p { font-size: 15px; }
+ol.rules { margin: 0; padding: 0; list-style: none; counter-reset: r; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+ol.rules li { counter-increment: r; display: grid; grid-template-columns: 2.4em 1fr; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+ol.rules li::before { content: counter(r, decimal-leading-zero); font-family: var(--mono); color: var(--muted); font-size: 14px; padding-top: 3px; }
+.qs { display: flex; flex-direction: column; gap: 14px; }
+.q { background: var(--panel); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.q h3 { font-size: 18px; }
+.q ul { margin: 0; padding-left: 1.2em; font-size: 15px; display: flex; flex-direction: column; gap: 4px; }
+.q .rec { font-size: 14px; color: var(--pine); font-family: var(--mono); }
+.next { font-size: 15px; color: var(--muted); }
+code { font-family: var(--mono); font-size: 0.85em; }
+.viewer { display: flex; flex-direction: column; gap: 10px; }
+.viewer img { width: 100%; height: auto; image-rendering: pixelated; border-radius: 4px; display: block; aspect-ratio: 1200 / 296; background: var(--panel); }
+.pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick button { font: 600 14px var(--mono); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; min-width: 44px; }
+.pick button[aria-pressed="true"] { background: var(--pine); color: var(--bg); border-color: var(--pine); }
+.pick button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cap { font-size: 15px; min-height: 3em; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+.card { display: flex; flex-direction: column; gap: 6px; }
+.card h3 { color: var(--accent); }
+.card p { font-size: 15px; }
+.card ul { margin: 0; padding-left: 1.1em; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 3px; }
+.motion { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.motion figure img { aspect-ratio: 390 / 630; height: auto; }
+.wide { overflow-x: auto; }
+.wide img { max-width: none; width: 1824px; height: auto; image-rendering: pixelated; }
+@media (max-width: 520px) { .motion { grid-template-columns: repeat(2, 1fr); } }
+</style>
+
+<main>
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <span class="eyebrow">Reel It In · Study 11 · 22 Oct 2026</span>
+    <h1>The angler</h1>
+    <p class="lede">He was the last character from an art pack: a one-pixel face, his own outline and colours, a stiff stance. He's redrawn here from shapes, like the cast. His head is a little large (study 8's C), he has the cast's eye with a catchlight, and his arms and legs bend at real joints. He gets the same selective edge as the animals and is lit as one mass. The same man is rigged once and dressed three ways.</p>
+  </header>
+
+  <section class="viewer">
+    <span class="eyebrow">His poses: idle, fishing, landing, hurt, walking</span>
+    <div class="pick" role="group" aria-label="Version">
+      <button data-v="now" aria-pressed="false">Now</button>
+      <button data-v="A" aria-pressed="false">A</button>
+      <button data-v="B" aria-pressed="true">B</button>
+      <button data-v="C" aria-pressed="false">C</button>
+    </div>
+    <img id="shot" src="study11/B-poses.png" alt="The angler's poses, version B">
+    <p class="cap" id="cap"></p>
+    <img id="close" src="study11/B-close.png" alt="Version B in the game at midday, idle and fishing, enlarged">
+    <p class="cap">In the game at midday: standing with the rod on his shoulder, then fishing (the game draws the rod live from his hands so it can bend).</p>
+    <div class="wide"><img id="times" src="study11/B-times.png" alt="Version B fishing at five times of day" width="1432" height="148" style="width:1432px"></div>
+    <p class="cap">Fishing at dawn, morning, midday, dusk and night. Scroll sideways.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">The three outfits</span>
+    <h2>Who is he?</h2>
+    <div class="cards">
+      <div class="card"><h3>A &middot; The old-timer</h3><p>Bucket hat, an olive fishing vest with pockets over a chambray shirt, khakis, a grey beard.</p><ul><li>Reads "fisherman" at a glance</li><li>Quiet colours, close to the bank's</li></ul></div>
+      <div class="card"><h3>B &middot; Flannel and beanie</h3><p>A red buffalo-check flannel, a knit beanie, jeans, a full brown beard. The nearest to the man you know.</p><ul><li>Warm, cozy, stands out against the green</li><li>The check is busy at this size</li></ul></div>
+      <div class="card"><h3>C &middot; Rain jacket and cap</h3><p>A yellow rain jacket, a ball cap with its bill shading his eyes, grey trousers, stubble.</p><ul><li>The brightest; easy to find on screen</li><li>Younger, more modern</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Honest notes</span>
+    <h2>What's still rough</h2>
+    <ol class="rules">
+      <li><b>He's a few pixels taller</b> than the pack's man, so his head sits a little higher above the railing.</li>
+      <li><b>Arms folded across the body</b> (the rod on his shoulder, the flinch when hurt) are small at this size; I'll keep refining them once you've picked.</li>
+      <li><b>The landing frames</b> no longer draw the line whipping out of the water; the game's own line covers it.</li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="eyebrow">Your call</span>
+    <h2>Pick one, or mix</h2>
+    <p>Tell me A, B or C, or a mix (A's hat with B's flannel, say), and anything about his face or build. The hut comes after him.</p>
+  </section>
+</main>
+<script>
+(function () {
+  var notes = {
+    now: "Now: the art pack's fisherman.",
+    A: "A: the old-timer: bucket hat, fishing vest, chambray shirt, khakis, grey beard.",
+    B: "B: flannel and beanie: red buffalo check, knit beanie, jeans, brown beard.",
+    C: "C: rain jacket and cap: yellow jacket, ball cap, grey trousers, stubble."
+  };
+  var v = "B";
+  var ids = ["shot", "close", "times"], kinds = ["poses", "close", "times"];
+  function show() {
+    ids.forEach(function (id, i) { document.getElementById(id).src = "study11/" + v + "-" + kinds[i] + ".png"; });
+    document.getElementById("cap").textContent = notes[v];
+    document.querySelectorAll("[data-v]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.v === v); });
+  }
+  document.querySelectorAll("[data-v]").forEach(function (b) { b.addEventListener("click", function () { v = b.dataset.v; show(); }); });
+  show();
+})();
+</script>
