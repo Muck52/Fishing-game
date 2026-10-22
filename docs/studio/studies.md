@@ -515,6 +515,12 @@ outfits:
 
 Review page: `review/study11.html`.
 
+**Round two:** you liked B's clothes, hat and beard but found him too
+round. "B, realistic" (`B2`): the head a fifth smaller about the neck (about
+five heads tall), broad shoulders over a narrower waist, a shorter torso
+over longer legs, a trimmed beard, a flatter, darker beanie, a one-pixel
+eye with its catchlight.
+
 **Verdict:** waiting.
 
 <!--

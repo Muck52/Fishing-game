@@ -46,6 +46,10 @@ OUTFITS = {
     "B": {"colours": {"S": "#a83a32", "J": "#a83a32", "j": "#4a2228", "T": "#3f5f8a", "B": "#4a3426", "H": "#c0503e",
                       "Q": "#8a3428", "A": "#5a3a26", "D": "#6a4630", "X": "#4a2228", "L": "#c4524a", "a": "#7a2a26"},
           "hat": "beanie", "check": True, "beard": "full"},
+    # study 11's pick: B's clothes, beanie and beard, in realistic proportions
+    "B2": {"colours": {"S": "#a83a32", "J": "#a83a32", "j": "#4a2228", "T": "#3f5f8a", "B": "#4a3426", "H": "#943328",
+                       "Q": "#6a241e", "A": "#5a3a26", "D": "#6a4630", "X": "#4a2228", "L": "#c4524a", "a": "#7a2a26"},
+           "hat": "beanie", "check": True, "beard": "trim", "build": "real"},
     "C": {"colours": {"S": "#e0b040", "J": "#e0b040", "j": "#b88a28", "T": "#6a6c70", "B": "#33323d", "H": "#3f6a5a",
                       "Q": "#2c4c40", "A": "#4a3426", "D": "#8a6a52", "L": "#f2cc5c", "a": "#a87c22"},
           "hat": "cap", "hood": True, "beard": "stubble"},
@@ -98,14 +102,27 @@ def draw(outfit, pose, bob=0):
     lean = p.get("lean", 0)
     c = Canvas(FW, FH)
 
+    real = o.get("build") == "real"
+
+    def tall(y):  # the realistic build: a shorter torso over longer legs
+        return (20 + (y - 20) * 0.8 - 1.2) if (real and y >= 20) else (y - 1.2 if real else y)
+
     def up(pts, k=1.0):  # the upper body: lowered by dy, leaned by lean
-        return [(x + X0 + lean * (1 - (y - 8) / 26) * k, y + dy) for x, y in pts]
+        return [(x + X0 + lean * (1 - (y - 8) / 26) * k, tall(y) + dy) for x, y in pts]
+
+    def hd(pts):  # the head and all on it; smaller about the neck in the realistic build
+        if real:
+            pts = [(23.4 + (x - 23.4) * 0.8, 19 + (y - 19) * 0.8) for x, y in pts]
+        return up(pts, 0.5)
 
     def low(pts):
         return [(x + X0, y) for x, y in pts]
 
     def leg(j):  # hip moves with the body, the foot stays put
         (hx, hy), (kx, ky), (ax, ay) = j
+        hy = tall(hy)
+        if real:
+            ky = (hy + ay) / 2 - 0.4
         return [(hx + X0, hy + dy), (kx + X0, ky + dy * 0.5), (ax + X0, ay)]
 
     # far leg and arm, behind
@@ -118,6 +135,8 @@ def draw(outfit, pose, bob=0):
         c.blob([(hx - 1, hy - 1), (hx + 1, hy - 1), (hx + 1, hy + 1), (hx - 1, hy + 1)], "K")
     # the torso
     torso = [(20, 21), (26.8, 20.4), (29.2, 23), (29, 30), (28, 34), (20.6, 34), (19.2, 30), (19.2, 24)]
+    if real:  # broad in the shoulders, narrower at the waist: a man, not a barrel
+        torso = [(19.2, 20.6), (27.4, 20), (29.4, 21.8), (28.6, 26), (27.6, 30.4), (27.8, 34), (20.8, 34), (20.6, 30), (19.6, 26)]
     c.limb(leg(p["near_leg"])[:1] + leg(p["far_leg"])[:1], [3, 3], "T")
     c.blob(up(torso), "J" if not o.get("vest") else "S")
     if o.get("vest"):
@@ -131,24 +150,28 @@ def draw(outfit, pose, bob=0):
     # the head
     head = [(19, 11), (22, 8.6), (26, 9), (27.4, 12), (27, 16.4), (24.6, 18.6), (20.6, 18.6), (18.6, 16), (18.4, 13)]
     c.blob(up(head, 0.5), "K")
-    c.blob(up([(18.2, 13.8), (17.4, 15), (18.6, 15.6)], 0.5), "K")  # nose
-    c.blob(up([(24.8, 10), (27.8, 11), (27.8, 15.4), (25.2, 16.4), (24.6, 13)], 0.5), "A", clip=True)  # hair at the back
-    if o["beard"] == "full":
-        c.blob(up([(18, 15.6), (21, 16.2), (24.8, 16), (25.4, 18.6), (22.6, 21), (19.4, 20.4), (17.8, 18)], 0.5), "D")
-        c.blob(up([(18.4, 15.8), (20.4, 15.8), (20.4, 16.6), (18.4, 16.6)], 0.5), "D")  # moustache
+    c.blob(hd([(18.2, 13.8), (17.4, 15), (18.6, 15.6)]), "K")  # nose
+    c.blob(hd([(24.8, 10), (27.8, 11), (27.8, 15.4), (25.2, 16.4), (24.6, 13)]), "A", clip=True)  # hair at the back
+    if o["beard"] == "trim":
+        c.blob(hd([(18.4, 15.8), (21, 16.4), (24.6, 16.2), (25, 18.2), (22.6, 19.6), (19.6, 19.2), (18.2, 17.6)]), "D")
+        c.blob(hd([(18.4, 15.8), (20.4, 15.8), (20.4, 16.6), (18.4, 16.6)]), "D")  # moustache
+    elif o["beard"] == "full":
+        c.blob(hd([(18, 15.6), (21, 16.2), (24.8, 16), (25.4, 18.6), (22.6, 21), (19.4, 20.4), (17.8, 18)]), "D")
+        c.blob(hd([(18.4, 15.8), (20.4, 15.8), (20.4, 16.6), (18.4, 16.6)]), "D")  # moustache
     elif o["beard"] == "stubble":
-        c.blob(up([(18.8, 16.4), (24, 16.6), (24.6, 18.4), (20.4, 18.8), (18.8, 17.6)], 0.5), "D", clip=True)
+        c.blob(hd([(18.8, 16.4), (24, 16.6), (24.6, 18.4), (20.4, 18.8), (18.8, 17.6)]), "D", clip=True)
     # the hat
     if o["hat"] == "bucket":
-        c.blob(up([(19.6, 10.4), (20.6, 6.8), (25.6, 6.4), (27.2, 9.8)], 0.5), "H")
-        c.limb(up([(17.4, 10.6), (29.4, 10.8)], 0.5), [1.6, 1.6], "H")
-        c.blob(up([(19.8, 9), (27, 8.6), (27.2, 9.8), (19.8, 10.2)], 0.5), "Q", clip=True)  # the band
+        c.blob(hd([(19.6, 10.4), (20.6, 6.8), (25.6, 6.4), (27.2, 9.8)]), "H")
+        c.limb(hd([(17.4, 10.6), (29.4, 10.8)]), [1.6, 1.6], "H")
+        c.blob(hd([(19.8, 9), (27, 8.6), (27.2, 9.8), (19.8, 10.2)]), "Q", clip=True)  # the band
     elif o["hat"] == "beanie":
-        c.blob(up([(18.8, 11.2), (19.8, 7.4), (23.6, 5.8), (27.4, 7.6), (28.2, 11.6)], 0.5), "H")
-        c.limb(up([(18.8, 11), (28, 11.4)], 0.5), [2.2, 2.2], "Q")  # the cuff
+        dome = [(18.8, 11.2), (19.8, 8.4), (23.6, 7.4), (27.4, 8.4), (28.2, 11.6)] if real else [(18.8, 11.2), (19.8, 7.4), (23.6, 5.8), (27.4, 7.6), (28.2, 11.6)]
+        c.blob(hd(dome), "H")
+        c.limb(hd([(18.8, 11), (28, 11.4)]), [2.2, 2.2], "Q")  # the cuff
     else:
-        c.blob(up([(19.4, 10.8), (20.6, 7.4), (25.4, 6.6), (28, 9.2), (28.2, 11.2)], 0.5), "H")
-        c.limb(up([(15.4, 11), (20, 10.6)], 0.5), [1.4, 1.4], "Q")  # the bill, shading his eyes
+        c.blob(hd([(19.4, 10.8), (20.6, 7.4), (25.4, 6.6), (28, 9.2), (28.2, 11.2)]), "H")
+        c.limb(hd([(15.4, 11), (20, 10.6)]), [1.4, 1.4], "Q")  # the bill, shading his eyes
     # the rod, then the near arm over it
     if p.get("rod"):
         a, b = up(p["rod"])
@@ -171,9 +194,9 @@ def draw(outfit, pose, bob=0):
                 if g[y][x] in "JL" and (x % 3 == 0 or y % 3 == 0) and (x + y) % 2 == 0:
                     g[y][x] = "X"
     # the eye, as the cast's: two by two, a catchlight top left
-    ex, ey = up([(20.4, 12.6)], 0.5)[0]
+    ex, ey = hd([(20.4, 12.6)])[0]
     ex, ey = round(ex), round(ey)
-    for xx in (ex, ex + 1):
+    for xx in ((ex,) if o.get("build") == "real" else (ex, ex + 1)):  # a slimmer eye on the smaller head
         for yy in (ey, ey + 1):
             g[yy][xx] = "E"
     g[ey][ex] = "C"

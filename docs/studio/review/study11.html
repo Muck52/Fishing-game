@@ -111,13 +111,28 @@ code { font-family: var(--mono); font-size: 0.85em; }
     <p class="lede">He was the last character from an art pack: a one-pixel face, his own outline and colours, a stiff stance. He's redrawn here from shapes, like the cast. His head is a little large (study 8's C), he has the cast's eye with a catchlight, and his arms and legs bend at real joints. He gets the same selective edge as the animals and is lit as one mass. The same man is rigged once and dressed three ways.</p>
   </header>
 
+  <section>
+    <span class="eyebrow">Round two</span>
+    <h2>B, in realistic proportions</h2>
+    <p>You picked B's clothes, beanie and beard, with a less round, more realistic build. Changes:</p>
+    <ol class="rules">
+      <li><b>A smaller head</b>: a fifth smaller, so he's about five heads tall instead of three and a half.</li>
+      <li><b>Broad shoulders, a narrower waist</b> instead of a barrel of a body.</li>
+      <li><b>A shorter torso over longer legs.</b></li>
+      <li><b>A closer-trimmed beard and a flatter beanie</b>, which is a darker red so it doesn't run into his face.</li>
+      <li><b>A slimmer eye</b> (one pixel wide, still with the catchlight); the cast's two-by-two eye was too big for the smaller face.</li>
+    </ol>
+    <p>Compare it with B using the buttons below.</p>
+  </section>
+
   <section class="viewer">
     <span class="eyebrow">His poses: idle, fishing, landing, hurt, walking</span>
     <div class="pick" role="group" aria-label="Version">
       <button data-v="now" aria-pressed="false">Now</button>
       <button data-v="A" aria-pressed="false">A</button>
-      <button data-v="B" aria-pressed="true">B</button>
+      <button data-v="B" aria-pressed="false">B</button>
       <button data-v="C" aria-pressed="false">C</button>
+      <button data-v="B2" aria-pressed="true">B, realistic</button>
     </div>
     <img id="shot" src="study11/B-poses.png" alt="The angler's poses, version B">
     <p class="cap" id="cap"></p>
@@ -150,7 +165,7 @@ code { font-family: var(--mono); font-size: 0.85em; }
   <section>
     <span class="eyebrow">Your call</span>
     <h2>Pick one, or mix</h2>
-    <p>Tell me A, B or C, or a mix (A's hat with B's flannel, say), and anything about his face or build. The hut comes after him.</p>
+    <p>Tell me if "B, realistic" is him, or what to push further (taller, slimmer, a bigger or smaller beard). Then he goes into the game, and the hut comes next.</p>
   </section>
 </main>
 <script>
@@ -159,9 +174,10 @@ code { font-family: var(--mono); font-size: 0.85em; }
     now: "Now: the art pack's fisherman.",
     A: "A: the old-timer: bucket hat, fishing vest, chambray shirt, khakis, grey beard.",
     B: "B: flannel and beanie: red buffalo check, knit beanie, jeans, brown beard.",
-    C: "C: rain jacket and cap: yellow jacket, ball cap, grey trousers, stubble."
+    C: "C: rain jacket and cap: yellow jacket, ball cap, grey trousers, stubble.",
+    B2: "B, realistic: B's flannel, beanie and beard on a man about five heads tall, broad-shouldered, with longer legs."
   };
-  var v = "B";
+  var v = "B2";
   var ids = ["shot", "close", "times"], kinds = ["poses", "close", "times"];
   function show() {
     ids.forEach(function (id, i) { document.getElementById(id).src = "study11/" + v + "-" + kinds[i] + ".png"; });
