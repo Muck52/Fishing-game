@@ -200,6 +200,8 @@ def draw(spec, style="natural", pose="stand"):
             c.limb(j, w, spec.get("near", "O"))
     for ch, pts in p.get("front", []):
         c.blob(sh(pts), ch)
+    for ch, joints, widths in p.get("tail", []):
+        c.limb(sh(joints), widths, ch)  # a slim, tapering tail
     for side, j, w in legs:
         foot = spec.get("foot")
         if foot:

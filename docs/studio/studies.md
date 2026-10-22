@@ -388,6 +388,9 @@ in `tools/characters/anatomy.py`), 60 degrees, so they agree.
   separately they point different ways.
 - Parts that fold against a body of the same colour vanish; turn them so
   they stand clear of it, or give them a darker or lighter face.
+- A tail drawn as a solid shape reads as a plank; drawn as a tapering
+  limb (thick at the root, thin to the tip) it reads as a tail. (Olive's,
+  at your call.)
 - Antler tines need room: spaced three pixels apart with their outline,
   closer they merge into a clump.
 
