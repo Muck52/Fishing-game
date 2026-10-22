@@ -327,7 +327,7 @@ and character sheet: see [docs/characters/olive.md](characters/olive.md).
 | Piece | Source pack | Size on grid | Outline | Motion |
 | --- | --- | --- | --- | --- |
 | Sky, hills, clouds | ours: `tools/scenery/sky.py` (study 1, version B) | 360 x 260, 1x, one image per time of day | none | blends through the day; clouds drift |
-| Far bank | CraftPix mountain river | 576 x 324, 1x, cropped to 360 | none | waterfall and stream roll 4 frames |
+| Far bank | ours: `tools/scenery/bank.py` (study 2, version C) | 360 x 324 on the grid, 1x | none | the falls and stream run 4 frames |
 | Underwater, shelf, lakebed | built in `build_art.py` from the palette | full width | none | displacement wobble; shafts pulse |
 | Weeds, sand, clam | Reactorcore aquatic | 1x | none | 4-frame sway |
 | Hut, posts, barrel, cattails | CraftPix fishing | 1x | shared | cattails sway; hut windows lit at night |

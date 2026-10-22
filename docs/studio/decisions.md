@@ -2,6 +2,13 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The far bank is study 2's version C
+
+The birch cove: a pebble beach where the animals come down, white birches
+and red pines against dark spruce, and a pink granite bluff with the falls
+in a dark cleft, its tea-coloured stream crossing the beach. Replaces the
+pack's grassy slope, boulder, big spruces and grey cliff.
+
 ## 2026-10-22: The sky is study 1's version B
 
 Low forested hills in haze, the nearest edged in spruce and fir spires, a

@@ -86,9 +86,22 @@ run all the way across read as layer cake; they now die out. The forest
 behind is row under row of treetops, which reads as a forested slope where
 one flat fill read as a curtain.
 
-**Verdict:** waiting on you.
+**Verdict:** C, the birch cove. Before it went in: the falls lost the dark
+edges that made it read as a log (it is now a white curtain with streaks
+of tea-coloured water and ragged edges), the stream got a wet edge and
+ripples that catch the sky's blue, the bluff's joints all run one way
+like real bedrock, and the floating aspen crowns in the forest behind came
+out. The beach got wetter sand at the water, a few stones and a driftwood
+log. It's in the game (`tools/scenery/bank.py`), and with it the last of
+the mountain-river pack is gone.
 
-**Learned:** (after the verdict)
+**Learned:**
+- Light the whole silhouette in shade first, then light each part (a
+  tier, a clump) as one shape; drawing row by row makes stripes.
+- Break big rock into planes, with joints that run one way and die out.
+- A far forest is rows of treetops; one flat fill reads as a curtain.
+- Water reads as water by what it reflects: white crests and sky blue on
+  dark water. Brown alone, or a dark outline, reads as wood.
 
 <!--
 ## Study N: <subject> (<date>)

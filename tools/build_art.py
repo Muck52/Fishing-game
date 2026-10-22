@@ -132,7 +132,6 @@ BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
 
 # ---------------------------------------------------------------- backdrop
 def backdrop():
-    mr = "craftpix-mountain-river"
     # the sky and the distant hills are ours (study 1, version B): one image
     # per time of day, drawn in that time's light, and our drifting clouds
     import sys
@@ -143,35 +142,19 @@ def backdrop():
         save(img, f"environments/{name}.png", grade=False)
         shades |= {"#%02x%02x%02x" % p[:3] for p in img.getdata() if p[3]}
     manifest["anchors"]["sky"] = {"top": sky.TOP, "times": list(sky.TIMES), "clouds": len(sky.CLOUDS)}
+    # the far bank is ours too (study 2, version C), with its waterfall's
+    # water drawn on its own layer in four frames
+    import bank
+    land, falls, at = bank.images()
+    save(land, "environments/land.png", grade=False)
+    save(falls, "environments/falls.png", frame=tuple(at["frame"]), frames=4, grade=False)
+    manifest["anchors"]["falls"] = at["falls"]
+    manifest["anchors"]["fallsFoot"] = at["fallsFoot"]
+    for img in (land, falls):
+        shades |= {"#%02x%02x%02x" % p[:3] for p in img.getdata() if p[3]}
     fixed = json.loads((ROOT / "tools" / "palette.json").read_text())
     fixed["scenery"] = sorted(shades)
     (ROOT / "tools" / "palette.json").write_text(json.dumps(fixed, indent=1) + "\n")
-    land = load(f"{mr}/Plan 1.png")
-    save(land, "environments/land.png")
-
-    # The waterfall and the river below it, animated: in each column the
-    # water's own pixels are rolled downward a few rows per frame.
-    box = (326, 120, 576, 324)
-    region = land.crop(box)
-    is_water = lambda r, g, b: (b - r >= 12 and b > 150) or min(r, g, b) > 215
-    frames = []
-    for f in range(4):
-        out = Image.new("RGBA", region.size)
-        src = region.load()
-        dst = out.load()
-        for x in range(region.width):
-            ys = [y for y in range(region.height) if src[x, y][3] and is_water(*src[x, y][:3])]
-            if not ys:
-                continue
-            cols = [src[x, y] for y in ys]
-            k = (f * 3) % len(cols)
-            rolled = cols[-k:] + cols[:-k] if k else cols
-            for y, c in zip(ys, rolled):
-                dst[x, y] = c
-        frames.append(out)
-    save(strip(frames), "environments/falls.png", frame=region.size, frames=4)
-    manifest["anchors"]["falls"] = {"x": box[0], "y": box[1]}
-    manifest["anchors"]["fallsFoot"] = {"x": 352, "y": 214}
 
 
 # ---------------------------------------------------------------- the lake

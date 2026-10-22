@@ -34,7 +34,7 @@ OUT = ROOT / "docs" / "studio" / "audit"
 
 ORIGIN = {
     "sky": "craftpix mountain river", "mountains": "craftpix mountain river", "cloud-big": "craftpix mountain river",
-    "land": "craftpix mountain river", "falls": "craftpix mountain river",
+    "land": "ours (study 2)", "falls": "ours (study 2)",
     "cloud-1": "pixel frog", "cloud-2": "pixel frog", "cloud-3": "pixel frog",
     "water-surface": "craftpix fishing", "hut": "craftpix fishing", "post-wet": "craftpix fishing", "barrel": "craftpix fishing",
     "boat": "craftpix fishing", "angler": "craftpix fishing", "bucket": "craftpix fishing",

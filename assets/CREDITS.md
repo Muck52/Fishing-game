@@ -7,13 +7,17 @@ Every image in the game is compiled from the packs below by
 | Pack | Author | License | Used for |
 | --- | --- | --- | --- |
 | [Fishing game assets](https://opengameart.org/content/fishing-game-assets-pixel-art) | CraftPix.net | OGA-BY 3.0 | the angler, fishing hut, posts, boat (rebuilt as a rowboat), barrel, cattails, water surface, bucket icon |
-| [Mountain river landscape](https://opengameart.org/content/mountain-river-landscape-pixel-game-background) | CraftPix.net | OGA-BY 3.0 | the far bank and waterfall |
 | [Treasure Hunters](https://opengameart.org/content/treasure-hunters-demo) | Pixel Frog | CC-BY 4.0 | wooden boards and buttons, gold coin, splash, surface glints, bubbles |
 | [Fishing bobbles](https://opengameart.org/content/fishing-bobbles-spritesheet-24x24) | Nelson Yiap | CC-BY 3.0 | the float |
 | [Underwater diving pack](https://opengameart.org/content/underwater-diving-pack) | ansimuz | CC0 | underwater light |
 | [Nature props: aquatic](https://opengameart.org/content/nature-props-aquatic-underwater) | Reactorcore | CC0 | weeds, sand, clam on the lakebed |
 | [monogram](https://datagoblin.itch.io/monogram) | datagoblin | CC0 | all lettering, baked to bitmap fonts (outlined, plain ink, and bold) |
 | [Pixel art lake assets](https://opengameart.org/content/pixel-art-lake-assets) | Amberfall Studio | CC0 | drifting branch, ripples |
+
+The sky, the hills, the clouds and the far bank with its waterfall are
+drawn by the game's own tools (`tools/scenery/`, from the studies in
+`docs/studio/`). The Mountain river landscape pack (CraftPix.net, OGA-BY
+3.0) that they replace is still kept in `assets/source/` but no longer used.
 
 The seventeen species of fish are painted by the game's own build
 (`tools/fish_art.py`). No outside fish art is copied into them; these free

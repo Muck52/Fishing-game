@@ -207,7 +207,7 @@ def facets(c, m, mat, seed=0):
     for x, y in m:
         tops[x] = min(tops.get(x, H), y)
     for k, cx in enumerate(cuts):
-        slant = rnd.uniform(0.15, 0.45) * rnd.choice((-1, 1))
+        slant = -rnd.uniform(0.08, 0.22)  # the joints all run the same way, as in real bedrock
         turn = -1 if k % 2 == 0 else 1
         nxt = cuts[k + 1] if k + 1 < len(cuts) else xs[-1] + 1
         for x, y in m:
@@ -511,8 +511,12 @@ def red_pine(c, x, base, h, seed=0):
         rr = math.sqrt(rnd.random())
         blob(c, x + math.cos(a) * rr * rx, cy + math.sin(a) * rr * ry, rnd.randrange(3, 6),
              "white-pine-needles", steps=(3, 2, 1, 0), rnd=rnd, flat=0.7)
-    for k in range(-int(rx * 0.6), int(rx * 0.6), 5):
-        c.put(x + k, round(cy + ry * 0.4), "red-pine-bark", 1)
+    for k in range(3):  # a few lower branches with their own tufts
+        by = round(cy + ry + 4 + k * 7)
+        side = 1 if k % 2 == 0 else -1
+        for d in range(1, 5):
+            c.put(x + side * d, by - d // 2, "red-pine-bark", 1)
+        blob(c, x + side * 6, by - 3, 3, "white-pine-needles", steps=(3, 2, 1, 0), rnd=rnd, flat=0.6)
 
 
 def bushes(c, x0, x1, base, mat="aspen-leaves", seed=0, r=(3, 5), steps=(3, 2, 1, 0)):
@@ -580,7 +584,7 @@ def falls(c, x0, x1, top, bottom, mat="tannin", seed=0, foam="foam"):
                 elif y > bottom - 5 and rnd.random() < 0.8:
                     g(x, y, foam, rnd.randrange(1, 4))  # churning at the foot
                 elif x in (l, r):
-                    g(x, y, mat, 1)
+                    g(x, y, foam, 1 if rnd.random() < 0.5 else 2)  # ragged, thinning edges
                 elif v == 1:
                     g(x, y, mat, 2 if white[i] else 3)  # the water's own colour, in the thin streaks
                 else:
@@ -607,27 +611,40 @@ def pool(c, cx, cy, rx, ry, mat="tannin", seed=0, foam="foam"):
 
 
 def stream(c, pts, width, mat="tannin", seed=0, foam="foam"):
-    """Water running down a channel: a line of points, ripples moving along
-    it 3 px a frame, foam where it drops."""
+    """Water running down a channel: dark water, lit along its upper bank,
+    with short dashes of light on the ripples sliding downstream 3 px a
+    frame, and foam where it runs steep."""
+    rnd0 = random.Random(seed)
+    path = []
+    for k in range(len(pts) - 1):
+        (ax, ay), (bx, by) = pts[k], pts[k + 1]
+        n = max(abs(bx - ax), abs(by - ay))
+        for j in range(n):
+            path.append((ax + (bx - ax) * j / n, ay + (by - ay) * j / n, abs(by - ay) > abs(bx - ax)))
+    ripples = [(rnd0.randrange(0, 12), rnd0.randrange(1, width - 1), rnd0.randrange(2, 5)) for _ in range(len(path) // 2)]
+
     def draw(g, f):
         rnd = random.Random(seed * 5 + f)
-        for k in range(len(pts) - 1):
-            (ax, ay), (bx, by) = pts[k], pts[k + 1]
-            n = max(abs(bx - ax), abs(by - ay)) + 1
-            steep = abs(by - ay) > abs(bx - ax)
-            for j in range(n):
-                x = round(ax + (bx - ax) * j / n)
-                y = round(ay + (by - ay) * j / n)
-                along = k * 50 + j
-                for w in range(width):
-                    xx, yy = (x + w - width // 2, y) if steep else (x, y + w)
-                    if steep and rnd.random() < 0.3:
-                        g(xx, yy, foam, rnd.randrange(1, 4))
-                        continue
-                    s = PATTERN[(along - 3 * f + w * 5) % 12]
-                    if w == 0 or w == width - 1:
-                        s = max(0, s - 1)
-                    g(xx, yy, mat, s)
+        cells = {}
+        for i, (x, y, steep) in enumerate(path):
+            for w in range(width):
+                xx, yy = (round(x) + w - width // 2, round(y)) if steep else (round(x), round(y) + w - width // 2)
+                cells[(xx, yy)] = (i, w, steep)
+        for (xx, yy), (i, w, steep) in cells.items():
+            if steep and rnd.random() < 0.12:
+                g(xx, yy, foam, rnd.randrange(1, 4))
+            elif w == 0:
+                g(xx, yy, foam, 1)  # a wet edge of foam along the near bank
+            else:
+                g(xx, yy, mat, 1 if w < width - 1 else 0)
+        for k, (ph, w, n) in enumerate(ripples):
+            i = (k * 3 + ph + 3 * f) % len(path)
+            for d in range(n):
+                j = (i + d) % len(path)
+                x, y, steep = path[j]
+                xx, yy = (round(x) + w - width // 2, round(y)) if steep else (round(x), round(y) + w - width // 2)
+                # the ripples catch the sky: a white crest, then blue
+                g(xx, yy, foam if d == 0 else "clear", 3 if d == 0 else 3)
     c.water.append(draw)
 
 
@@ -660,7 +677,9 @@ def render(c, R, time="day", frame=None):
     return img
 
 
-def export(c, name, time="day"):
+def images(c, time="day"):
+    """The bank (576 wide, drawn from x = -150), its water as a strip of
+    frames, and where they go: {falls, fallsFoot, frame}."""
     R = materials(time)
     land = render(c, R, time)
     frames = [render(c, R, time, f) for f in range(FRAMES)]
@@ -672,11 +691,16 @@ def export(c, name, time="day"):
     strip = Image.new("RGBA", (fw * FRAMES, fh))
     for i, f in enumerate(frames):
         strip.paste(f.crop(box), (i * fw, 0))
+    anchors = {"falls": {"x": box[0], "y": box[1]}, "fallsFoot": {"x": c.foot[0] + BACK_X, "y": c.foot[1]},
+               "frame": [fw, fh]}
+    return land, strip, anchors
+
+
+def export(c, name, time="day"):
+    land, strip, anchors = images(c, time)
     OUT.mkdir(parents=True, exist_ok=True)
     land.save(OUT / f"{name}-land.png")
     strip.save(OUT / f"{name}-falls.png")
-    anchors = {"falls": {"x": box[0], "y": box[1]}, "fallsFoot": {"x": c.foot[0] + BACK_X, "y": c.foot[1]},
-               "frame": [fw, fh]}
     (OUT / f"{name}.json").write_text(json.dumps(anchors) + "\n")
     return land
 
@@ -813,17 +837,19 @@ def version_b():
 def version_c():
     """Birch cove: a low bank and a pebble beach where the animals come down,
     white birch and aspen bright against dark spruce, a pair of red pines,
-    and a pink granite bluff on the right, the falls a narrow ribbon of
-    root-beer water dropping through a cleft in it."""
+    and a pink granite bluff on the right, the falls a ribbon of water
+    dropping through a dark cleft in it, its stream running tea-brown
+    across the beach to the lake."""
     c = Canvas(3)
-    back_forest(c, 2, 132, lambda x: wave(x, 152, 144, 4, 15))
+    back_forest(c, 2, 132, lambda x: wave(x, 150, 142, 4, 15), aspen=0)
     slabs(c, [[(172, 250), (176, 180), (196, 152), (232, 142), (280, 134), (330, 130), (362, 128), (362, 324), (172, 324)]],
-          "pink-granite", lichen=0.05, moss=0.1, seed=4)
+          "pink-granite", lichen=0.02, moss=0.1, seed=4)
     outcrop_trees(c, 226, 360, lambda x: top_of(c, x, ("pink-granite", "moss", "lichen")), 50)
     slabs(c, [[(212, 212), (236, 196), (300, 188), (362, 186), (362, 324), (212, 324)],
-              [(176, 262), (220, 248), (300, 244), (362, 240), (362, 324), (176, 324)]], "pink-granite", lichen=0.05, seed=5)
+              [(176, 262), (220, 248), (300, 244), (362, 240), (362, 324), (176, 324)]], "pink-granite", lichen=0.02, seed=5)
     crack(c, [(226, 210), (250, 224), (262, 246)], "pink-granite")
-    slabs(c, [[(188, 156), (196, 148), (204, 150), (206, 248), (186, 250)]], "basalt", seed=6)
+    # the cleft the falls drop through, dark and wet
+    slabs(c, [[(186, 158), (194, 148), (208, 150), (210, 250), (184, 252)]], "basalt", seed=6)
     # the forest edge: aspen behind, red pines, birches in front
     bushes(c, -4, 190, lambda x: 266 + 3 * math.sin(x / 9), "aspen-leaves", seed=7, r=(5, 9))
     red_pine(c, 150, 272, 100, seed=8)
@@ -831,22 +857,33 @@ def version_c():
     for k, (x, h, ln) in enumerate([(26, 76, -1), (34, 88, 0), (42, 70, 1), (92, 80, 0), (100, 66, 1), (124, 72, -1)]):
         birch(c, x, 286, h, ln, seed=20 + k)
     bushes(c, -4, 190, lambda x: 286 + 2 * math.sin(x / 5), "aspen-leaves", seed=10, r=(3, 6))
-    # the beach: a line of grass, then sand and cobble to the water
+    # the beach: a line of grass, then sand, wetter and darker toward the
+    # water, with cobble, a few bigger stones and a silvered driftwood log
     ground(c, lambda x: 284 if x < 200 else None, "grass", seed=11, blades=0.5)
     rnd = random.Random(12)
     for x in range(0, 206):
-        for y in range(289, H):
-            c.put(x, y, "sand", 3 if y == 289 else 2 if y < 295 else 1)
-    for _ in range(45):
+        edge = 289 + (1 if math.sin(x / 7) > 0.6 else 0)
+        for y in range(edge, H):
+            c.put(x, y, "sand", 3 if y == edge else 2 if y < 297 else 1)
+    for _ in range(40):
         x, y = rnd.randrange(0, 200), rnd.randrange(292, 304)
         c.put(x, y, "cobble", 3)
         c.put(x + 1, y, "cobble", 2)
         c.put(x + 1, y + 1, "cobble", 0)
+    for x0 in (58, 132, 176):
+        slabs(c, [[(x0, 303), (x0 + 2, 298), (x0 + 6, 296), (x0 + 10, 298), (x0 + 11, 303)]], "grey-gneiss", seed=x0)
+    for k in range(34):  # the driftwood log, lit along its top
+        x, y = 70 + k, 294 + k // 12
+        c.put(x, y, "snag", 3)
+        c.put(x, y + 1, "snag", 2)
+        c.put(x, y + 2, "snag", 0)
+    c.put(104, 293, "snag", 3)
+    c.put(105, 292, "snag", 2)  # a broken root
     shoreline(c, 0, 206, SHORE + 1)
-    falls(c, 192, 201, 154, 244, seed=13)
-    pool(c, 196, 247, 9, 3)
-    stream(c, [(199, 250), (204, 272), (208, 290), (214, 304)], 6, seed=14)
-    c.foot = (196, 245)
+    falls(c, 191, 202, 154, 244, seed=13)
+    pool(c, 197, 247, 10, 3)
+    stream(c, [(199, 250), (204, 262), (212, 274), (222, 288), (232, 305)], 10, seed=14)
+    c.foot = (197, 245)
     return c
 
 
