@@ -1,0 +1,182 @@
+<title>Far Bank Study</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single reading column like a field-station report, with full-bleed image plates and swatch strips drawn from the lake itself. */
+:root {
+  --bg: #eef1ec;
+  --panel: #e2e8e2;
+  --ink: #1b2826;
+  --muted: #566764;
+  --line: #c3cec7;
+  --accent: #a24f45;
+  --pine: #2d5747;
+  --display: "Pixelify Sans", "Courier New", monospace;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1918; --panel: #172423; --ink: #e2e9e4; --muted: #97a9a4; --line: #2a3b39;
+    --accent: #e29a8b; --pine: #86bba4; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1918; --panel: #172423; --ink: #e2e9e4; --muted: #97a9a4; --line: #2a3b39;
+  --accent: #e29a8b; --pine: #86bba4; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+main { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(32px, 7vw, 46px); letter-spacing: 0.5px; }
+h2 { font-size: 26px; color: var(--pine); }
+h3 { font-size: 19px; font-weight: 500; }
+p { margin: 0; max-width: 65ch; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 19px; }
+a { color: var(--accent); }
+figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+figure img { width: 100%; image-rendering: pixelated; border-radius: 4px; display: block; }
+figcaption { font-size: 14px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat { border-top: 3px solid var(--pine); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+.stat b { font-family: var(--display); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 14px; color: var(--muted); }
+ol.findings { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 12px; }
+ol.findings li::marker { font-family: var(--mono); color: var(--accent); }
+ol.findings b { font-weight: 600; }
+.meter { display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; align-items: center; font-size: 14px; }
+.meter .bars { display: flex; flex-direction: column; gap: 3px; }
+.bar { height: 10px; border-radius: 2px; background: var(--line); position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; }
+.bar.ours i { background: var(--pine); }
+.bar.pack i { background: var(--accent); }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.legend .l-ours::before { background: var(--pine); }
+.legend .l-pack::before { background: var(--accent); }
+.skies { display: flex; flex-direction: column; gap: 6px; }
+.sky { display: grid; grid-template-columns: 7.5em 1fr; align-items: center; gap: 12px; font-size: 14px; }
+.sky div { height: 30px; border-radius: 3px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.sw { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.sw .strip { display: flex; height: 34px; border-radius: 3px; overflow: hidden; }
+.sw .strip i { flex: 1; }
+.sw b { font-weight: 600; font-size: 15px; }
+.sw span { font-size: 13px; color: var(--muted); font-family: var(--mono); overflow-wrap: anywhere; }
+.lessons { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px 24px; }
+.lessons div { display: flex; flex-direction: column; gap: 4px; }
+.lessons h3 { color: var(--accent); }
+.lessons p { font-size: 15px; }
+ol.rules { margin: 0; padding: 0; list-style: none; counter-reset: r; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+ol.rules li { counter-increment: r; display: grid; grid-template-columns: 2.4em 1fr; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+ol.rules li::before { content: counter(r, decimal-leading-zero); font-family: var(--mono); color: var(--muted); font-size: 14px; padding-top: 3px; }
+.qs { display: flex; flex-direction: column; gap: 14px; }
+.q { background: var(--panel); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.q h3 { font-size: 18px; }
+.q ul { margin: 0; padding-left: 1.2em; font-size: 15px; display: flex; flex-direction: column; gap: 4px; }
+.q .rec { font-size: 14px; color: var(--pine); font-family: var(--mono); }
+.next { font-size: 15px; color: var(--muted); }
+code { font-family: var(--mono); font-size: 0.85em; }
+.viewer { display: flex; flex-direction: column; gap: 10px; }
+.viewer img { width: 100%; height: auto; image-rendering: pixelated; border-radius: 4px; display: block; aspect-ratio: 360 / 300; background: var(--panel); }
+.pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick button { font: 600 14px var(--mono); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; min-width: 44px; }
+.pick button[aria-pressed="true"] { background: var(--pine); color: var(--bg); border-color: var(--pine); }
+.pick button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cap { font-size: 15px; min-height: 3em; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+.card { display: flex; flex-direction: column; gap: 6px; }
+.card h3 { color: var(--accent); }
+.card p { font-size: 15px; }
+.card ul { margin: 0; padding-left: 1.1em; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 3px; }
+</style>
+
+<main>
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <span class="eyebrow">Reel It In · Study 2 · 22 Oct 2026</span>
+    <h1>The far bank</h1>
+    <p class="lede">Three versions of everything between the hills and the water: the trees, the rock, the shore where the animals come down, and the waterfall. Each one is shown in the game itself, under the time-of-day light, with Olive, the hut and the wildlife in front. Flip between them and the bank you have now.</p>
+  </header>
+
+  <section class="viewer">
+    <div class="pick" role="group" aria-label="Version">
+      <button data-v="now" aria-pressed="false">Now</button>
+      <button data-v="A" aria-pressed="true">A</button>
+      <button data-v="B" aria-pressed="false">B</button>
+      <button data-v="C" aria-pressed="false">C</button>
+    </div>
+    <div class="pick" role="group" aria-label="Time of day">
+      <button data-t="dawn" aria-pressed="false">Dawn</button>
+      <button data-t="day" aria-pressed="true">Day</button>
+      <button data-t="golden" aria-pressed="false">Golden</button>
+      <button data-t="dusk" aria-pressed="false">Dusk</button>
+      <button data-t="night" aria-pressed="false">Night</button>
+    </div>
+    <img id="shot" src="study2/A-day.png" alt="Version A at midday" width="360" height="300">
+    <p class="cap" id="cap"></p>
+  </section>
+
+  <section>
+    <span class="eyebrow">The three versions</span>
+    <h2>What each one tries</h2>
+    <div class="cards">
+      <div class="card"><h3>A &middot; Granite point</h3><p>The Canadian Shield: a pink granite outcrop with spruce, fir and a silver snag along its top, the falls pouring over its flank in tea-coloured water. A big white pine stands over the shore, with spruce and a birch clump, and smooth granite and a lone boulder at the water.</p><ul><li>The most "up north" of the three</li><li>The white pine is drawn big this time, so its flat tiers read</li></ul></div>
+      <div class="card"><h3>B &middot; The bank we have, redrawn</h3><p>The same layout as now (grassy slope, boulder, two big spruces, a cliff with a tall white waterfall, a treeline on top), drawn in our own materials and light.</p><ul><li>The least change: everything stays where you know it</li><li>Grey rock and white water, like today</li></ul></div>
+      <div class="card"><h3>C &middot; Birch cove</h3><p>A low bank and a pebble beach where the animals come down, white birches and aspen bright against the dark spruce, a pair of red pines, and a pink granite bluff with the falls a narrow ribbon of tea-coloured water.</p><ul><li>The brightest and most open at the water</li><li>The birches turn gold when seasons come</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">What stays the same in all three</span>
+    <h2>The rules at work</h2>
+    <p>Every piece is drawn at true size on the one pixel grid, from the materials library's ramps. Light comes from the upper left, and each shape is lit as one mass: a rim of light on its top and left, shade on its bottom and right, one calm tone between. Spruce are a few big drooping tiers, each hanging over the one below. Rock is broken into big planes and ledges, not speckled. The forest behind is row under row of treetops, with a hazy band of spires on the far ridge.</p>
+    <p>The shore along the left stays flat at the water, so the deer, fox, hare and bear still walk down to drink, and the waterfall still runs and throws up its mist.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Honest notes</span>
+    <h2>What isn't right yet</h2>
+    <ol class="findings">
+      <li><b>The tea-coloured falls</b> (A and C) are true to north-woods rivers, but at this size they can read a little like a pale log. B's white water reads as water at a glance.</li>
+      <li><b>The old bank has richer, warmer greens</b> and big soft clumps on its trees. Ours is darker and more like a real conifer forest; tell me if you'd like it sunnier.</li>
+      <li><b>The forest behind</b> is quieter than I'd like, with a hazy band between the far ridge and the near trees.</li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="eyebrow">Your call</span>
+    <h2>Pick one, or mix</h2>
+    <p>Tell me A, B or C, or a mix (for example "B's layout with A's white pine and C's birches"), and anything that feels off. The one you pick gets polished and then replaces the pack's bank in the game.</p>
+  </section>
+</main>
+<script>
+(function () {
+  var notes = {
+    now: "The game today: the pack's bank, drawn at twice the pixel size of everything else.",
+    A: "A: granite point. Pink granite, a big white pine, tea-coloured falls.",
+    B: "B: the bank you have, redrawn in our own materials. Grey cliff, white falls, two big spruces.",
+    C: "C: birch cove. A pebble beach, birches and red pines, a ribbon falls in a granite bluff."
+  };
+  var times = { dawn: "dawn", day: "midday", golden: "golden hour", dusk: "dusk", night: "night" };
+  var v = "A", t = "day";
+  var img = document.getElementById("shot"), cap = document.getElementById("cap");
+  function show() {
+    img.src = "study2/" + v + "-" + t + ".png";
+    img.alt = (v === "now" ? "The game now" : "Version " + v) + " at " + times[t];
+    cap.textContent = notes[v];
+    document.querySelectorAll("[data-v]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.v === v); });
+    document.querySelectorAll("[data-t]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.t === t); });
+  }
+  document.querySelectorAll("[data-v]").forEach(function (b) { b.addEventListener("click", function () { v = b.dataset.v; show(); }); });
+  document.querySelectorAll("[data-t]").forEach(function (b) { b.addEventListener("click", function () { t = b.dataset.t; show(); }); });
+  show();
+})();
+</script>

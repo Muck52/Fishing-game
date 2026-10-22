@@ -56,6 +56,40 @@ behind the bank; it now steps toward the bank's own night colour.
 - Each layer at night must stay a little lighter than the one in front, or
   it reads as a hole.
 
+## Study 2: the far bank (2026-10-22)
+
+**Why:** the bank is the pack's art at twice our pixel size, its trees and
+rock in plain darkening, with no white pine, birch or granite of the real
+north woods.
+
+**References:** trees, rock and the waterfall in
+[research/north-woods-lake.md](research/north-woods-lake.md); needles,
+bark and granite in [research/materials.md](research/materials.md).
+
+**Versions** (`tools/studio/study_bank.py`, images in
+[studies/02-bank/](studies/02-bank/), review page `review/study2.html`;
+each is shown in the game itself, swapped in by the headless browser):
+- **A, granite point:** a pink granite outcrop with spruce and a snag on
+  top, tea-coloured falls over its flank, a big white pine over a granite
+  shore, a birch clump and an erratic.
+- **B, the bank we have, redrawn:** today's layout in our materials: grassy
+  slope, boulder, two big spruces, a grey cliff with white falls.
+- **C, birch cove:** a pebble beach, birches and red pines against spruce,
+  a granite bluff with a ribbon falls.
+
+**Along the way:** the first spruces were drawn tier by tier as full rows
+and read as stripes; drawing the whole spire in shade first and then
+lighting each tier as one clump fixed it. Rock lit only at its edges was a
+flat pink wall; broken into planes (lines slanting down from the top, the
+planes either side a step lighter or darker) it reads as granite. Joints
+run all the way across read as layer cake; they now die out. The forest
+behind is row under row of treetops, which reads as a forested slope where
+one flat fill read as a curtain.
+
+**Verdict:** waiting on you.
+
+**Learned:** (after the verdict)
+
 <!--
 ## Study N: <subject> (<date>)
 
