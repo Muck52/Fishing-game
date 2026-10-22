@@ -153,9 +153,20 @@ SPECIES = {
     ),
 }
 
+# Not caught, only seen: the shiners that school mid-water (an olive back,
+# bright silver sides with a dark stripe along them, a white belly).
+EXTRA = {
+    "minnow": dict(
+        depth=0.24, peak=0.4, up=0.52, nose=0.9, snout=0.2, ped=0.3, tail=("fork", 0.22, 0.75),
+        dorsal=[(0.42, 0.58, 0.22, "round")], anal=[(0.66, 0.8, 0.18, "round")],
+        pelvic=0.45, back=(108, 127, 88), flank=(221, 224, 205), belly=(250, 255, 255), fin=(134, 163, 152),
+        eye=(30, 30, 30), marks=[("lateral", (79, 115, 139))],
+    ),
+}
+
 # The one or two markings each species keeps at swimming size, where there
 # is no room for more: its signature, the thing you'd know it by.
-SIGNATURE = {"bluegill": ["ear", "bars", "breast"], "pumpkinseed": ["ear", "breast"], "perch": ["bars"], "crappie": ["speckle"], "whitebass": ["stripes"], "carp": [], "bass": ["bars"], "largemouth": ["band"], "trout": ["spots", "breast"], "rainbow": ["band"], "channelcat": ["spots"], "drum": ["lateral"], "walleye": ["saddles", "tailtip"], "catfish": ["mottle"], "pike": ["beans"], "muskie": ["bars"], "golden": ["scutes"]}
+SIGNATURE = {"bluegill": ["ear", "bars", "breast"], "pumpkinseed": ["ear", "breast"], "perch": ["bars"], "crappie": ["speckle"], "whitebass": ["stripes"], "carp": [], "bass": ["bars"], "largemouth": ["band"], "trout": ["spots", "breast"], "rainbow": ["band"], "channelcat": ["spots"], "drum": ["lateral"], "walleye": ["saddles", "tailtip"], "catfish": ["mottle"], "pike": ["beans"], "muskie": ["bars"], "golden": ["scutes"], "minnow": ["lateral"]}
 
 # Swimming length on screen, nose to tail tip, in pixels. The angler is
 # about 34 pixels tall; fish are a little larger than life beside him so
@@ -192,7 +203,7 @@ STYLES = {
 
 def paint(sid, total, card=False, style=None):
     st = STYLES.get(style, style or {}) if isinstance(style, str) or style else {}
-    s = dict(SPECIES[sid])
+    s = dict({**SPECIES, **EXTRA}[sid])
     if st:
         s["depth"] *= st.get("depth", 1)
         s["snout"] = min(0.6, s["snout"] * st.get("snout", 1))
@@ -573,3 +584,25 @@ def paint(sid, total, card=False, style=None):
     img[ring & ~solid] = (*OUTLINE, 255)
     out = Image.fromarray(img)
     return out.crop(out.getbbox())
+
+
+def swim_frames(img, n=6):
+    """A swimming wave that runs from head to tail: each column of the body
+    is lifted by a sine that lags further behind toward the tail, and grows
+    from almost nothing at the head to the full sweep at the tail fin. The
+    head nods a little against it, as real fish do."""
+    w, h = img.size
+    frames = []
+    sp = img.load()
+    for f in range(n):
+        out = Image.new("RGBA", (w, h + 4))
+        dp = out.load()
+        for x in range(w):
+            t = x / (w - 1)  # 0 at the nose (the art faces left), 1 at the tail tip
+            amp = 0.35 + 1.6 * max(0, t - 0.35) ** 1.5 / 0.65 ** 1.5
+            dy = round(amp * math.sin(f / n * math.pi * 2 - t * math.pi * 1.4))
+            for y in range(h):
+                if sp[x, y][3]:
+                    dp[x, y + 2 + dy] = sp[x, y]
+        frames.append(out)
+    return frames

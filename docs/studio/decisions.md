@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The fish are study 10's version C
+
+Their own colours (no longer snapped to the pack palette), the cast's eye
+and proportions, and every marking, fin rays, scale shimmer and lateral
+line at swimming size. The minnows are painted the same way.
+
 ## 2026-10-22: The birds carry study 9b's detail (version B)
 
 Feathered wings, field marks and body feather texture, at the size they

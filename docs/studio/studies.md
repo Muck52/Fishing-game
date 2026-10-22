@@ -488,7 +488,16 @@ building on the last:
 
 Review page: `review/study10.html`.
 
-**Verdict:** waiting.
+**Verdict:** C. In the game: the art build paints every species, card and
+the minnows with `fish_art.STYLES["C"]` and keeps them in their own
+colours (no palette snap). The old kit-drawn minnow is retired.
+
+**Learned:**
+- Check what the build does after the drawing: the fish were painted in
+  good colours and then snapped to a 56-colour pack palette on the way
+  out. The biggest gain here was undoing that.
+- A detail pass written once as a rule (every marking, fin rays, a
+  shimmer, the lateral line) carries all seventeen species at once.
 
 <!--
 ## Study N: <subject> (<date>)

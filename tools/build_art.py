@@ -394,7 +394,7 @@ def angler():
 
 
 # ---------------------------------------------------------------- wildlife
-CREATURES = ["deer", "buck", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "loon", "gull-stand", "eagle-perch", "sparrow-perch", "mallard-swim", "minnow"]
+CREATURES = ["deer", "buck", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "loon", "gull-stand", "eagle-perch", "sparrow-perch", "mallard-swim"]  # the minnow is painted with the fish
 BIRDS = ["gull", "sparrow", "mallard", "eagle", "loon", "gull-stand", "eagle-perch", "sparrow-perch", "mallard-swim"]  # all drawn in tools/characters/birds.py
 ANIMALS = ["deer", "buck", "fox", "hare", "bear"]  # animated from study 8 in tools/characters/land.py
 
@@ -448,36 +448,28 @@ def shrink(img, length):
     return Image.fromarray(out)
 
 
+FISH_STYLE = "C"  # study 10: their own colours, the cast's eye and proportions, full detail
+
+
 def fish():
     """Every species, painted by tools/fish_art.py straight onto the grid: a
-    small one that swims and a large one for the journal card."""
+    small one that swims and a large one for the journal card. Kept in the
+    colours they're painted in (study 10), not snapped to the pack palette."""
     info = {}
     for sid in fish_art.SPECIES:
-        img = fish_art.paint(sid, fish_art.LENGTH[sid])
-        card = fish_art.paint(sid, min(150, round(fish_art.LENGTH[sid] * 3.4)), card=True)
+        img = fish_art.paint(sid, fish_art.LENGTH[sid], style=FISH_STYLE)
+        card = fish_art.paint(sid, min(150, round(fish_art.LENGTH[sid] * 3.4)), card=True, style=FISH_STYLE)
         w, h = img.size
-        # A swimming wave that runs from head to tail: each column of the
-        # body is lifted by a sine that lags further behind toward the tail,
-        # and grows from almost nothing at the head to the full sweep at the
-        # tail fin. The head nods a little against it, as real fish do.
-        frames = []
-        n = 6
-        for f in range(n):
-            out = Image.new("RGBA", (w, h + 4))
-            sp = img.load()
-            dp = out.load()
-            for x in range(w):
-                t = x / (w - 1)  # 0 at the nose (the art faces left), 1 at the tail tip
-                amp = 0.35 + 1.6 * max(0, t - 0.35) ** 1.5 / 0.65 ** 1.5
-                dy = round(amp * math.sin(f / n * math.pi * 2 - t * math.pi * 1.4))
-                for y in range(h):
-                    if sp[x, y][3]:
-                        dp[x, y + 2 + dy] = sp[x, y]
-            frames.append(out)
-        save(strip(frames), f"fish/{sid}.png", key=f"fish-{sid}", frame=(w, h + 4), frames=n, actor=True)
-        save(card, f"fish/{sid}-card.png", key=f"card-{sid}", actor=True)
+        frames = fish_art.swim_frames(img)
+        save(strip(frames), f"fish/{sid}.png", key=f"fish-{sid}", frame=(w, h + 4), frames=len(frames), grade=False)
+        save(card, f"fish/{sid}-card.png", key=f"card-{sid}", grade=False)
         info[sid] = {"w": w, "h": h}
     manifest["anchors"]["fish"] = info
+    # the minnows, painted the same way
+    img = fish_art.paint("minnow", 12, style=FISH_STYLE)
+    frames = fish_art.swim_frames(img, 4)
+    save(strip(frames), "characters/minnow.png", key="minnow", frame=(img.width, img.height + 4), frames=4, grade=False)
+    manifest["anchors"]["creatures"]["minnow"] = {"swim": {"frames": [0, 1, 2, 3], "fps": 8, "loop": True}}
 
 
 # ---------------------------------------------------------------- effects
@@ -1183,7 +1175,7 @@ def edges():
     from edges import treat
     from light import LAND, lit
     for key, s in manifest["sheets"].items():
-        if key in CREATURES + ["olive"] or (key.startswith("fish-")):
+        if key in CREATURES + ["olive", "minnow"] or (key.startswith("fish-")):
             path = ROOT / s["url"]
             img = treat(Image.open(path), s["frameWidth"])
             if key in LAND:

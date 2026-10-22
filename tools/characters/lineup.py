@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import kit  # noqa: E402
 
 GROUND = ["olive", "deer", "buck", "fox", "hare", "bear"]  # drawn in land.py
-SKY = ["eagle", "gull", "mallard", "sparrow", "loon", "minnow"]
+SKY = ["eagle", "gull", "mallard", "sparrow", "loon"]
 BIRDS = ["eagle", "gull", "mallard", "sparrow", "loon"]  # drawn in birds.py
 
 

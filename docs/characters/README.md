@@ -96,7 +96,7 @@ journal and the backpack, and from the research below.
 
 Since studies 8 and 9, the land animals and the birds are drawn from shapes
 (`land.py`, `birds.py`) and have no Pixelorama projects; the touch-ups
-below belonged to the old drawings. The minnow still has one. A creature
+below belonged to the old drawings. A creature
 with a [Pixelorama](https://orama-interactive.itch.io/pixelorama)
 project has it at `assets/source/pixelorama/<name>.pxo`, kept in step by the build:
 
@@ -130,13 +130,13 @@ has a pale ring of fur round its eye.
 | Mallard (`birds.py`) | 3 ft wings | drake: green head, white collar, chestnut breast, grey sides, black stern; hen: mottled brown; both a blue speculum | fly (drake), hen |
 | Bald eagle (`birds.py`) | 6 1/2 ft wings | dark brown, white head and tail, yellow bill and feet | fly (slow beats), glide |
 | Common loon (`birds.py`) | 3 ft long | black head, dagger bill, white necklace, black back chequered white, low in the water | swim, dive |
-| Shiner minnow (`minnow.py`) | 3 in | olive back, silver sides, dark stripe, white belly | swim |
+| Shiner minnow (`tools/fish_art.py`, with the fish) | 3 in | olive back, silver sides, dark stripe, white belly | swim |
 
 Each script writes its sheet (`assets/art/characters/<name>.png`), its
 animation table (`<name>.json`, also in the manifest under
 `anchors.creatures`) and previews here (`<name>-sheet.png` and a GIF per
 animation). Run them on their own (`python3 tools/characters/land.py`,
-`birds.py`, `minnow.py`) or the whole art build. In `land.py` each leg
+`birds.py`; the minnow is painted with the fish) or the whole art build. In `land.py` each leg
 swings through a stride by gait (walk, trot, gallop), its foot fixed on the
 ground while it bears weight, which gives each walk frame its step. `python3 tools/characters/lineup.py` redraws the
 lineup above.

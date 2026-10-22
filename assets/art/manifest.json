@@ -245,46 +245,40 @@
    "frameHeight": 12,
    "frames": 2
   },
-  "minnow": {
-   "url": "assets/art/characters/minnow.png",
-   "frameWidth": 14,
-   "frameHeight": 7,
-   "frames": 4
-  },
   "fish-bluegill": {
    "url": "assets/art/fish/bluegill.png",
    "frameWidth": 21,
-   "frameHeight": 19,
+   "frameHeight": 21,
    "frames": 6
   },
   "fish-pumpkinseed": {
    "url": "assets/art/fish/pumpkinseed.png",
    "frameWidth": 21,
-   "frameHeight": 19,
+   "frameHeight": 21,
    "frames": 6
   },
   "fish-perch": {
    "url": "assets/art/fish/perch.png",
-   "frameWidth": 22,
-   "frameHeight": 15,
+   "frameWidth": 23,
+   "frameHeight": 16,
    "frames": 6
   },
   "fish-crappie": {
    "url": "assets/art/fish/crappie.png",
    "frameWidth": 23,
-   "frameHeight": 20,
+   "frameHeight": 24,
    "frames": 6
   },
   "fish-whitebass": {
    "url": "assets/art/fish/whitebass.png",
    "frameWidth": 26,
-   "frameHeight": 18,
+   "frameHeight": 19,
    "frames": 6
   },
   "fish-carp": {
    "url": "assets/art/fish/carp.png",
    "frameWidth": 36,
-   "frameHeight": 18,
+   "frameHeight": 20,
    "frames": 6
   },
   "fish-bass": {
@@ -302,19 +296,19 @@
   "fish-trout": {
    "url": "assets/art/fish/trout.png",
    "frameWidth": 26,
-   "frameHeight": 15,
+   "frameHeight": 16,
    "frames": 6
   },
   "fish-rainbow": {
    "url": "assets/art/fish/rainbow.png",
    "frameWidth": 30,
-   "frameHeight": 16,
+   "frameHeight": 17,
    "frames": 6
   },
   "fish-channelcat": {
    "url": "assets/art/fish/channelcat.png",
    "frameWidth": 36,
-   "frameHeight": 16,
+   "frameHeight": 17,
    "frames": 6
   },
   "fish-drum": {
@@ -326,32 +320,38 @@
   "fish-walleye": {
    "url": "assets/art/fish/walleye.png",
    "frameWidth": 33,
-   "frameHeight": 16,
+   "frameHeight": 17,
    "frames": 6
   },
   "fish-catfish": {
    "url": "assets/art/fish/catfish.png",
    "frameWidth": 31,
-   "frameHeight": 14,
+   "frameHeight": 16,
    "frames": 6
   },
   "fish-pike": {
    "url": "assets/art/fish/pike.png",
    "frameWidth": 39,
-   "frameHeight": 15,
+   "frameHeight": 16,
    "frames": 6
   },
   "fish-muskie": {
    "url": "assets/art/fish/muskie.png",
    "frameWidth": 45,
-   "frameHeight": 17,
+   "frameHeight": 19,
    "frames": 6
   },
   "fish-golden": {
    "url": "assets/art/fish/golden.png",
-   "frameWidth": 46,
+   "frameWidth": 47,
    "frameHeight": 15,
    "frames": 6
+  },
+  "minnow": {
+   "url": "assets/art/characters/minnow.png",
+   "frameWidth": 16,
+   "frameHeight": 11,
+   "frames": 4
   },
   "splash": {
    "url": "assets/art/effects/splash.png",
@@ -945,27 +945,27 @@
   "fish": {
    "bluegill": {
     "w": 21,
-    "h": 15
+    "h": 17
    },
    "pumpkinseed": {
     "w": 21,
-    "h": 15
+    "h": 17
    },
    "perch": {
-    "w": 22,
-    "h": 11
+    "w": 23,
+    "h": 12
    },
    "crappie": {
     "w": 23,
-    "h": 16
+    "h": 20
    },
    "whitebass": {
     "w": 26,
-    "h": 14
+    "h": 15
    },
    "carp": {
     "w": 36,
-    "h": 14
+    "h": 16
    },
    "bass": {
     "w": 28,
@@ -977,15 +977,15 @@
    },
    "trout": {
     "w": 26,
-    "h": 11
+    "h": 12
    },
    "rainbow": {
     "w": 30,
-    "h": 12
+    "h": 13
    },
    "channelcat": {
     "w": 36,
-    "h": 12
+    "h": 13
    },
    "drum": {
     "w": 29,
@@ -993,22 +993,22 @@
    },
    "walleye": {
     "w": 33,
-    "h": 12
+    "h": 13
    },
    "catfish": {
     "w": 31,
-    "h": 10
+    "h": 12
    },
    "pike": {
     "w": 39,
-    "h": 11
+    "h": 12
    },
    "muskie": {
     "w": 45,
-    "h": 13
+    "h": 15
    },
    "golden": {
-    "w": 46,
+    "w": 47,
     "h": 11
    }
   },

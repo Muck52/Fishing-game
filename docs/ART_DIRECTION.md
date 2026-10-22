@@ -35,7 +35,9 @@ we borrow is the thinking behind them.
    key colours and the interface art's own shades. It is now fixed in
    `tools/palette.json`, with a few shades added for the creatures, so
    redrawing art never shifts it. This is what makes art from many packs
-   and our own drawings look like one game.
+   and our own drawings look like one game. *Since study 10,* the pack art
+   is what's graded: everything we draw ourselves (scenery, animals, birds,
+   fish) keeps its own colours.
 3. **Outlines say "this moves."** The angler, the boat, the hut and props
    carry the shared dark outline. The animals and fish carry a selective
    one (study 6): the dark line only underneath and on the shadow side,
