@@ -1,5 +1,5 @@
 {
- "frameWidth": 46,
+ "frameWidth": 45,
  "frameHeight": 31,
  "animations": {
   "walk": {
@@ -15,7 +15,16 @@
    ],
    "fps": 7,
    "loop": true,
-   "step": 1
+   "steps": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1
+   ]
   },
   "idle": {
    "frames": [

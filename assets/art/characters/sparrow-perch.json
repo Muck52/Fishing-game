@@ -1,6 +1,6 @@
 {
- "frameWidth": 15,
- "frameHeight": 12,
+ "frameWidth": 5,
+ "frameHeight": 5,
  "animations": {
   "perch": {
    "frames": [

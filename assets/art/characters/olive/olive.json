@@ -1,6 +1,6 @@
 {
- "frameWidth": 42,
- "frameHeight": 36,
+ "frameWidth": 28,
+ "frameHeight": 24,
  "animations": {
   "idle": {
    "frames": [
@@ -27,7 +27,16 @@
    ],
    "fps": 10,
    "loop": true,
-   "step": 1
+   "steps": [
+    1,
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1
+   ]
   },
   "run": {
    "frames": [
@@ -41,12 +50,12 @@
    "fps": 14,
    "loop": true,
    "steps": [
+    2,
+    2,
     3,
-    4,
-    4,
-    4,
-    4,
-    4
+    2,
+    2,
+    3
    ]
   },
   "leap": {
@@ -67,7 +76,8 @@
     27
    ],
    "fps": 6,
-   "loop": true
+   "loop": true,
+   "waterline": 13
   },
   "shake": {
    "frames": [

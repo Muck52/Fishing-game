@@ -1,13 +1,14 @@
 {
- "frameWidth": 25,
- "frameHeight": 12,
+ "frameWidth": 14,
+ "frameHeight": 7,
  "animations": {
   "drake": {
    "frames": [
     0
    ],
    "fps": 1,
-   "loop": false
+   "loop": false,
+   "waterline": 5
   },
   "hen": {
    "frames": [

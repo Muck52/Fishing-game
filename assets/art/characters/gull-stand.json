@@ -1,6 +1,6 @@
 {
- "frameWidth": 31,
- "frameHeight": 22,
+ "frameWidth": 11,
+ "frameHeight": 9,
  "animations": {
   "stand": {
    "frames": [

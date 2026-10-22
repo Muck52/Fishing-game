@@ -1,13 +1,14 @@
 {
- "frameWidth": 36,
- "frameHeight": 15,
+ "frameWidth": 20,
+ "frameHeight": 8,
  "animations": {
   "swim": {
    "frames": [
     0
    ],
    "fps": 1,
-   "loop": false
+   "loop": false,
+   "waterline": 5
   },
   "dive": {
    "frames": [

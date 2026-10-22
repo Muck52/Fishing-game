@@ -192,7 +192,7 @@ export class Wildlife {
       onComplete: () => {
         // feet down on the sand
         b.setTexture(stand).setOrigin(0.5, 1).setPosition(x, BANK_Y + (big ? 2 : 0));
-        const shadow = s.add.ellipse(x, BANK_Y - 1, big ? 14 : 12, 3, 0x2a2418, 0.35).setDepth(DEPTH.SHORE_LIFE);
+        const shadow = s.add.ellipse(x, BANK_Y - 1, Math.max(4, Math.round(b.width * 0.8)), 2, 0x2a2418, 0.35).setDepth(DEPTH.SHORE_LIFE);
         this.note(big ? 'The bald eagle lands on the shore to watch the water.' : 'A gull drops onto the sand and settles.');
         // now and then it turns to look the other way
         const look = s.time.addEvent({ delay: R(2500, 4000), loop: true, callback: () => b.setFlipX(!b.flipX) });
@@ -233,8 +233,7 @@ export class Wildlife {
   // paddle back out.
   paddle() {
     const s = this.scene;
-    const fh = ART.sheets['mallard-swim'].frameHeight;
-    const top = SURFACE_Y + 13 - fh;
+    const top = SURFACE_Y + 8 - ART.anchors.creatures['mallard-swim'].drake.waterline;
     const stop = R(70, 110);
     const pair = [['drake', 0], ['hen', 1]].map(([who, i]) => {
       const d = s.add.sprite(-25 - i * 20, top, 'mallard-swim', ART.anchors.creatures['mallard-swim'][who].frames[0])
@@ -257,8 +256,7 @@ export class Wildlife {
   loon() {
     const s = this.scene;
     const t = ART.anchors.creatures.loon;
-    const fh = ART.sheets.loon.frameHeight;
-    const top = SURFACE_Y + 13 - fh; // its waterline on the surface
+    const top = SURFACE_Y + 8 - t.swim.waterline; // its waterline on the surface
     const b = s.add.sprite(-25, top, 'loon', t.swim.frames[0]).setOrigin(0.5, 0).setDepth(DEPTH.SURFACE + 0.1).setFlipX(true);
     const bob = s.tweens.add({ targets: b, y: top + 1, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     const dive = (then) => {

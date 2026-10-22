@@ -72,29 +72,8 @@ def target(px, option):
 
 
 def scale_spec(spec, k):
-    """An animal's shapes, all scaled by k (its frame, ground and every
-    point and width), to be drawn again at the new size."""
-    s = copy.deepcopy(spec)
-    pt = lambda p: (p[0] * k, p[1] * k)  # noqa: E731
-    pts = lambda ps: [pt(p) for p in ps]  # noqa: E731
-    s["frame"] = (math.ceil(spec["frame"][0] * k) + 2, math.ceil(spec["frame"][1] * k) + 2)
-    s["ground"] = spec["ground"] * k
-    if "dx" in s:
-        s["dx"] = s["dx"] * k
-    s["tiny_eye"] = k < 0.6
-    for pose in s["poses"].values():
-        for key, v in list(pose.items()):
-            if key in ("pivot", "eye", "nose"):
-                pose[key] = pt(v)
-            elif key in ("torso", "neck", "head"):
-                pose[key] = pts(v)
-            elif key in ("ears", "ears_far", "marks", "head_marks", "behind", "front"):
-                pose[key] = [(ch, pts(p)) for ch, p in v]
-            elif key in ("tail", "antlers", "antlers_far"):
-                pose[key] = [(ch, pts(p), [w * k for w in ws]) for ch, p, ws in v]
-            elif key == "legs":
-                pose[key] = [(side, pts(j), [w * k for w in ws]) for side, j, ws in v]
-    return s
+    from anatomy import scale_spec as sp
+    return sp(spec, k)
 
 
 def measure(img):

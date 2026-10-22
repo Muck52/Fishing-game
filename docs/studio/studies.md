@@ -592,7 +592,22 @@ redrawn at size from its shapes.
 
 Review page: `review/study13.html`.
 
-**Verdict:** waiting.
+**Verdict:** A, true scale. In the game: `tools/characters/scale.py` holds
+each animal's factor; `land.py` animates each animal in its design's own
+units, then draws every frame again at its size and scales its walk steps
+to match (Olive's steps now come from her sheet, not fixed numbers);
+`birds.py` draws every bird at its size, waterline included; the fish are
+painted at their true length, no less than 4 pixels (the painter's least
+for a head, a body and a tail; a minnow is really under 2). The journal
+cards keep their size.
+
+**Learned:**
+- Measure against one figure everyone knows: a man is 178 cm, so 39
+  pixels gives the whole cast its scale, and "big for readability" had
+  crept in animal by animal.
+- Animate in the design's own units and scale at the end: gaits, strides,
+  hops and waterlines all scale with the drawing, and only the steps need
+  rounding back to whole pixels.
 
 <!--
 ## Study N: <subject> (<date>)

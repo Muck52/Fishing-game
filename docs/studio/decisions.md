@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: Every animal at true scale (study 13, version A)
+
+Beside the angler (178 cm, 39 pixels) every animal and fish is its real
+adult size: Olive to his thigh, the hare a small brown shape, the sparrow
+a few pixels. Fish no smaller than 4 pixels. Journal cards unchanged.
+
 ## 2026-10-22: The hut is study 12's log cabin
 
 Round logs and chinking, a cedar shake roof, braced pilings, a stovepipe,

@@ -261,3 +261,51 @@ def draw(spec, style="natural", pose="stand"):
     if st.get("nose", 1) > 1:
         put(nx, ny - 1, "N")
     return g
+
+
+# ---------------------------------------------------------------- scale
+# Study 13: every animal at true scale beside the angler. An animal is
+# drawn again at its size from its shapes, every point and width scaled
+# (never shrunk as an image), so its edges stay clean.
+
+def scale_pose(p, k):
+    pt = lambda q: (q[0] * k, q[1] * k)  # noqa: E731
+    pts = lambda qs: [pt(q) for q in qs]  # noqa: E731
+    out = dict(p)
+    for key, v in p.items():
+        if key in ("pivot", "eye", "nose"):
+            out[key] = pt(v)
+        elif key in ("torso", "neck", "head"):
+            out[key] = pts(v)
+        elif key in ("ears", "ears_far", "marks", "head_marks", "behind", "front"):
+            out[key] = [(ch, pts(q)) for ch, q in v]
+        elif key in ("tail", "antlers", "antlers_far"):
+            out[key] = [(ch, pts(q), [w * k for w in ws]) for ch, q, ws in v]
+        elif key == "legs":
+            out[key] = [(side, pts(j), [w * k for w in ws]) for side, j, ws in v]
+        elif key in ("drop", "air"):
+            out[key] = v * k
+    return out
+
+
+def scale_spec(spec, k):
+    """An animal's spec, its frame, ground and every pose scaled by k."""
+    s = dict(spec)
+    s["frame"] = (math.ceil(spec["frame"][0] * k) + 2, math.ceil(spec["frame"][1] * k) + 2)
+    s["ground"] = spec["ground"] * k
+    if "dx" in spec:
+        s["dx"] = spec["dx"] * k
+    s["tiny_eye"] = k < 0.6
+    s["poses"] = {name: scale_pose(p, k) for name, p in spec["poses"].items()}
+    return s
+
+
+def scale_steps(steps, k):
+    """How far each frame of a walk moves, scaled, in whole pixels that
+    add up right over the cycle."""
+    out, acc, done = [], 0.0, 0
+    for st in steps:
+        acc += st * k
+        out.append(round(acc) - done)
+        done += out[-1]
+    return out

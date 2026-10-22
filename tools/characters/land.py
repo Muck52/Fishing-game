@@ -35,7 +35,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / "studio"))
 import study_creatures as sc  # noqa: E402
-from anatomy import draw, ground_drop  # noqa: E402
+from anatomy import draw, ground_drop, scale_pose, scale_spec, scale_steps  # noqa: E402
+import scale  # noqa: E402
 from kit import outline, image, preview, ART  # noqa: E402
 
 STYLE = "between"
@@ -358,13 +359,25 @@ def anims(name):
 
 
 def sheet(name, folder=None):
+    """An animal's sheet at true scale (study 13): animated in its design's
+    own units, then every frame drawn again at its size, and its walk's
+    steps scaled to match."""
     spec, a = anims(name)
+    k = scale.LAND[name]
+    spec = scale_spec(spec, k)
     imgs, index, n = [], {}, 0
     for an, t in a.items():
         poses, fps, loop = t[:3]
         extra = dict(t[3]) if len(t) > 3 else {}
         water = extra.pop("water", None)
-        imgs += [render(spec, p, water) for p in poses]
+        if water is not None:
+            water = round(water * k)
+            extra["waterline"] = water
+        if "step" in extra:
+            extra["steps"] = scale_steps([extra.pop("step")] * len(poses), k)
+        elif "steps" in extra:
+            extra["steps"] = scale_steps(extra["steps"], k)
+        imgs += [render(spec, scale_pose(p, k), water) for p in poses]
         index[an] = {"frames": list(range(n, n + len(poses))), "fps": fps, "loop": loop, **extra}
         n += len(poses)
     fw, fh = imgs[0].size

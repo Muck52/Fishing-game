@@ -25,6 +25,7 @@ sys.path.insert(0, str(HERE.parent / "studio"))
 import study_birds as sb  # noqa: E402
 import study_bird_detail as bd  # noqa: E402
 from kit import outline, image, preview, ART  # noqa: E402
+import scale  # noqa: E402
 
 BEAT = ["flap-up", "flap-mid", "flap-down", "flap-mid"]
 
@@ -34,8 +35,13 @@ NAMES = {id(sb.GULL): "gull", id(sb.EAGLE): "eagle", id(sb.MALLARD): "mallard", 
 
 
 def frame(spec, pose, water=None):
+    """A frame at the bird's true size (study 13), drawn again from its
+    shapes; on the water, the waterline moves with it."""
     name = NAMES[id(spec)]
-    return image(outline(bd.draw(name, pose, DETAIL)), bd.colours(name), water=water)
+    k = scale.BIRDS[name]
+    if water is not None:
+        water = round(water * k)
+    return image(outline(bd.draw(name, pose, DETAIL, scale=k)), bd.colours(name), water=water)
 
 
 def crop(img):
@@ -59,28 +65,31 @@ def anims(name):
     if name == "eagle-perch":
         return {"perch": ([crop(frame(sb.EAGLE, "rest"))], 1, False)}
     if name == "sparrow-perch":
-        return {"perch": ([crop(image(outline(bd.draw("sparrow", "perch", DETAIL)), bd.colours("sparrow")))], 1, False)}
+        return {"perch": ([crop(image(outline(bd.draw("sparrow", "perch", DETAIL, scale=scale.BIRDS["sparrow"])), bd.colours("sparrow")))], 1, False)}
     if name == "mallard-swim":
-        return {"drake": ([frame(sb.MALLARD, "rest", 9)], 1, False), "hen": ([frame(sb.HEN, "rest", 9)], 1, False)}
+        w = round(9 * scale.BIRDS["mallard"])
+        return {"drake": ([frame(sb.MALLARD, "rest", 9)], 1, False, {"waterline": w}), "hen": ([frame(sb.HEN, "rest", 9)], 1, False)}
     if name == "loon":
-        return {"swim": ([frame(sb.LOON, "rest", 9)], 1, False), "dive": ([frame(sb.LOON, "dive", 9)], 1, False)}
+        w = round(9 * scale.BIRDS["loon"])
+        return {"swim": ([frame(sb.LOON, "rest", 9)], 1, False, {"waterline": w}), "dive": ([frame(sb.LOON, "dive", 9)], 1, False)}
     raise KeyError(name)
 
 
 def sheet(name):
     a = anims(name)
-    imgs = [f for fs, _, _ in a.values() for f in fs]
+    imgs = [f for t in a.values() for f in t[0]]
     fw, fh = imgs[0].size
     strip = Image.new("RGBA", (fw * len(imgs), fh))
     index, n = {}, 0
-    for an, (fs, fps, loop) in a.items():
-        index[an] = {"frames": list(range(n, n + len(fs))), "fps": fps, "loop": loop}
+    for an, t in a.items():
+        fs, fps, loop = t[:3]
+        index[an] = {"frames": list(range(n, n + len(fs))), "fps": fps, "loop": loop, **(t[3] if len(t) > 3 else {})}
         n += len(fs)
     for k, f in enumerate(imgs):
         strip.alpha_composite(f, (k * fw, 0))
     strip.save(ART / f"{name}.png")
     (ART / f"{name}.json").write_text(json.dumps({"frameWidth": fw, "frameHeight": fh, "animations": index}, indent=1) + "\n")
-    preview(name, {an: (fs, fps) for an, (fs, fps, _) in a.items()}, fw, fh)
+    preview(name, {an: (t[0], t[1]) for an, t in a.items()}, fw, fh)
     return strip, index, fw, fh
 
 

@@ -166,194 +166,194 @@
   },
   "deer": {
    "url": "assets/art/characters/deer.png",
-   "frameWidth": 46,
-   "frameHeight": 42,
+   "frameWidth": 45,
+   "frameHeight": 41,
    "frames": 18
   },
   "buck": {
    "url": "assets/art/characters/buck.png",
-   "frameWidth": 54,
-   "frameHeight": 54,
+   "frameWidth": 53,
+   "frameHeight": 53,
    "frames": 18
   },
   "fox": {
    "url": "assets/art/characters/fox.png",
-   "frameWidth": 42,
-   "frameHeight": 27,
+   "frameWidth": 25,
+   "frameHeight": 17,
    "frames": 14
   },
   "hare": {
    "url": "assets/art/characters/hare.png",
-   "frameWidth": 30,
-   "frameHeight": 37,
+   "frameWidth": 13,
+   "frameHeight": 16,
    "frames": 20
   },
   "bear": {
    "url": "assets/art/characters/bear.png",
-   "frameWidth": 46,
+   "frameWidth": 45,
    "frameHeight": 31,
    "frames": 14
   },
   "gull": {
    "url": "assets/art/characters/gull.png",
-   "frameWidth": 32,
-   "frameHeight": 31,
+   "frameWidth": 11,
+   "frameHeight": 11,
    "frames": 5
   },
   "sparrow": {
    "url": "assets/art/characters/sparrow.png",
-   "frameWidth": 15,
-   "frameHeight": 12,
+   "frameWidth": 5,
+   "frameHeight": 4,
    "frames": 11
   },
   "mallard": {
    "url": "assets/art/characters/mallard.png",
-   "frameWidth": 25,
-   "frameHeight": 21,
+   "frameWidth": 14,
+   "frameHeight": 12,
    "frames": 8
   },
   "eagle": {
    "url": "assets/art/characters/eagle.png",
-   "frameWidth": 42,
-   "frameHeight": 40,
+   "frameWidth": 25,
+   "frameHeight": 24,
    "frames": 5
   },
   "loon": {
    "url": "assets/art/characters/loon.png",
-   "frameWidth": 36,
-   "frameHeight": 15,
+   "frameWidth": 20,
+   "frameHeight": 8,
    "frames": 2
   },
   "gull-stand": {
    "url": "assets/art/characters/gull-stand.png",
-   "frameWidth": 31,
-   "frameHeight": 22,
+   "frameWidth": 11,
+   "frameHeight": 9,
    "frames": 1
   },
   "eagle-perch": {
    "url": "assets/art/characters/eagle-perch.png",
-   "frameWidth": 22,
-   "frameHeight": 32,
+   "frameWidth": 13,
+   "frameHeight": 19,
    "frames": 1
   },
   "sparrow-perch": {
    "url": "assets/art/characters/sparrow-perch.png",
-   "frameWidth": 15,
-   "frameHeight": 12,
+   "frameWidth": 5,
+   "frameHeight": 5,
    "frames": 1
   },
   "mallard-swim": {
    "url": "assets/art/characters/mallard-swim.png",
-   "frameWidth": 25,
-   "frameHeight": 12,
+   "frameWidth": 14,
+   "frameHeight": 7,
    "frames": 2
   },
   "fish-bluegill": {
    "url": "assets/art/fish/bluegill.png",
-   "frameWidth": 21,
-   "frameHeight": 21,
+   "frameWidth": 6,
+   "frameHeight": 11,
    "frames": 6
   },
   "fish-pumpkinseed": {
    "url": "assets/art/fish/pumpkinseed.png",
-   "frameWidth": 21,
-   "frameHeight": 21,
+   "frameWidth": 6,
+   "frameHeight": 11,
    "frames": 6
   },
   "fish-perch": {
    "url": "assets/art/fish/perch.png",
-   "frameWidth": 23,
-   "frameHeight": 16,
+   "frameWidth": 7,
+   "frameHeight": 10,
    "frames": 6
   },
   "fish-crappie": {
    "url": "assets/art/fish/crappie.png",
-   "frameWidth": 23,
-   "frameHeight": 24,
+   "frameWidth": 8,
+   "frameHeight": 11,
    "frames": 6
   },
   "fish-whitebass": {
    "url": "assets/art/fish/whitebass.png",
-   "frameWidth": 26,
-   "frameHeight": 19,
+   "frameWidth": 11,
+   "frameHeight": 12,
    "frames": 6
   },
   "fish-carp": {
    "url": "assets/art/fish/carp.png",
-   "frameWidth": 36,
-   "frameHeight": 20,
+   "frameWidth": 17,
+   "frameHeight": 14,
    "frames": 6
   },
   "fish-bass": {
    "url": "assets/art/fish/bass.png",
-   "frameWidth": 28,
-   "frameHeight": 17,
+   "frameWidth": 11,
+   "frameHeight": 11,
    "frames": 6
   },
   "fish-largemouth": {
    "url": "assets/art/fish/largemouth.png",
-   "frameWidth": 30,
-   "frameHeight": 18,
+   "frameWidth": 12,
+   "frameHeight": 12,
    "frames": 6
   },
   "fish-trout": {
    "url": "assets/art/fish/trout.png",
-   "frameWidth": 26,
-   "frameHeight": 16,
+   "frameWidth": 11,
+   "frameHeight": 11,
    "frames": 6
   },
   "fish-rainbow": {
    "url": "assets/art/fish/rainbow.png",
-   "frameWidth": 30,
-   "frameHeight": 17,
+   "frameWidth": 14,
+   "frameHeight": 11,
    "frames": 6
   },
   "fish-channelcat": {
    "url": "assets/art/fish/channelcat.png",
-   "frameWidth": 36,
-   "frameHeight": 17,
+   "frameWidth": 18,
+   "frameHeight": 13,
    "frames": 6
   },
   "fish-drum": {
    "url": "assets/art/fish/drum.png",
-   "frameWidth": 29,
-   "frameHeight": 20,
+   "frameWidth": 14,
+   "frameHeight": 14,
    "frames": 6
   },
   "fish-walleye": {
    "url": "assets/art/fish/walleye.png",
-   "frameWidth": 33,
-   "frameHeight": 17,
+   "frameWidth": 13,
+   "frameHeight": 12,
    "frames": 6
   },
   "fish-catfish": {
    "url": "assets/art/fish/catfish.png",
-   "frameWidth": 31,
-   "frameHeight": 16,
+   "frameWidth": 14,
+   "frameHeight": 13,
    "frames": 6
   },
   "fish-pike": {
    "url": "assets/art/fish/pike.png",
-   "frameWidth": 39,
-   "frameHeight": 16,
+   "frameWidth": 17,
+   "frameHeight": 13,
    "frames": 6
   },
   "fish-muskie": {
    "url": "assets/art/fish/muskie.png",
-   "frameWidth": 45,
-   "frameHeight": 19,
+   "frameWidth": 27,
+   "frameHeight": 14,
    "frames": 6
   },
   "fish-golden": {
    "url": "assets/art/fish/golden.png",
-   "frameWidth": 47,
-   "frameHeight": 15,
+   "frameWidth": 35,
+   "frameHeight": 14,
    "frames": 6
   },
   "minnow": {
    "url": "assets/art/characters/minnow.png",
-   "frameWidth": 16,
-   "frameHeight": 11,
+   "frameWidth": 7,
+   "frameHeight": 9,
    "frames": 4
   },
   "splash": {
@@ -418,8 +418,8 @@
   },
   "olive": {
    "url": "assets/art/characters/olive/olive.png",
-   "frameWidth": 42,
-   "frameHeight": 36,
+   "frameWidth": 28,
+   "frameHeight": 24,
    "frames": 36
   }
  },
@@ -631,7 +631,16 @@
      ],
      "fps": 8,
      "loop": true,
-     "step": 1
+     "steps": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1
+     ]
     },
     "idle": {
      "frames": [
@@ -664,7 +673,16 @@
      ],
      "fps": 8,
      "loop": true,
-     "step": 1
+     "steps": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0
+     ]
     },
     "idle": {
      "frames": [
@@ -699,13 +717,13 @@
      "loop": true,
      "steps": [
       1,
+      0,
       1,
       1,
-      2,
+      0,
       1,
-      1,
-      1,
-      2
+      0,
+      1
      ]
     },
     "idle": {
@@ -739,10 +757,10 @@
      "loop": true,
      "steps": [
       0,
-      4,
-      6,
-      5,
+      1,
       3,
+      1,
+      1,
       1,
       0,
       0,
@@ -781,7 +799,16 @@
      ],
      "fps": 7,
      "loop": true,
-     "step": 1
+     "steps": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1
+     ]
     },
     "idle": {
      "frames": [
@@ -881,7 +908,8 @@
       0
      ],
      "fps": 1,
-     "loop": false
+     "loop": false,
+     "waterline": 5
     },
     "dive": {
      "frames": [
@@ -924,7 +952,8 @@
       0
      ],
      "fps": 1,
-     "loop": false
+     "loop": false,
+     "waterline": 5
     },
     "hen": {
      "frames": [
@@ -949,72 +978,72 @@
   },
   "fish": {
    "bluegill": {
-    "w": 21,
-    "h": 17
+    "w": 6,
+    "h": 7
    },
    "pumpkinseed": {
-    "w": 21,
-    "h": 17
+    "w": 6,
+    "h": 7
    },
    "perch": {
-    "w": 23,
-    "h": 12
+    "w": 7,
+    "h": 6
    },
    "crappie": {
-    "w": 23,
-    "h": 20
+    "w": 8,
+    "h": 7
    },
    "whitebass": {
-    "w": 26,
-    "h": 15
+    "w": 11,
+    "h": 8
    },
    "carp": {
-    "w": 36,
-    "h": 16
+    "w": 17,
+    "h": 10
    },
    "bass": {
-    "w": 28,
-    "h": 13
+    "w": 11,
+    "h": 7
    },
    "largemouth": {
-    "w": 30,
-    "h": 14
+    "w": 12,
+    "h": 8
    },
    "trout": {
-    "w": 26,
-    "h": 12
+    "w": 11,
+    "h": 7
    },
    "rainbow": {
-    "w": 30,
-    "h": 13
+    "w": 14,
+    "h": 7
    },
    "channelcat": {
-    "w": 36,
-    "h": 13
+    "w": 18,
+    "h": 9
    },
    "drum": {
-    "w": 29,
-    "h": 16
+    "w": 14,
+    "h": 10
    },
    "walleye": {
-    "w": 33,
-    "h": 13
+    "w": 13,
+    "h": 8
    },
    "catfish": {
-    "w": 31,
-    "h": 12
+    "w": 14,
+    "h": 9
    },
    "pike": {
-    "w": 39,
-    "h": 12
+    "w": 17,
+    "h": 9
    },
    "muskie": {
-    "w": 45,
-    "h": 15
+    "w": 27,
+    "h": 10
    },
    "golden": {
-    "w": 47,
-    "h": 11
+    "w": 35,
+    "h": 10
    }
   },
   "journal": {
@@ -1059,7 +1088,16 @@
     ],
     "fps": 10,
     "loop": true,
-    "step": 1
+    "steps": [
+     1,
+     0,
+     1,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
    },
    "run": {
     "frames": [
@@ -1073,12 +1111,12 @@
     "fps": 14,
     "loop": true,
     "steps": [
+     2,
+     2,
      3,
-     4,
-     4,
-     4,
-     4,
-     4
+     2,
+     2,
+     3
     ]
    },
    "leap": {
@@ -1099,7 +1137,8 @@
      27
     ],
     "fps": 6,
-    "loop": true
+    "loop": true,
+    "waterline": 13
    },
    "shake": {
     "frames": [
@@ -1117,8 +1156,8 @@
    }
   },
   "olive-at": {
-   "feet": 35,
-   "waterline": 22
+   "feet": 21,
+   "waterline": 13
   }
  },
  "palette": [

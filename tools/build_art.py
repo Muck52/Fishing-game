@@ -10,6 +10,7 @@ changing anything in assets/source/:
 Credits for every pack are in assets/CREDITS.md.
 """
 import json
+import sys
 import math
 from pathlib import Path
 
@@ -398,6 +399,9 @@ def shrink(img, length):
     return Image.fromarray(out)
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "characters"))
+import scale  # noqa: E402  (study 13: true sizes)
+
 FISH_STYLE = "C"  # study 10: their own colours, the cast's eye and proportions, full detail
 
 
@@ -407,7 +411,7 @@ def fish():
     colours they're painted in (study 10), not snapped to the pack palette."""
     info = {}
     for sid in fish_art.SPECIES:
-        img = fish_art.paint(sid, fish_art.LENGTH[sid], style=FISH_STYLE)
+        img = fish_art.paint(sid, scale.fish_length(sid), style=FISH_STYLE)  # true length (study 13)
         card = fish_art.paint(sid, min(150, round(fish_art.LENGTH[sid] * 3.4)), card=True, style=FISH_STYLE)
         w, h = img.size
         frames = fish_art.swim_frames(img)
@@ -416,7 +420,7 @@ def fish():
         info[sid] = {"w": w, "h": h}
     manifest["anchors"]["fish"] = info
     # the minnows, painted the same way
-    img = fish_art.paint("minnow", 12, style=FISH_STYLE)
+    img = fish_art.paint("minnow", scale.fish_length("minnow"), style=FISH_STYLE)
     frames = fish_art.swim_frames(img, 4)
     save(strip(frames), "characters/minnow.png", key="minnow", frame=(img.width, img.height + 4), frames=4, grade=False)
     manifest["anchors"]["creatures"]["minnow"] = {"swim": {"frames": [0, 1, 2, 3], "fps": 8, "loop": True}}
@@ -972,7 +976,7 @@ def olive():
     strip, index, fw, fh, spec = land.sheet("olive", "olive")  # also writes her json and previews
     save(strip, "characters/olive/olive.png", key="olive", frame=(fw, fh), frames=strip.width // fw, grade=False)
     manifest["anchors"]["olive"] = index
-    manifest["anchors"]["olive-at"] = {"feet": spec["ground"] + 1, "waterline": land.WATERLINE}
+    manifest["anchors"]["olive-at"] = {"feet": round(spec["ground"]) + 1, "waterline": index["swim"]["waterline"]}
 
 
 # ---------------------------------------------------------------- fonts

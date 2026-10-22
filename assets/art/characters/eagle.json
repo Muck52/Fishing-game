@@ -1,6 +1,6 @@
 {
- "frameWidth": 42,
- "frameHeight": 40,
+ "frameWidth": 25,
+ "frameHeight": 24,
  "animations": {
   "fly": {
    "frames": [

@@ -23,8 +23,9 @@ const origin = () => {
 const DECK = { min: 258, max: 322 }; // where she potters about, behind the angler
 const EDGE = HUT_X + 6; // she springs off the end of the walkway here
 const BANK = { x: 132, y: SURFACE_Y - 4 }; // where she climbs out on the far bank
-const WALK_STEP = 1; // px per walk frame
-const RUN_STEP = 4; // px per gallop frame
+// how far she moves on frame i of her walk or gallop, from her gait as
+// it was drawn (tools/characters/land.py), at her true size
+const stepOf = (anim, i) => ART.anchors.olive[anim].steps[i];
 const SWIM_SPEED = 16; // px per second
 
 export class Olive {
@@ -35,7 +36,7 @@ export class Olive {
     this.s = scene.add.sprite(R(DECK.min + 10, DECK.max), DECK_Y, 'olive', 0).setOrigin(0.5, this.FEET).setDepth(DEPTH.ANGLER - 0.5);
     this.dir = 0; // -1 walking left, +1 right
     this.target = null;
-    this.s.on('animationupdate', (anim) => this.step(anim.key));
+    this.s.on('animationupdate', (anim, frame) => this.step(anim.key, frame.index - 1));
     this.onDeck();
   }
 
@@ -68,9 +69,9 @@ export class Olive {
   }
 
   // Called on each new frame of her walk or run: move by that frame's step.
-  step(key) {
+  step(key, i) {
     if (!this.dir || (key !== 'olive-walk' && key !== 'olive-run')) return;
-    this.s.x += this.dir * (key === 'olive-run' ? RUN_STEP : WALK_STEP);
+    this.s.x += this.dir * stepOf(key === 'olive-run' ? 'run' : 'walk', i);
     if ((this.dir < 0 && this.s.x <= this.target) || (this.dir > 0 && this.s.x >= this.target)) {
       this.dir = 0;
       // changing animation inside its own frame event confuses Phaser

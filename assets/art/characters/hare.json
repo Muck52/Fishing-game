@@ -1,6 +1,6 @@
 {
- "frameWidth": 30,
- "frameHeight": 37,
+ "frameWidth": 13,
+ "frameHeight": 16,
  "animations": {
   "walk": {
    "frames": [
@@ -19,10 +19,10 @@
    "loop": true,
    "steps": [
     0,
-    4,
-    6,
-    5,
+    1,
     3,
+    1,
+    1,
     1,
     0,
     0,
