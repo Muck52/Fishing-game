@@ -1,0 +1,30 @@
+# Decisions
+
+Newest first. Each one: what we decided, when, and why.
+
+## 2026-10-22: Research before new modes
+
+New game modes are on hold. The work goes into the game we have: research,
+then a materials library, practice studies, and replacing the pack art so
+everything on screen is ours and follows one set of rules. We do it
+together: Claude researches, drafts and builds; you set the direction and
+make the calls.
+
+## 2026-10-22: Creatures are finished the same way
+
+Every creature goes through the kit's finishing passes: cleanup, hue-shifted
+light and shade, selective outline on the lit top of light parts; tilted
+frames turn the RotSprite way. Each has a Pixelorama project; hand edits go
+on its touch-ups layer.
+
+## 2026-10-21: One kit for every creature
+
+Olive and all the animals are drawn by our own scripts with one kit: side-on,
+lit from above, one palette and outline, real proportions on one scale (half
+a pixel to the inch, small animals drawn up to 1.6x), legs through their
+joints, real gaits, birds seen from below.
+
+## 2026-10-21: The palette is fixed
+
+`tools/palette.json` holds the master palette; redrawing art never shifts
+it. Creature shades are added to it as they're made.

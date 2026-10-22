@@ -1,0 +1,1856 @@
+{
+ "angler": {
+  "size": [
+   48,
+   48
+  ],
+  "pixels": 481,
+  "colours": 9,
+  "outline": 1.0,
+  "cluster": 2.18,
+  "noise": 0.025,
+  "dither": 0.008,
+  "doubled": 0.34,
+  "hue_shift": 50.5,
+  "contrast": 0.189,
+  "saturation": 0.427,
+  "origin": "craftpix fishing",
+  "url": "assets/art/characters/angler.png"
+ },
+ "backpack": {
+  "size": [
+   24,
+   24
+  ],
+  "pixels": 278,
+  "colours": 9,
+  "outline": 0.97,
+  "cluster": 2.46,
+  "noise": 0.014,
+  "dither": 0.0,
+  "doubled": 0.22,
+  "hue_shift": 33.9,
+  "contrast": 0.169,
+  "saturation": 0.527,
+  "origin": "ours",
+  "url": "assets/art/ui/backpack.png"
+ },
+ "barrel": {
+  "size": [
+   22,
+   25
+  ],
+  "pixels": 457,
+  "colours": 12,
+  "outline": 1.0,
+  "cluster": 2.37,
+  "noise": 0.02,
+  "dither": 0.0,
+  "doubled": 0.35,
+  "hue_shift": 16.7,
+  "contrast": 0.247,
+  "saturation": 0.404,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/barrel.png"
+ },
+ "bear": {
+  "size": [
+   38,
+   24
+  ],
+  "pixels": 476,
+  "colours": 13,
+  "outline": 1.0,
+  "cluster": 2.96,
+  "noise": 0.109,
+  "dither": 0.0,
+  "doubled": 0.4,
+  "hue_shift": -87.1,
+  "contrast": 0.077,
+  "saturation": 0.291,
+  "origin": "ours",
+  "url": "assets/art/characters/bear.png"
+ },
+ "bed-clam-small": {
+  "size": [
+   20,
+   11
+  ],
+  "pixels": 158,
+  "colours": 18,
+  "outline": 0.24,
+  "cluster": 1.26,
+  "noise": 0.386,
+  "dither": 0.032,
+  "doubled": 0.0,
+  "hue_shift": 32.1,
+  "contrast": 0.247,
+  "saturation": 0.393,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-clam-small.png"
+ },
+ "bed-sand-pit-2": {
+  "size": [
+   46,
+   20
+  ],
+  "pixels": 599,
+  "colours": 27,
+  "outline": 0.0,
+  "cluster": 1.18,
+  "noise": 0.601,
+  "dither": 0.021,
+  "doubled": 0.0,
+  "hue_shift": -2.8,
+  "contrast": 0.141,
+  "saturation": 0.468,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sand-pit-2.png"
+ },
+ "bed-sand-pit-3": {
+  "size": [
+   46,
+   16
+  ],
+  "pixels": 396,
+  "colours": 21,
+  "outline": 0.0,
+  "cluster": 1.21,
+  "noise": 0.578,
+  "dither": 0.009,
+  "doubled": 0.0,
+  "hue_shift": 3.0,
+  "contrast": 0.127,
+  "saturation": 0.461,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sand-pit-3.png"
+ },
+ "bed-sand-pit-4": {
+  "size": [
+   43,
+   22
+  ],
+  "pixels": 448,
+  "colours": 26,
+  "outline": 0.0,
+  "cluster": 1.14,
+  "noise": 0.634,
+  "dither": 0.008,
+  "doubled": 0.01,
+  "hue_shift": -4.6,
+  "contrast": 0.146,
+  "saturation": 0.464,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sand-pit-4.png"
+ },
+ "bed-sand-pit-5": {
+  "size": [
+   43,
+   22
+  ],
+  "pixels": 448,
+  "colours": 28,
+  "outline": 0.0,
+  "cluster": 1.15,
+  "noise": 0.589,
+  "dither": 0.013,
+  "doubled": 0.02,
+  "hue_shift": -5.8,
+  "contrast": 0.152,
+  "saturation": 0.464,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sand-pit-5.png"
+ },
+ "bed-sea-bush-weed-1": {
+  "size": [
+   24,
+   26
+  ],
+  "pixels": 253,
+  "colours": 13,
+  "outline": 0.01,
+  "cluster": 1.17,
+  "noise": 0.281,
+  "dither": 0.045,
+  "doubled": 0.0,
+  "hue_shift": -6.3,
+  "contrast": 0.135,
+  "saturation": 0.441,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sea-bush-weed-1.png"
+ },
+ "bed-sea-bush-weed-2": {
+  "size": [
+   20,
+   21
+  ],
+  "pixels": 152,
+  "colours": 12,
+  "outline": 0.06,
+  "cluster": 1.23,
+  "noise": 0.276,
+  "dither": 0.0,
+  "doubled": 0.06,
+  "hue_shift": -5.9,
+  "contrast": 0.135,
+  "saturation": 0.442,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sea-bush-weed-2.png"
+ },
+ "bed-sea-flora-plant-1": {
+  "size": [
+   19,
+   34
+  ],
+  "pixels": 163,
+  "colours": 12,
+  "outline": 0.02,
+  "cluster": 1.18,
+  "noise": 0.491,
+  "dither": 0.091,
+  "doubled": 0.07,
+  "hue_shift": 9.5,
+  "contrast": 0.215,
+  "saturation": 0.482,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sea-flora-plant-1.png"
+ },
+ "bed-sea-flora-plant-2": {
+  "size": [
+   16,
+   34
+  ],
+  "pixels": 146,
+  "colours": 13,
+  "outline": 0.0,
+  "cluster": 1.17,
+  "noise": 0.473,
+  "dither": 0.031,
+  "doubled": 0.0,
+  "hue_shift": -25.3,
+  "contrast": 0.243,
+  "saturation": 0.393,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sea-flora-plant-2.png"
+ },
+ "bed-sea-flora-plant-3": {
+  "size": [
+   21,
+   35
+  ],
+  "pixels": 138,
+  "colours": 14,
+  "outline": 0.02,
+  "cluster": 1.1,
+  "noise": 0.609,
+  "dither": 0.054,
+  "doubled": 0.0,
+  "hue_shift": -27.8,
+  "contrast": 0.156,
+  "saturation": 0.489,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sea-flora-plant-3.png"
+ },
+ "bed-sea-flora-plant-4": {
+  "size": [
+   24,
+   35
+  ],
+  "pixels": 163,
+  "colours": 14,
+  "outline": 0.02,
+  "cluster": 1.16,
+  "noise": 0.472,
+  "dither": 0.023,
+  "doubled": 0.0,
+  "hue_shift": 10.0,
+  "contrast": 0.258,
+  "saturation": 0.446,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-sea-flora-plant-4.png"
+ },
+ "bed-seaweed-1": {
+  "size": [
+   10,
+   34
+  ],
+  "pixels": 94,
+  "colours": 13,
+  "outline": 0.11,
+  "cluster": 1.24,
+  "noise": 0.266,
+  "dither": 0.06,
+  "doubled": 0.09,
+  "hue_shift": -0.7,
+  "contrast": 0.143,
+  "saturation": 0.429,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-seaweed-1.png"
+ },
+ "bed-seaweed-2": {
+  "size": [
+   11,
+   31
+  ],
+  "pixels": 78,
+  "colours": 14,
+  "outline": 0.05,
+  "cluster": 1.22,
+  "noise": 0.397,
+  "dither": 0.086,
+  "doubled": 0.11,
+  "hue_shift": 9.4,
+  "contrast": 0.153,
+  "saturation": 0.392,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-seaweed-2.png"
+ },
+ "bed-seaweed-3": {
+  "size": [
+   21,
+   33
+  ],
+  "pixels": 129,
+  "colours": 10,
+  "outline": 0.06,
+  "cluster": 1.26,
+  "noise": 0.341,
+  "dither": 0.028,
+  "doubled": 0.0,
+  "hue_shift": -3.2,
+  "contrast": 0.158,
+  "saturation": 0.44,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-seaweed-3.png"
+ },
+ "bed-seaweed-4": {
+  "size": [
+   20,
+   31
+  ],
+  "pixels": 147,
+  "colours": 10,
+  "outline": 0.01,
+  "cluster": 1.37,
+  "noise": 0.32,
+  "dither": 0.0,
+  "doubled": 0.1,
+  "hue_shift": 4.7,
+  "contrast": 0.137,
+  "saturation": 0.452,
+  "origin": "reactorcore",
+  "url": "assets/art/environments/bed-seaweed-4.png"
+ },
+ "board": {
+  "size": [
+   96,
+   96
+  ],
+  "pixels": 7392,
+  "colours": 8,
+  "outline": 0.0,
+  "cluster": 5.17,
+  "noise": 0.029,
+  "dither": 0.002,
+  "doubled": 0.59,
+  "hue_shift": 67.8,
+  "contrast": 0.139,
+  "saturation": 0.418,
+  "origin": "pixel frog",
+  "url": "assets/art/ui/board.png"
+ },
+ "boat": {
+  "size": [
+   86,
+   30
+  ],
+  "pixels": 861,
+  "colours": 6,
+  "outline": 0.75,
+  "cluster": 4.68,
+  "noise": 0.085,
+  "dither": 0.02,
+  "doubled": 0.26,
+  "hue_shift": 19.8,
+  "contrast": 0.164,
+  "saturation": 0.48,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/boat.png"
+ },
+ "bobber": {
+  "size": [
+   24,
+   24
+  ],
+  "pixels": 68,
+  "colours": 6,
+  "outline": 0.37,
+  "cluster": 2.43,
+  "noise": 0.103,
+  "dither": 0.0,
+  "doubled": 0.18,
+  "hue_shift": 39.4,
+  "contrast": 0.325,
+  "saturation": 0.315,
+  "origin": "nelson yiap",
+  "url": "assets/art/effects/bobber.png"
+ },
+ "branch": {
+  "size": [
+   32,
+   32
+  ],
+  "pixels": 369,
+  "colours": 7,
+  "outline": 0.52,
+  "cluster": 2.22,
+  "noise": 0.076,
+  "dither": 0.008,
+  "doubled": 0.28,
+  "hue_shift": 106.0,
+  "contrast": 0.092,
+  "saturation": 0.447,
+  "origin": "amberfall",
+  "url": "assets/art/effects/branch.png"
+ },
+ "bubble": {
+  "size": [
+   7,
+   7
+  ],
+  "pixels": 12,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 1.5,
+  "noise": 0.0,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": null,
+  "contrast": 0.0,
+  "saturation": 0.0,
+  "origin": "pixel frog",
+  "url": "assets/art/effects/bubble.png"
+ },
+ "bucket": {
+  "size": [
+   32,
+   32
+  ],
+  "pixels": 775,
+  "colours": 10,
+  "outline": 0.0,
+  "cluster": 2.84,
+  "noise": 0.018,
+  "dither": 0.0,
+  "doubled": 0.53,
+  "hue_shift": 46.2,
+  "contrast": 0.167,
+  "saturation": 0.402,
+  "origin": "craftpix fishing",
+  "url": "assets/art/ui/bucket.png"
+ },
+ "button": {
+  "size": [
+   14,
+   14
+  ],
+  "pixels": 184,
+  "colours": 5,
+  "outline": 0.0,
+  "cluster": 2.49,
+  "noise": 0.049,
+  "dither": 0.013,
+  "doubled": 0.13,
+  "hue_shift": 148.0,
+  "contrast": 0.228,
+  "saturation": 0.386,
+  "origin": "pixel frog",
+  "url": "assets/art/ui/button.png"
+ },
+ "card-bass": {
+  "size": [
+   85,
+   33
+  ],
+  "pixels": 1537,
+  "colours": 7,
+  "outline": 1.0,
+  "cluster": 2.97,
+  "noise": 0.041,
+  "dither": 0.007,
+  "doubled": 0.42,
+  "hue_shift": 21.3,
+  "contrast": 0.211,
+  "saturation": 0.513,
+  "origin": "ours",
+  "url": "assets/art/fish/bass-card.png"
+ },
+ "card-bluegill": {
+  "size": [
+   62,
+   44
+  ],
+  "pixels": 1604,
+  "colours": 12,
+  "outline": 1.0,
+  "cluster": 1.96,
+  "noise": 0.052,
+  "dither": 0.019,
+  "doubled": 0.3,
+  "hue_shift": 113.2,
+  "contrast": 0.198,
+  "saturation": 0.409,
+  "origin": "ours",
+  "url": "assets/art/fish/bluegill-card.png"
+ },
+ "card-carp": {
+  "size": [
+   115,
+   44
+  ],
+  "pixels": 2710,
+  "colours": 10,
+  "outline": 1.0,
+  "cluster": 1.84,
+  "noise": 0.138,
+  "dither": 0.09,
+  "doubled": 0.16,
+  "hue_shift": 31.0,
+  "contrast": 0.217,
+  "saturation": 0.531,
+  "origin": "ours",
+  "url": "assets/art/fish/carp-card.png"
+ },
+ "card-catfish": {
+  "size": [
+   98,
+   23
+  ],
+  "pixels": 1581,
+  "colours": 8,
+  "outline": 1.0,
+  "cluster": 2.75,
+  "noise": 0.051,
+  "dither": 0.006,
+  "doubled": 0.21,
+  "hue_shift": 55.2,
+  "contrast": 0.231,
+  "saturation": 0.447,
+  "origin": "ours",
+  "url": "assets/art/fish/catfish-card.png"
+ },
+ "card-channelcat": {
+  "size": [
+   112,
+   31
+  ],
+  "pixels": 1803,
+  "colours": 11,
+  "outline": 1.0,
+  "cluster": 3.13,
+  "noise": 0.04,
+  "dither": 0.009,
+  "doubled": 0.36,
+  "hue_shift": -2.3,
+  "contrast": 0.275,
+  "saturation": 0.307,
+  "origin": "ours",
+  "url": "assets/art/fish/channelcat-card.png"
+ },
+ "card-crappie": {
+  "size": [
+   72,
+   53
+  ],
+  "pixels": 1717,
+  "colours": 11,
+  "outline": 1.0,
+  "cluster": 2.21,
+  "noise": 0.05,
+  "dither": 0.014,
+  "doubled": 0.38,
+  "hue_shift": -85.0,
+  "contrast": 0.291,
+  "saturation": 0.189,
+  "origin": "ours",
+  "url": "assets/art/fish/crappie-card.png"
+ },
+ "card-drum": {
+  "size": [
+   91,
+   44
+  ],
+  "pixels": 2266,
+  "colours": 8,
+  "outline": 1.0,
+  "cluster": 3.01,
+  "noise": 0.026,
+  "dither": 0.006,
+  "doubled": 0.49,
+  "hue_shift": 9.9,
+  "contrast": 0.257,
+  "saturation": 0.215,
+  "origin": "ours",
+  "url": "assets/art/fish/drum-card.png"
+ },
+ "card-golden": {
+  "size": [
+   153,
+   25
+  ],
+  "pixels": 2388,
+  "colours": 8,
+  "outline": 1.0,
+  "cluster": 2.88,
+  "noise": 0.057,
+  "dither": 0.001,
+  "doubled": 0.35,
+  "hue_shift": 23.8,
+  "contrast": 0.254,
+  "saturation": 0.192,
+  "origin": "ours",
+  "url": "assets/art/fish/golden-card.png"
+ },
+ "card-largemouth": {
+  "size": [
+   95,
+   37
+  ],
+  "pixels": 1942,
+  "colours": 8,
+  "outline": 1.0,
+  "cluster": 4.24,
+  "noise": 0.04,
+  "dither": 0.019,
+  "doubled": 0.5,
+  "hue_shift": 32.2,
+  "contrast": 0.277,
+  "saturation": 0.372,
+  "origin": "ours",
+  "url": "assets/art/fish/largemouth-card.png"
+ },
+ "card-muskie": {
+  "size": [
+   146,
+   38
+  ],
+  "pixels": 2490,
+  "colours": 11,
+  "outline": 1.0,
+  "cluster": 3.73,
+  "noise": 0.059,
+  "dither": 0.006,
+  "doubled": 0.37,
+  "hue_shift": -9.4,
+  "contrast": 0.26,
+  "saturation": 0.351,
+  "origin": "ours",
+  "url": "assets/art/fish/muskie-card.png"
+ },
+ "card-perch": {
+  "size": [
+   72,
+   29
+  ],
+  "pixels": 1054,
+  "colours": 10,
+  "outline": 1.0,
+  "cluster": 2.08,
+  "noise": 0.049,
+  "dither": 0.011,
+  "doubled": 0.25,
+  "hue_shift": 6.8,
+  "contrast": 0.272,
+  "saturation": 0.408,
+  "origin": "ours",
+  "url": "assets/art/fish/perch-card.png"
+ },
+ "card-pike": {
+  "size": [
+   126,
+   32
+  ],
+  "pixels": 1850,
+  "colours": 12,
+  "outline": 1.0,
+  "cluster": 3.29,
+  "noise": 0.021,
+  "dither": 0.002,
+  "doubled": 0.32,
+  "hue_shift": 20.3,
+  "contrast": 0.288,
+  "saturation": 0.347,
+  "origin": "ours",
+  "url": "assets/art/fish/pike-card.png"
+ },
+ "card-pumpkinseed": {
+  "size": [
+   62,
+   43
+  ],
+  "pixels": 1547,
+  "colours": 10,
+  "outline": 1.0,
+  "cluster": 2.51,
+  "noise": 0.043,
+  "dither": 0.013,
+  "doubled": 0.47,
+  "hue_shift": 8.2,
+  "contrast": 0.18,
+  "saturation": 0.501,
+  "origin": "ours",
+  "url": "assets/art/fish/pumpkinseed-card.png"
+ },
+ "card-rainbow": {
+  "size": [
+   91,
+   29
+  ],
+  "pixels": 1382,
+  "colours": 10,
+  "outline": 1.0,
+  "cluster": 3.41,
+  "noise": 0.047,
+  "dither": 0.006,
+  "doubled": 0.35,
+  "hue_shift": 130.7,
+  "contrast": 0.289,
+  "saturation": 0.259,
+  "origin": "ours",
+  "url": "assets/art/fish/rainbow-card.png"
+ },
+ "card-trout": {
+  "size": [
+   81,
+   28
+  ],
+  "pixels": 1212,
+  "colours": 14,
+  "outline": 1.0,
+  "cluster": 2.4,
+  "noise": 0.079,
+  "dither": 0.009,
+  "doubled": 0.25,
+  "hue_shift": 18.0,
+  "contrast": 0.179,
+  "saturation": 0.403,
+  "origin": "ours",
+  "url": "assets/art/fish/trout-card.png"
+ },
+ "card-walleye": {
+  "size": [
+   102,
+   32
+  ],
+  "pixels": 1677,
+  "colours": 11,
+  "outline": 1.0,
+  "cluster": 2.93,
+  "noise": 0.023,
+  "dither": 0.001,
+  "doubled": 0.42,
+  "hue_shift": 50.2,
+  "contrast": 0.293,
+  "saturation": 0.371,
+  "origin": "ours",
+  "url": "assets/art/fish/walleye-card.png"
+ },
+ "card-whitebass": {
+  "size": [
+   78,
+   39
+  ],
+  "pixels": 1538,
+  "colours": 10,
+  "outline": 1.0,
+  "cluster": 2.46,
+  "noise": 0.052,
+  "dither": 0.012,
+  "doubled": 0.26,
+  "hue_shift": 129.2,
+  "contrast": 0.293,
+  "saturation": 0.242,
+  "origin": "ours",
+  "url": "assets/art/fish/whitebass-card.png"
+ },
+ "cattails-1": {
+  "size": [
+   34,
+   33
+  ],
+  "pixels": 569,
+  "colours": 5,
+  "outline": 1.0,
+  "cluster": 1.6,
+  "noise": 0.044,
+  "dither": 0.011,
+  "doubled": 0.25,
+  "hue_shift": 8.4,
+  "contrast": 0.133,
+  "saturation": 0.512,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/cattails-1.png"
+ },
+ "cattails-2": {
+  "size": [
+   40,
+   25
+  ],
+  "pixels": 506,
+  "colours": 5,
+  "outline": 1.0,
+  "cluster": 1.64,
+  "noise": 0.067,
+  "dither": 0.012,
+  "doubled": 0.17,
+  "hue_shift": 10.9,
+  "contrast": 0.131,
+  "saturation": 0.514,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/cattails-2.png"
+ },
+ "cattails-3": {
+  "size": [
+   23,
+   24
+  ],
+  "pixels": 283,
+  "colours": 5,
+  "outline": 1.0,
+  "cluster": 1.55,
+  "noise": 0.071,
+  "dither": 0.005,
+  "doubled": 0.14,
+  "hue_shift": 13.6,
+  "contrast": 0.139,
+  "saturation": 0.503,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/cattails-3.png"
+ },
+ "cattails-4": {
+  "size": [
+   21,
+   23
+  ],
+  "pixels": 198,
+  "colours": 5,
+  "outline": 1.0,
+  "cluster": 1.51,
+  "noise": 0.066,
+  "dither": 0.007,
+  "doubled": 0.24,
+  "hue_shift": 9.6,
+  "contrast": 0.142,
+  "saturation": 0.5,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/cattails-4.png"
+ },
+ "cloud-1": {
+  "size": [
+   74,
+   24
+  ],
+  "pixels": 881,
+  "colours": 2,
+  "outline": 0.0,
+  "cluster": 12.59,
+  "noise": 0.006,
+  "dither": 0.003,
+  "doubled": 0.95,
+  "hue_shift": -0.7,
+  "contrast": 0.016,
+  "saturation": 0.105,
+  "origin": "pixel frog",
+  "url": "assets/art/environments/cloud-1.png"
+ },
+ "cloud-2": {
+  "size": [
+   133,
+   35
+  ],
+  "pixels": 2183,
+  "colours": 2,
+  "outline": 0.0,
+  "cluster": 17.33,
+  "noise": 0.004,
+  "dither": 0.002,
+  "doubled": 0.96,
+  "hue_shift": -0.5,
+  "contrast": 0.014,
+  "saturation": 0.105,
+  "origin": "pixel frog",
+  "url": "assets/art/environments/cloud-2.png"
+ },
+ "cloud-3": {
+  "size": [
+   140,
+   39
+  ],
+  "pixels": 2922,
+  "colours": 2,
+  "outline": 0.0,
+  "cluster": 20.58,
+  "noise": 0.003,
+  "dither": 0.002,
+  "doubled": 0.96,
+  "hue_shift": -0.4,
+  "contrast": 0.012,
+  "saturation": 0.106,
+  "origin": "pixel frog",
+  "url": "assets/art/environments/cloud-3.png"
+ },
+ "cloud-big": {
+  "size": [
+   183,
+   67
+  ],
+  "pixels": 5434,
+  "colours": 3,
+  "outline": 0.0,
+  "cluster": 11.61,
+  "noise": 0.003,
+  "dither": 0.003,
+  "doubled": 0.82,
+  "hue_shift": null,
+  "contrast": 0.072,
+  "saturation": 0.021,
+  "origin": "craftpix mountain river",
+  "url": "assets/art/environments/cloud-big.png"
+ },
+ "coin": {
+  "size": [
+   16,
+   16
+  ],
+  "pixels": 97,
+  "colours": 6,
+  "outline": 0.0,
+  "cluster": 1.59,
+  "noise": 0.186,
+  "dither": 0.013,
+  "doubled": 0.0,
+  "hue_shift": 103.9,
+  "contrast": 0.261,
+  "saturation": 0.368,
+  "origin": "pixel frog",
+  "url": "assets/art/ui/coin.png"
+ },
+ "deer": {
+  "size": [
+   40,
+   32
+  ],
+  "pixels": 479,
+  "colours": 15,
+  "outline": 0.87,
+  "cluster": 2.23,
+  "noise": 0.152,
+  "dither": 0.0,
+  "doubled": 0.37,
+  "hue_shift": 51.2,
+  "contrast": 0.242,
+  "saturation": 0.438,
+  "origin": "ours",
+  "url": "assets/art/characters/deer.png"
+ },
+ "drop": {
+  "size": [
+   1,
+   1
+  ],
+  "pixels": 1,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 1.0,
+  "noise": 1.0,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": null,
+  "contrast": 0.0,
+  "saturation": 0.08,
+  "origin": "ours",
+  "url": "assets/art/effects/drop.png"
+ },
+ "eagle": {
+  "size": [
+   40,
+   50
+  ],
+  "pixels": 451,
+  "colours": 17,
+  "outline": 0.92,
+  "cluster": 1.85,
+  "noise": 0.098,
+  "dither": 0.0,
+  "doubled": 0.33,
+  "hue_shift": 44.8,
+  "contrast": 0.214,
+  "saturation": 0.421,
+  "origin": "ours",
+  "url": "assets/art/characters/eagle.png"
+ },
+ "falls": {
+  "size": [
+   250,
+   204
+  ],
+  "pixels": 6845,
+  "colours": 5,
+  "outline": 0.0,
+  "cluster": 3.61,
+  "noise": 0.032,
+  "dither": 0.018,
+  "doubled": 0.27,
+  "hue_shift": null,
+  "contrast": 0.134,
+  "saturation": 0.091,
+  "origin": "craftpix mountain river",
+  "url": "assets/art/environments/falls.png"
+ },
+ "firefly": {
+  "size": [
+   5,
+   5
+  ],
+  "pixels": 5,
+  "colours": 2,
+  "outline": 0.0,
+  "cluster": 1.0,
+  "noise": 1.0,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": 2.7,
+  "contrast": 0.097,
+  "saturation": 0.547,
+  "origin": "ours",
+  "url": "assets/art/effects/firefly.png"
+ },
+ "fish-bass": {
+  "size": [
+   28,
+   17
+  ],
+  "pixels": 211,
+  "colours": 7,
+  "outline": 0.98,
+  "cluster": 2.18,
+  "noise": 0.123,
+  "dither": 0.019,
+  "doubled": 0.23,
+  "hue_shift": 50.1,
+  "contrast": 0.228,
+  "saturation": 0.466,
+  "origin": "ours",
+  "url": "assets/art/fish/bass.png"
+ },
+ "fish-bluegill": {
+  "size": [
+   21,
+   19
+  ],
+  "pixels": 195,
+  "colours": 9,
+  "outline": 0.98,
+  "cluster": 1.88,
+  "noise": 0.159,
+  "dither": 0.026,
+  "doubled": 0.29,
+  "hue_shift": 0.7,
+  "contrast": 0.183,
+  "saturation": 0.422,
+  "origin": "ours",
+  "url": "assets/art/fish/bluegill.png"
+ },
+ "fish-carp": {
+  "size": [
+   36,
+   18
+  ],
+  "pixels": 320,
+  "colours": 8,
+  "outline": 0.98,
+  "cluster": 3.14,
+  "noise": 0.059,
+  "dither": 0.008,
+  "doubled": 0.15,
+  "hue_shift": 63.6,
+  "contrast": 0.248,
+  "saturation": 0.515,
+  "origin": "ours",
+  "url": "assets/art/fish/carp.png"
+ },
+ "fish-catfish": {
+  "size": [
+   31,
+   14
+  ],
+  "pixels": 219,
+  "colours": 7,
+  "outline": 0.97,
+  "cluster": 3.53,
+  "noise": 0.068,
+  "dither": 0.006,
+  "doubled": 0.11,
+  "hue_shift": 64.5,
+  "contrast": 0.208,
+  "saturation": 0.485,
+  "origin": "ours",
+  "url": "assets/art/fish/catfish.png"
+ },
+ "fish-channelcat": {
+  "size": [
+   36,
+   16
+  ],
+  "pixels": 258,
+  "colours": 10,
+  "outline": 0.98,
+  "cluster": 2.37,
+  "noise": 0.14,
+  "dither": 0.037,
+  "doubled": 0.13,
+  "hue_shift": -0.8,
+  "contrast": 0.278,
+  "saturation": 0.348,
+  "origin": "ours",
+  "url": "assets/art/fish/channelcat.png"
+ },
+ "fish-crappie": {
+  "size": [
+   23,
+   20
+  ],
+  "pixels": 204,
+  "colours": 9,
+  "outline": 0.98,
+  "cluster": 2.04,
+  "noise": 0.152,
+  "dither": 0.025,
+  "doubled": 0.08,
+  "hue_shift": -10.3,
+  "contrast": 0.279,
+  "saturation": 0.251,
+  "origin": "ours",
+  "url": "assets/art/fish/crappie.png"
+ },
+ "fish-drum": {
+  "size": [
+   29,
+   20
+  ],
+  "pixels": 271,
+  "colours": 7,
+  "outline": 0.97,
+  "cluster": 2.79,
+  "noise": 0.092,
+  "dither": 0.018,
+  "doubled": 0.36,
+  "hue_shift": -10.6,
+  "contrast": 0.277,
+  "saturation": 0.248,
+  "origin": "ours",
+  "url": "assets/art/fish/drum.png"
+ },
+ "fish-golden": {
+  "size": [
+   46,
+   15
+  ],
+  "pixels": 308,
+  "colours": 6,
+  "outline": 1.0,
+  "cluster": 2.99,
+  "noise": 0.075,
+  "dither": 0.0,
+  "doubled": 0.13,
+  "hue_shift": 40.5,
+  "contrast": 0.282,
+  "saturation": 0.264,
+  "origin": "ours",
+  "url": "assets/art/fish/golden.png"
+ },
+ "fish-largemouth": {
+  "size": [
+   30,
+   18
+  ],
+  "pixels": 238,
+  "colours": 7,
+  "outline": 0.99,
+  "cluster": 2.48,
+  "noise": 0.092,
+  "dither": 0.016,
+  "doubled": 0.21,
+  "hue_shift": 79.7,
+  "contrast": 0.265,
+  "saturation": 0.414,
+  "origin": "ours",
+  "url": "assets/art/fish/largemouth.png"
+ },
+ "fish-muskie": {
+  "size": [
+   45,
+   17
+  ],
+  "pixels": 318,
+  "colours": 9,
+  "outline": 0.98,
+  "cluster": 3.18,
+  "noise": 0.075,
+  "dither": 0.012,
+  "doubled": 0.12,
+  "hue_shift": 63.2,
+  "contrast": 0.263,
+  "saturation": 0.396,
+  "origin": "ours",
+  "url": "assets/art/fish/muskie.png"
+ },
+ "fish-perch": {
+  "size": [
+   22,
+   15
+  ],
+  "pixels": 146,
+  "colours": 8,
+  "outline": 0.98,
+  "cluster": 2.06,
+  "noise": 0.164,
+  "dither": 0.019,
+  "doubled": 0.19,
+  "hue_shift": 79.4,
+  "contrast": 0.255,
+  "saturation": 0.409,
+  "origin": "ours",
+  "url": "assets/art/fish/perch.png"
+ },
+ "fish-pike": {
+  "size": [
+   39,
+   15
+  ],
+  "pixels": 244,
+  "colours": 9,
+  "outline": 0.99,
+  "cluster": 3.01,
+  "noise": 0.119,
+  "dither": 0.0,
+  "doubled": 0.16,
+  "hue_shift": 56.1,
+  "contrast": 0.279,
+  "saturation": 0.407,
+  "origin": "ours",
+  "url": "assets/art/fish/pike.png"
+ },
+ "fish-pumpkinseed": {
+  "size": [
+   21,
+   19
+  ],
+  "pixels": 193,
+  "colours": 8,
+  "outline": 0.98,
+  "cluster": 1.95,
+  "noise": 0.135,
+  "dither": 0.033,
+  "doubled": 0.23,
+  "hue_shift": 75.1,
+  "contrast": 0.211,
+  "saturation": 0.469,
+  "origin": "ours",
+  "url": "assets/art/fish/pumpkinseed.png"
+ },
+ "fish-rainbow": {
+  "size": [
+   30,
+   16
+  ],
+  "pixels": 194,
+  "colours": 6,
+  "outline": 0.96,
+  "cluster": 3.03,
+  "noise": 0.098,
+  "dither": 0.007,
+  "doubled": 0.09,
+  "hue_shift": 35.0,
+  "contrast": 0.285,
+  "saturation": 0.329,
+  "origin": "ours",
+  "url": "assets/art/fish/rainbow.png"
+ },
+ "fish-trout": {
+  "size": [
+   26,
+   15
+  ],
+  "pixels": 163,
+  "colours": 10,
+  "outline": 0.98,
+  "cluster": 2.4,
+  "noise": 0.092,
+  "dither": 0.008,
+  "doubled": 0.1,
+  "hue_shift": 62.0,
+  "contrast": 0.174,
+  "saturation": 0.471,
+  "origin": "ours",
+  "url": "assets/art/fish/trout.png"
+ },
+ "fish-walleye": {
+  "size": [
+   33,
+   16
+  ],
+  "pixels": 227,
+  "colours": 9,
+  "outline": 0.97,
+  "cluster": 2.7,
+  "noise": 0.106,
+  "dither": 0.012,
+  "doubled": 0.25,
+  "hue_shift": 71.1,
+  "contrast": 0.281,
+  "saturation": 0.356,
+  "origin": "ours",
+  "url": "assets/art/fish/walleye.png"
+ },
+ "fish-whitebass": {
+  "size": [
+   26,
+   18
+  ],
+  "pixels": 203,
+  "colours": 9,
+  "outline": 0.95,
+  "cluster": 2.28,
+  "noise": 0.123,
+  "dither": 0.007,
+  "doubled": 0.1,
+  "hue_shift": 6.4,
+  "contrast": 0.277,
+  "saturation": 0.294,
+  "origin": "ours",
+  "url": "assets/art/fish/whitebass.png"
+ },
+ "fox": {
+  "size": [
+   36,
+   20
+  ],
+  "pixels": 302,
+  "colours": 18,
+  "outline": 0.98,
+  "cluster": 1.89,
+  "noise": 0.189,
+  "dither": 0.009,
+  "doubled": 0.17,
+  "hue_shift": 46.2,
+  "contrast": 0.24,
+  "saturation": 0.462,
+  "origin": "ours",
+  "url": "assets/art/characters/fox.png"
+ },
+ "gull": {
+  "size": [
+   32,
+   34
+  ],
+  "pixels": 197,
+  "colours": 17,
+  "outline": 0.85,
+  "cluster": 1.58,
+  "noise": 0.218,
+  "dither": 0.0,
+  "doubled": 0.03,
+  "hue_shift": -3.5,
+  "contrast": 0.366,
+  "saturation": 0.229,
+  "origin": "ours",
+  "url": "assets/art/characters/gull.png"
+ },
+ "hare": {
+  "size": [
+   26,
+   18
+  ],
+  "pixels": 178,
+  "colours": 16,
+  "outline": 1.0,
+  "cluster": 1.71,
+  "noise": 0.219,
+  "dither": 0.0,
+  "doubled": 0.2,
+  "hue_shift": 51.8,
+  "contrast": 0.262,
+  "saturation": 0.414,
+  "origin": "ours",
+  "url": "assets/art/characters/hare.png"
+ },
+ "hook": {
+  "size": [
+   6,
+   9
+  ],
+  "pixels": 17,
+  "colours": 4,
+  "outline": 0.0,
+  "cluster": 1.0,
+  "noise": 0.647,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": 81.9,
+  "contrast": 0.166,
+  "saturation": 0.271,
+  "origin": "ours",
+  "url": "assets/art/effects/hook.png"
+ },
+ "hut": {
+  "size": [
+   192,
+   122
+  ],
+  "pixels": 10054,
+  "colours": 9,
+  "outline": 1.0,
+  "cluster": 2.91,
+  "noise": 0.006,
+  "dither": 0.004,
+  "doubled": 0.45,
+  "hue_shift": 49.5,
+  "contrast": 0.173,
+  "saturation": 0.469,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/hut.png"
+ },
+ "hut-lights": {
+  "size": [
+   192,
+   122
+  ],
+  "pixels": 712,
+  "colours": 3,
+  "outline": 0.0,
+  "cluster": 3.19,
+  "noise": 0.0,
+  "dither": 0.0,
+  "doubled": 0.87,
+  "hue_shift": 4.1,
+  "contrast": 0.083,
+  "saturation": 0.48,
+  "origin": "ours",
+  "url": "assets/art/environments/hut-lights.png"
+ },
+ "journal": {
+  "size": [
+   24,
+   24
+  ],
+  "pixels": 398,
+  "colours": 11,
+  "outline": 0.97,
+  "cluster": 2.34,
+  "noise": 0.075,
+  "dither": 0.011,
+  "doubled": 0.38,
+  "hue_shift": 28.4,
+  "contrast": 0.21,
+  "saturation": 0.508,
+  "origin": "ours",
+  "url": "assets/art/ui/journal.png"
+ },
+ "journal-held": {
+  "size": [
+   360,
+   464
+  ],
+  "pixels": 125750,
+  "colours": 15,
+  "outline": 0.81,
+  "cluster": 4.39,
+  "noise": 0.044,
+  "dither": 0.014,
+  "doubled": 0.65,
+  "hue_shift": 22.0,
+  "contrast": 0.204,
+  "saturation": 0.213,
+  "origin": "ours",
+  "url": "assets/art/ui/journal-held.png"
+ },
+ "lakebed": {
+  "size": [
+   360,
+   40
+  ],
+  "pixels": 12227,
+  "colours": 4,
+  "outline": 0.0,
+  "cluster": 8.42,
+  "noise": 0.037,
+  "dither": 0.005,
+  "doubled": 0.73,
+  "hue_shift": 36.3,
+  "contrast": 0.066,
+  "saturation": 0.179,
+  "origin": "reactorcore (sand) + ours",
+  "url": "assets/art/environments/lakebed.png"
+ },
+ "land": {
+  "size": [
+   576,
+   324
+  ],
+  "pixels": 129850,
+  "colours": 24,
+  "outline": 0.0,
+  "cluster": 8.19,
+  "noise": 0.005,
+  "dither": 0.005,
+  "doubled": 0.72,
+  "hue_shift": 32.2,
+  "contrast": 0.18,
+  "saturation": 0.397,
+  "origin": "craftpix mountain river",
+  "url": "assets/art/environments/land.png"
+ },
+ "light-ray": {
+  "size": [
+   30,
+   300
+  ],
+  "pixels": 1141,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 1.31,
+  "noise": 0.595,
+  "dither": 0.0,
+  "doubled": 1.0,
+  "hue_shift": 0.0,
+  "contrast": 0.0,
+  "saturation": 0.167,
+  "origin": "ours",
+  "url": "assets/art/effects/light-ray.png"
+ },
+ "mallard": {
+  "size": [
+   20,
+   26
+  ],
+  "pixels": 126,
+  "colours": 23,
+  "outline": 0.88,
+  "cluster": 1.38,
+  "noise": 0.262,
+  "dither": 0.01,
+  "doubled": 0.08,
+  "hue_shift": 75.6,
+  "contrast": 0.314,
+  "saturation": 0.316,
+  "origin": "ours",
+  "url": "assets/art/characters/mallard.png"
+ },
+ "minnow": {
+  "size": [
+   14,
+   7
+  ],
+  "pixels": 61,
+  "colours": 10,
+  "outline": 0.83,
+  "cluster": 2.54,
+  "noise": 0.131,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": 60.6,
+  "contrast": 0.324,
+  "saturation": 0.331,
+  "origin": "ours",
+  "url": "assets/art/characters/minnow.png"
+ },
+ "mist": {
+  "size": [
+   9,
+   9
+  ],
+  "pixels": 69,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 7.67,
+  "noise": 0.0,
+  "dither": 0.0,
+  "doubled": 1.0,
+  "hue_shift": null,
+  "contrast": 0.0,
+  "saturation": 0.056,
+  "origin": "ours",
+  "url": "assets/art/effects/mist.png"
+ },
+ "mote": {
+  "size": [
+   1,
+   1
+  ],
+  "pixels": 1,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 1.0,
+  "noise": 1.0,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": 0.0,
+  "contrast": 0.0,
+  "saturation": 0.176,
+  "origin": "ours",
+  "url": "assets/art/effects/mote.png"
+ },
+ "mountains": {
+  "size": [
+   576,
+   324
+  ],
+  "pixels": 174073,
+  "colours": 3,
+  "outline": 0.0,
+  "cluster": 22.13,
+  "noise": 0.002,
+  "dither": 0.002,
+  "doubled": 0.92,
+  "hue_shift": 2.0,
+  "contrast": 0.177,
+  "saturation": 0.358,
+  "origin": "craftpix mountain river",
+  "url": "assets/art/environments/mountains.png"
+ },
+ "olive": {
+  "size": [
+   40,
+   30
+  ],
+  "pixels": 436,
+  "colours": 24,
+  "outline": 0.96,
+  "cluster": 1.97,
+  "noise": 0.165,
+  "dither": 0.0,
+  "doubled": 0.31,
+  "hue_shift": 34.6,
+  "contrast": 0.264,
+  "saturation": 0.272,
+  "origin": "ours",
+  "url": "assets/art/characters/olive/olive.png"
+ },
+ "post-wet": {
+  "size": [
+   8,
+   64
+  ],
+  "pixels": 512,
+  "colours": 4,
+  "outline": 0.91,
+  "cluster": 2.23,
+  "noise": 0.0,
+  "dither": 0.0,
+  "doubled": 0.31,
+  "hue_shift": -56.4,
+  "contrast": 0.131,
+  "saturation": 0.526,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/post-wet.png"
+ },
+ "ripple": {
+  "size": [
+   32,
+   32
+  ],
+  "pixels": 36,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 1.38,
+  "noise": 0.0,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": 0.0,
+  "contrast": 0.0,
+  "saturation": 0.432,
+  "origin": "amberfall",
+  "url": "assets/art/effects/ripple.png"
+ },
+ "ripple-map": {
+  "size": [
+   64,
+   256
+  ],
+  "pixels": 16384,
+  "colours": 10900,
+  "outline": 0.0,
+  "cluster": 1.01,
+  "noise": 0.985,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": -1.6,
+  "contrast": 0.145,
+  "saturation": 1.0,
+  "origin": "ours",
+  "url": "assets/art/effects/ripple-map.png"
+ },
+ "ripple-tiny": {
+  "size": [
+   22,
+   3
+  ],
+  "pixels": 9,
+  "colours": 2,
+  "outline": 0.0,
+  "cluster": 1.8,
+  "noise": 0.111,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": null,
+  "contrast": 0.374,
+  "saturation": 0.319,
+  "origin": "amberfall (cut down)",
+  "url": "assets/art/effects/ripple-tiny.png"
+ },
+ "shelf": {
+  "size": [
+   200,
+   460
+  ],
+  "pixels": 54783,
+  "colours": 3,
+  "outline": 0.0,
+  "cluster": 14.34,
+  "noise": 0.012,
+  "dither": 0.013,
+  "doubled": 0.93,
+  "hue_shift": -0.1,
+  "contrast": 0.011,
+  "saturation": 0.74,
+  "origin": "ours (from the far bank)",
+  "url": "assets/art/environments/shelf.png"
+ },
+ "sky": {
+  "size": [
+   576,
+   324
+  ],
+  "pixels": 186624,
+  "colours": 4,
+  "outline": 0.0,
+  "cluster": 8.2,
+  "noise": 0.116,
+  "dither": 0.115,
+  "doubled": 0.88,
+  "hue_shift": 0.9,
+  "contrast": 0.056,
+  "saturation": 0.116,
+  "origin": "craftpix mountain river",
+  "url": "assets/art/environments/sky.png"
+ },
+ "spark": {
+  "size": [
+   3,
+   3
+  ],
+  "pixels": 5,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 1.67,
+  "noise": 0.0,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": 0.0,
+  "contrast": 0.0,
+  "saturation": 0.137,
+  "origin": "ours",
+  "url": "assets/art/effects/spark.png"
+ },
+ "sparrow": {
+  "size": [
+   12,
+   14
+  ],
+  "pixels": 68,
+  "colours": 14,
+  "outline": 0.92,
+  "cluster": 1.24,
+  "noise": 0.5,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": 53.8,
+  "contrast": 0.259,
+  "saturation": 0.413,
+  "origin": "ours",
+  "url": "assets/art/characters/sparrow.png"
+ },
+ "splash": {
+  "size": [
+   56,
+   14
+  ],
+  "pixels": 48,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 2.4,
+  "noise": 0.0,
+  "dither": 0.0,
+  "doubled": 1.0,
+  "hue_shift": null,
+  "contrast": 0.0,
+  "saturation": 0.069,
+  "origin": "pixel frog",
+  "url": "assets/art/effects/splash.png"
+ },
+ "star": {
+  "size": [
+   1,
+   1
+  ],
+  "pixels": 1,
+  "colours": 1,
+  "outline": 0.0,
+  "cluster": 1.0,
+  "noise": 1.0,
+  "dither": 0.0,
+  "doubled": 0.0,
+  "hue_shift": null,
+  "contrast": 0.0,
+  "saturation": 0.059,
+  "origin": "ours",
+  "url": "assets/art/effects/star.png"
+ },
+ "underwater": {
+  "size": [
+   360,
+   500
+  ],
+  "pixels": 180000,
+  "colours": 12,
+  "outline": 0.0,
+  "cluster": 2.0,
+  "noise": 0.3,
+  "dither": 0.236,
+  "doubled": 0.27,
+  "hue_shift": 7.5,
+  "contrast": 0.062,
+  "saturation": 0.7,
+  "origin": "ansimuz (light) + ours",
+  "url": "assets/art/environments/underwater.png"
+ },
+ "water-surface": {
+  "size": [
+   96,
+   30
+  ],
+  "pixels": 2880,
+  "colours": 5,
+  "outline": 0.37,
+  "cluster": 5.65,
+  "noise": 0.004,
+  "dither": 0.002,
+  "doubled": 0.57,
+  "hue_shift": 41.2,
+  "contrast": 0.181,
+  "saturation": 0.357,
+  "origin": "craftpix fishing",
+  "url": "assets/art/environments/water-surface.png"
+ }
+}
