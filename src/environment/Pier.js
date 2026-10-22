@@ -28,10 +28,6 @@ export class Pier {
     this.boat = scene.add.sprite(W - 35, SURFACE_Y + 19, 'boat', 0).setOrigin(0.5, 1).setDepth(DEPTH.BOAT);
     this.boatY = this.boat.y;
     this.tilt = 0;
-
-    [[-6, 2], [18, 3], [40, 4]].forEach(([x, k], i) => {
-      scene.add.sprite(x, SURFACE_Y + 9, `cattails-${k}`).setOrigin(0, 1).setDepth(DEPTH.REEDS).play({ key: `sway-cattails-${k}`, startFrame: i });
-    });
   }
 
   update(time) {

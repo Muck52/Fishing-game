@@ -1,0 +1,41 @@
+{
+ "sheets": {
+  "shore-reeds": {
+   "url": "assets/art/study/shore-reeds.png",
+   "frameWidth": 110,
+   "frameHeight": 52,
+   "frames": 4
+  },
+  "shore-algae": {
+   "url": "assets/art/study/shore-algae.png",
+   "frameWidth": 120,
+   "frameHeight": 8,
+   "frames": 4
+  }
+ },
+ "anchors": {
+  "shore": {
+   "items": [
+    {
+     "key": "shore-algae",
+     "x": 0,
+     "y": -2,
+     "layer": "surface",
+     "origin": [
+      0,
+      0
+     ],
+     "bob": true,
+     "fps": 2
+    },
+    {
+     "key": "shore-reeds",
+     "x": -4,
+     "y": 6,
+     "layer": "reeds",
+     "fps": 3
+    }
+   ]
+  }
+ }
+}

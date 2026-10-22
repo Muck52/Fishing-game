@@ -55,4 +55,8 @@ export function makeAnims(scene, fishIds) {
   }
   // plants sway slowly, each sheet four frames
   for (const key of Object.keys(ART.sheets)) if (key.startsWith('bed-sea') || key.startsWith('cattails')) add(`sway-${key}`, key, range(0, 3), 3, -1);
+  for (const it of ART.anchors.shore?.items || []) {
+    const s = ART.sheets[it.key];
+    if (s && s.frames > 1) add(`sway-${it.key}`, it.key, range(0, s.frames - 1), it.fps || 3, -1);
+  }
 }

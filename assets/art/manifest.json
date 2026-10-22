@@ -505,6 +505,28 @@
    "w": 192,
    "h": 122
   },
+  "shore": {
+   "items": [
+    {
+     "key": "cattails-2",
+     "x": -6,
+     "y": 9,
+     "layer": "reeds"
+    },
+    {
+     "key": "cattails-3",
+     "x": 18,
+     "y": 9,
+     "layer": "reeds"
+    },
+    {
+     "key": "cattails-4",
+     "x": 40,
+     "y": 9,
+     "layer": "reeds"
+    }
+   ]
+  },
   "angler": {
    "idle": [
     0,

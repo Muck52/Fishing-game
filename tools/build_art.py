@@ -292,6 +292,10 @@ def pier():
     for i in range(1, 5):
         sheet, size = sway(load(f"craftpix-fishing/Grass{i}.png"), amp=1)
         save(sheet, f"environments/cattails-{i}.png", frame=size, frames=4, actor=True)
+    # the plants of the shallows, placed by the game from this list (y is
+    # from the waterline); for now the pack's cattails where they stood
+    manifest["anchors"]["shore"] = {"items": [{"key": f"cattails-{k}", "x": x, "y": 9, "layer": "reeds"}
+                                              for x, k in ((-6, 2), (18, 3), (40, 4))]}
 
 
 def rowboat():

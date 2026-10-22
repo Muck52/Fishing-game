@@ -1,0 +1,52 @@
+{
+ "sheets": {
+  "shore-algae": {
+   "url": "assets/art/study/shore-algae.png",
+   "frameWidth": 96,
+   "frameHeight": 8,
+   "frames": 4
+  }
+ },
+ "anchors": {
+  "shore": {
+   "items": [
+    {
+     "key": "cattails-2",
+     "x": -4,
+     "y": 1,
+     "layer": "reeds"
+    },
+    {
+     "key": "cattails-3",
+     "x": 16,
+     "y": 1,
+     "layer": "reeds"
+    },
+    {
+     "key": "cattails-4",
+     "x": 34,
+     "y": 1,
+     "layer": "reeds"
+    },
+    {
+     "key": "cattails-3",
+     "x": 52,
+     "y": 1,
+     "layer": "reeds"
+    },
+    {
+     "key": "shore-algae",
+     "x": 0,
+     "y": -2,
+     "layer": "surface",
+     "origin": [
+      0,
+      0
+     ],
+     "bob": true,
+     "fps": 2
+    }
+   ]
+  }
+ }
+}

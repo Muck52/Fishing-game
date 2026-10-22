@@ -232,6 +232,34 @@ resting boulders and creepers hanging down. The first try scattered them
 over the open face, where they floated; plants and boulders need a ledge
 to sit on.
 
+## Study 5: cattails at the shoreline (2026-10-22)
+
+**Why:** you asked to tuck the cattails in tighter to the shoreline and
+add algae round them. They were the pack's art, outlined, floating 9 px
+out on the lake's surface band.
+
+**Versions** (`tools/studio/study_shore.py`, images in
+[studies/05-shore/](studies/05-shore/), review page `review/study5.html`;
+the game now places the shallows' plants from the manifest,
+`anchors.shore`, so each version is swapped into the real game):
+- **A, tucked in:** the pack's cattails at the shore, an algae mat.
+- **B, our stand:** our own cattails, a dense stand rooted in the
+  shallows, the algae mat, stems seen through the water with algae
+  threads on them.
+- **C, mixed shallows:** clumps of cattails with bulrush and sedge,
+  algae, duckweed and lily pads.
+
+**Along the way:** the first leaves were 1 px lines standing straight up
+and read as pale grass; fans of arcing leaves, 2 px wide low down, some
+tips folding over, in a deeper green, read as cattails. Rooted 14 rows
+deep, the stems hung down into the lake like a curtain; 6 rows is the
+shallows. A one-row algae line vanished on the surface band; three or four
+rows in soft patches, breaking up at the edges, read as a mat.
+
+**Verdict:** waiting on you.
+
+**Learned:** (after the verdict)
+
 <!--
 ## Study N: <subject> (<date>)
 

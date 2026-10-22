@@ -59,6 +59,20 @@ export class Lake {
       scene.add.sprite(x, BED_Y + R(2, 8), k).setOrigin(0.5, 1).setDepth(DEPTH.WEEDS + Math.random() * 0.05).play({ key: `sway-${k}`, startFrame: R(0, 3) });
     }
 
+    // the plants of the shallows along the shore (tools/scenery/shore.py):
+    // reeds standing in front, algae floating on the surface (riding its
+    // swell), stems and weed seen through the water
+    const layer = { reeds: DEPTH.REEDS, surface: DEPTH.SURFACE + 0.06, under: DEPTH.SURFACE + 0.04 };
+    this.floating = [];
+    (ART.anchors.shore?.items || []).forEach((it, i) => {
+      const s = scene.add.sprite(it.x, SURFACE_Y + it.y, it.key).setOrigin(...(it.origin || [0, 1])).setDepth(layer[it.layer]);
+      if (ART.sheets[it.key]?.frames > 1) s.play({ key: `sway-${it.key}`, startFrame: i % 4 });
+      if (it.bob) {
+        s.baseY = s.y;
+        this.floating.push(s);
+      }
+    });
+
     // the sun twinkling on the surface
     this.twinkle = scene.add.particles(0, 0, 'spark', {
       emitZone: { type: 'random', source: new Phaser.Geom.Rectangle(0, SURFACE_Y + 1, W, 8) },
@@ -136,6 +150,7 @@ export class Lake {
     this.surface.tilePositionX += (3 + wind * 9) * dt;
     this.surface.y = STRIP_TOP + Math.round(Math.sin(time / 900));
     if (this.mouth) this.mouth.y = this.surface.y;
+    for (const s of this.floating) s.y = s.baseY + (this.surface.y - STRIP_TOP);
     for (const r of this.rays) r.setAlpha(0.13 + 0.07 * Math.sin(time / 1700 + r.phase));
 
     this.branch.x += (5 + wind * 10) * dt;
