@@ -103,6 +103,36 @@ the mountain-river pack is gone.
 - Water reads as water by what it reflects: white crests and sky blue on
   dark water. Brown alone, or a dark outline, reads as wood.
 
+## Study 3: the waterfall (2026-10-22)
+
+**Why:** you said the falls looked unnatural. It was a straight column of
+even width out of a square hole, with no river above it, stopping halfway
+down the cliff, its stream sliding down the rock like a ramp, and its
+tea-brown streaks with a dark outline read as a log.
+
+**References:** [research/waterfalls.md](research/waterfalls.md): the
+forms (plunge, horsetail, cascade, segmented, tiered), the North Shore's
+falls over basalt ledges, and pixel-art waterfalls as a mouth, a flow and
+a splash.
+
+**Versions** (`tools/studio/study_falls.py`, images in
+[studies/03-falls/](studies/03-falls/), review page `review/study3.html`,
+with animated close-ups):
+- **A, tiered cascade:** three drops down basalt ledges, foam at each step.
+- **B, plunge from a notch:** one drop, widening, breaking into strands.
+- **C, segmented horsetail:** two strands on the rock, split by a rib.
+
+**Along the way:** the first pass used the cream foam and brown pool from
+study 2 and read as paper and a rug; white water with blue shadows and a
+dark tea-teal pool with sky in its ripples read as water. A box of dark
+rock round the falls looked like a slot; a ragged band a few pixels wide
+either side, with moss, reads as a gorge. Amber dots near the lip looked
+like dirt; amber as short streaks reads as thin water.
+
+**Verdict:** waiting on you.
+
+**Learned:** (after the verdict)
+
 <!--
 ## Study N: <subject> (<date>)
 

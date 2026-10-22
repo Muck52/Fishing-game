@@ -46,6 +46,10 @@ def materials(time="day"):
     R["pink-granite"] = ramp("#b08a7e", 5)  # weathered: greyer than the fresh rock
     R["clear"] = ramp("#8cc4d6", 5)  # white-blue water
     R["spray"] = ramp("#e4f0f2", 4)  # its white water
+    # white water: aerated, it takes the sky's blue in its shadows
+    R["whitewater"] = ["#6f8a92", "#a9c0c4", "#d9e6e6", "#f7fbf8"]
+    # deep water at the foot: dark, a little tea-brown, the sky in its ripples
+    R["deepwater"] = ["#1e2a2a", "#2c3b38", "#3f5049", "#6b7f78", "#a9c4c8"]
     R["moss"] = ramp("#5a7438", 4)
     R["floor"] = ramp("#3f4a2e", 4)  # forest floor, needles and shade
     R["cedar-foliage"] = ramp("#56763c", 5)
@@ -834,7 +838,17 @@ def version_b():
     return c
 
 
-def version_c():
+def falls_now(c):
+    """The falls as first drawn for study 2: a ribbon in a dark cleft, its
+    stream running down the rock to the lake."""
+    slabs(c, [[(186, 158), (194, 148), (208, 150), (210, 250), (184, 252)]], "basalt", seed=6)
+    falls(c, 191, 202, 154, 244, seed=13)
+    pool(c, 197, 247, 10, 3)
+    stream(c, [(199, 250), (204, 262), (212, 274), (222, 288), (232, 305)], 10, seed=14)
+    c.foot = (197, 245)
+
+
+def version_c(waterfall=None):
     """Birch cove: a low bank and a pebble beach where the animals come down,
     white birch and aspen bright against dark spruce, a pair of red pines,
     and a pink granite bluff on the right, the falls a ribbon of water
@@ -848,8 +862,6 @@ def version_c():
     slabs(c, [[(212, 212), (236, 196), (300, 188), (362, 186), (362, 324), (212, 324)],
               [(176, 262), (220, 248), (300, 244), (362, 240), (362, 324), (176, 324)]], "pink-granite", lichen=0.02, seed=5)
     crack(c, [(226, 210), (250, 224), (262, 246)], "pink-granite")
-    # the cleft the falls drop through, dark and wet
-    slabs(c, [[(186, 158), (194, 148), (208, 150), (210, 250), (184, 252)]], "basalt", seed=6)
     # the forest edge: aspen behind, red pines, birches in front
     bushes(c, -4, 190, lambda x: 266 + 3 * math.sin(x / 9), "aspen-leaves", seed=7, r=(5, 9))
     red_pine(c, 150, 272, 100, seed=8)
@@ -880,10 +892,7 @@ def version_c():
     c.put(104, 293, "snag", 3)
     c.put(105, 292, "snag", 2)  # a broken root
     shoreline(c, 0, 206, SHORE + 1)
-    falls(c, 191, 202, 154, 244, seed=13)
-    pool(c, 197, 247, 10, 3)
-    stream(c, [(199, 250), (204, 262), (212, 274), (222, 288), (232, 305)], 10, seed=14)
-    c.foot = (197, 245)
+    (waterfall or falls_now)(c)
     return c
 
 
