@@ -20,12 +20,13 @@ journal and the backpack, and from the research below.
    (`tools/palette.json`; the kit refuses anything else), and every creature
    wears the shared outline, `#25131a`, put round it after drawing. They
    are saved exactly as drawn, never recoloured afterwards.
-3. **Real animals, one scale.** Sizes come from the real animal measured
-   against the angler (34 pixels for 5 ft 9 in: half a pixel to the inch).
-   Big animals are near true size; small ones are drawn up to 1.6 times
-   larger so they still read, the way games draw pets. So a fox is smaller
-   than Olive, a hare comes up to her chest, and the deer and the bear stand
-   a little over half the angler's height.
+3. **Real animals, true scale** (study 13). Sizes come from the real
+   animal measured against the angler (39 pixels for 5 ft 10: 0.22 pixels
+   to the centimetre), and nothing is drawn up: Olive comes to his thigh,
+   the deer's ears about to his eyes, the hare is a small brown shape, the
+   sparrow a few pixels. Each is drawn again at its size from its shapes
+   (factors in `scale.py`). Fish are their true length, no less than 4
+   pixels.
 4. **What makes the species, first.** The silhouette and one or two marks
    you'd know it by: the fox's black stockings and white-tipped brush, the
    doe's white throat and big ears, the black bear's straight face, big
