@@ -4,8 +4,8 @@ import { tinyRipple } from './Effects.js';
 
 // The fishing hut on the right, standing on stilts in the lake, with its
 // walkway running out over the water. The stilts carry on down, dark and
-// wet, to the lakebed. A rowboat is tied up beside it and cattails grow
-// along the bank on the left.
+// wet, to the lakebed. A rowboat is tied up beside it. (The cattails along
+// the bank on the left belong to the lake's shallows: Lake.js.)
 export class Pier {
   constructor(scene) {
     this.scene = scene;
