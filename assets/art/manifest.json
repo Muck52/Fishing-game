@@ -143,28 +143,16 @@
    "frameHeight": 30,
    "frames": 4
   },
-  "cattails-1": {
-   "url": "assets/art/environments/cattails-1.png",
-   "frameWidth": 34,
-   "frameHeight": 33,
+  "shore-reeds": {
+   "url": "assets/art/environments/shore-reeds.png",
+   "frameWidth": 110,
+   "frameHeight": 52,
    "frames": 4
   },
-  "cattails-2": {
-   "url": "assets/art/environments/cattails-2.png",
-   "frameWidth": 40,
-   "frameHeight": 25,
-   "frames": 4
-  },
-  "cattails-3": {
-   "url": "assets/art/environments/cattails-3.png",
-   "frameWidth": 23,
-   "frameHeight": 24,
-   "frames": 4
-  },
-  "cattails-4": {
-   "url": "assets/art/environments/cattails-4.png",
-   "frameWidth": 21,
-   "frameHeight": 23,
+  "shore-algae": {
+   "url": "assets/art/environments/shore-algae.png",
+   "frameWidth": 120,
+   "frameHeight": 8,
    "frames": 4
   },
   "angler": {
@@ -508,22 +496,23 @@
   "shore": {
    "items": [
     {
-     "key": "cattails-2",
-     "x": -6,
-     "y": 9,
-     "layer": "reeds"
+     "key": "shore-algae",
+     "x": 0,
+     "y": -2,
+     "layer": "surface",
+     "origin": [
+      0,
+      0
+     ],
+     "bob": true,
+     "fps": 2
     },
     {
-     "key": "cattails-3",
-     "x": 18,
-     "y": 9,
-     "layer": "reeds"
-    },
-    {
-     "key": "cattails-4",
-     "x": 40,
-     "y": 9,
-     "layer": "reeds"
+     "key": "shore-reeds",
+     "x": -4,
+     "y": 6,
+     "layer": "reeds",
+     "fps": 3
     }
    ]
   },

@@ -256,9 +256,18 @@ deep, the stems hung down into the lake like a curtain; 6 rows is the
 shallows. A one-row algae line vanished on the surface band; three or four
 rows in soft patches, breaking up at the edges, read as a mat.
 
-**Verdict:** waiting on you.
+**Verdict:** C, "all the way. It looks beautiful." In the game
+(`tools/scenery/shore.py`); the pack's cattails are gone.
 
-**Learned:** (after the verdict)
+**Learned:**
+- Plants of the shallows root at the edge: a few rows of stem under the
+  water, the rest above, never floating out on the lake.
+- Under the waterline, draw through the water: mix toward the lake's own
+  colours.
+- Variety reads as real: cattails in clumps with bulrush and sedge
+  between, algae at their feet, duckweed and lily pads further out.
+- A long leaf reads by its arc and its width low down; a 1 px straight
+  line reads as grass.
 
 <!--
 ## Study N: <subject> (<date>)

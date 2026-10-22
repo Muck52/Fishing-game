@@ -289,13 +289,13 @@ def pier():
     save(tiles.crop((66, 64, 74, 128)), "environments/post-wet.png")
     rowboat()
     save(load("craftpix-fishing/Fishbarrel4.png"), "environments/barrel.png", actor=True)
-    for i in range(1, 5):
-        sheet, size = sway(load(f"craftpix-fishing/Grass{i}.png"), amp=1)
-        save(sheet, f"environments/cattails-{i}.png", frame=size, frames=4, actor=True)
-    # the plants of the shallows, placed by the game from this list (y is
-    # from the waterline); for now the pack's cattails where they stood
-    manifest["anchors"]["shore"] = {"items": [{"key": f"cattails-{k}", "x": x, "y": 9, "layer": "reeds"}
-                                              for x, k in ((-6, 2), (18, 3), (40, 4))]}
+    # the plants of the shallows are ours (study 5, version C), placed by
+    # the game from this list (y is from the waterline)
+    import shore
+    shore_sheets, items = shore.sheets()
+    for key, (img, size) in shore_sheets.items():
+        save(img, f"environments/{key}.png", frame=size, frames=4, grade=False)
+    manifest["anchors"]["shore"] = {"items": items}
 
 
 def rowboat():

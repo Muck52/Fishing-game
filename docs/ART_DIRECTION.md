@@ -330,7 +330,8 @@ and character sheet: see [docs/characters/olive.md](characters/olive.md).
 | Far bank | ours: `tools/scenery/bank.py` (study 2, version C) | 360 x 324 on the grid, 1x | none | the falls and stream run 4 frames |
 | Underwater, shelf, lakebed | built in `build_art.py` from the palette | full width | none | displacement wobble; shafts pulse |
 | Weeds, sand, clam | Reactorcore aquatic | 1x | none | 4-frame sway |
-| Hut, posts, barrel, cattails | CraftPix fishing | 1x | shared | cattails sway; hut windows lit at night |
+| Hut, posts, barrel | CraftPix fishing | 1x | shared | hut windows lit at night |
+| Shallows: cattails, bulrush, sedge, algae, duckweed, lily pads | ours: `tools/scenery/shore.py` (study 5, version C) | 1x | none | plants sway, the algae mat drifts and rides the swell, 4 frames |
 | Rowboat and oars | CraftPix skiff, made double-ended; oars drawn in the build | 1x | shared | rides the swell and rocks through 4 baked tilt frames, sending tiny ripples off each end |
 | Tiny ripples | drawn in the build | 22 x 3 | none | spread and fade in 5 frames, all over the surface |
 | Angler | CraftPix fishing (turned, line erased; rod cut away for the live-rod body) | 48 x 48 frames | shared | idle fidgets, waiting jigs, bite, fight, land; the rod is drawn live so it bends |

@@ -2,6 +2,12 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The shallows are study 5's version C
+
+Clumps of our own cattails with bulrush and sedge, rooted in the shallows
+tight to the shore, algae round their feet, duckweed and lily pads further
+out, stems seen through the water. Replaces the pack's cattails.
+
 ## 2026-10-22: The river above the falls is study 4's version B, tuned
 
 The plateau river: it winds toward us across the forested plateau in its
