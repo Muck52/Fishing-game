@@ -112,6 +112,24 @@ code { font-family: var(--mono); font-size: 0.85em; }
   </header>
 
   <section>
+    <span class="eyebrow">Round three</span>
+    <h2>The clothes, in detail</h2>
+    <p><b>The bald head.</b> Lighting the figure as one mass put a pale band on the smooth top of the beanie, and the edge pass gave it a skin-coloured rim. On top of that, the cap was drawn a little smaller than the head, so a row of skin showed above it. The cap is now a snug knit watch cap that covers the head and the tops of the ears, with ribs of knit and a turned-up cuff. It keeps its own colours and a plain dark edge.</p>
+    <p><b>What the clothes were missing.</b> I compared each piece with the real thing and added what still reads at this size:</p>
+    <ol class="rules">
+      <li><b>Flannel:</b> a true buffalo check (red and black squares, dark red where they cross, not scattered lines), the collar open over an undershirt, a placket of buttons, a chest pocket with its flap and button, sleeves rolled to the elbow or buttoned at the cuff.</li>
+      <li><b>Jeans:</b> a leather belt with a buckle, indigo fading on the thighs, turned-up hems.</li>
+      <li><b>Boots:</b> work boots with a light sole and laces, duck boots (rubber below, leather above), or green rubber knee boots.</li>
+      <li><b>Cap:</b> ribbed knit and a folded cuff, and on one design a small leather patch.</li>
+    </ol>
+    <div class="cards">
+      <div class="card"><h3>1 &middot; Work flannel</h3><p>Buffalo check, sleeves rolled to the elbow, a grey henley at the open collar, buttons and a pocket. Dark indigo jeans with a belt, faded thighs and turned-up hems. Leather work boots with tan soles and laces.</p></div>
+      <div class="card"><h3>2 &middot; Shirt-jacket over a thermal</h3><p>A heavier flannel worn open over a cream waffle-knit thermal, buttoned cuffs, two flap pockets. Lighter, faded jeans. Duck boots. A leather patch on the cap.</p></div>
+      <div class="card"><h3>3 &middot; Dock work</h3><p>Buffalo check, sleeves rolled, dark suspenders. Brown canvas work trousers tucked into green rubber knee boots, for standing on a wet dock.</p></div>
+    </div>
+  </section>
+
+  <section>
     <span class="eyebrow">Round two</span>
     <h2>B, in realistic proportions</h2>
     <p>You picked B's clothes, beanie and beard, with a less round, more realistic build. Changes:</p>
@@ -132,7 +150,10 @@ code { font-family: var(--mono); font-size: 0.85em; }
       <button data-v="A" aria-pressed="false">A</button>
       <button data-v="B" aria-pressed="false">B</button>
       <button data-v="C" aria-pressed="false">C</button>
-      <button data-v="B2" aria-pressed="true">B, realistic</button>
+      <button data-v="B2" aria-pressed="false">B, realistic</button>
+      <button data-v="R1" aria-pressed="true">1 Work flannel</button>
+      <button data-v="R2" aria-pressed="false">2 Shirt-jacket</button>
+      <button data-v="R3" aria-pressed="false">3 Dock work</button>
     </div>
     <img id="shot" src="study11/B-poses.png" alt="The angler's poses, version B">
     <p class="cap" id="cap"></p>
@@ -165,7 +186,7 @@ code { font-family: var(--mono); font-size: 0.85em; }
   <section>
     <span class="eyebrow">Your call</span>
     <h2>Pick one, or mix</h2>
-    <p>Tell me if "B, realistic" is him, or what to push further (taller, slimmer, a bigger or smaller beard). Then he goes into the game, and the hut comes next.</p>
+    <p>Pick 1, 2 or 3, or mix pieces (the shirt-jacket with the rubber boots, say). Then he goes into the game, and the hut comes next.</p>
   </section>
 </main>
 <script>
@@ -175,9 +196,12 @@ code { font-family: var(--mono); font-size: 0.85em; }
     A: "A: the old-timer: bucket hat, fishing vest, chambray shirt, khakis, grey beard.",
     B: "B: flannel and beanie: red buffalo check, knit beanie, jeans, brown beard.",
     C: "C: rain jacket and cap: yellow jacket, ball cap, grey trousers, stubble.",
-    B2: "B, realistic: B's flannel, beanie and beard on a man about five heads tall, broad-shouldered, with longer legs."
+    B2: "B, realistic: B's flannel, beanie and beard on a man about five heads tall, broad-shouldered, with longer legs.",
+    R1: "1, work flannel: buffalo check, rolled sleeves, henley collar, belt, faded and cuffed indigo jeans, work boots.",
+    R2: "2, shirt-jacket: open flannel over a waffle thermal, buttoned cuffs, two pockets, faded jeans, duck boots, patched cap.",
+    R3: "3, dock work: buffalo check, rolled sleeves, suspenders, canvas trousers, green rubber knee boots."
   };
-  var v = "B2";
+  var v = "R1";
   var ids = ["shot", "close", "times"], kinds = ["poses", "close", "times"];
   function show() {
     ids.forEach(function (id, i) { document.getElementById(id).src = "study11/" + v + "-" + kinds[i] + ".png"; });

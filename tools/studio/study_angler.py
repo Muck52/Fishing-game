@@ -46,6 +46,25 @@ OUTFITS = {
     "B": {"colours": {"S": "#a83a32", "J": "#a83a32", "j": "#4a2228", "T": "#3f5f8a", "B": "#4a3426", "H": "#c0503e",
                       "Q": "#8a3428", "A": "#5a3a26", "D": "#6a4630", "X": "#4a2228", "L": "#c4524a", "a": "#7a2a26"},
           "hat": "beanie", "check": True, "beard": "full"},
+    # round three: B's direction, realistic, with the clothes' details
+    "R1": {"colours": {"J": "#a8323a", "L": "#bc3e44", "l": "#d8c8b0", "X": "#25131a", "x": "#5a1e26", "a": "#7a2430", "j": "#4a1a22",
+                       "U": "#8a8e96", "u": "#6e727a", "w": "#e8dcc8", "T": "#2f4a72", "t": "#5a78a0", "e": "#4a2e1e", "k": "#c8ccd0",
+                       "B": "#6a4428", "b": "#c8a070", "n": "#e2d4b4", "H": "#a83a32", "h": "#7e2a26", "Q": "#8a2e28", "q": "#6a221e",
+                       "A": "#5a3a26", "D": "#6a4630", "S": "#a8323a"},
+           "hat": "watch", "buffalo": True, "beard": "trim", "build": "real", "details": True, "sleeves": "rolled",
+           "hems": True, "fade": True},
+    "R2": {"colours": {"J": "#9a3430", "L": "#ae3e3a", "X": "#25131a", "x": "#561e22", "a": "#70262a", "j": "#3a161c",
+                       "U": "#e6dcc6", "u": "#c8bca4", "w": "#e8dcc8", "T": "#4a6c98", "t": "#7a98c0", "e": "#4a2e1e", "k": "#c8ccd0",
+                       "B": "#3a2e28", "b": "#241c18", "n": "#a8743a", "H": "#a83a32", "h": "#7e2a26", "Q": "#8a2e28", "q": "#6a221e",
+                       "p": "#c8a070", "A": "#5a3a26", "D": "#6a4630", "S": "#9a3430"},
+           "hat": "watch", "buffalo": True, "beard": "trim", "build": "real", "details": True, "sleeves": "cuffs",
+           "open": True, "pockets": 2, "fade": True, "duck": True, "patch": True},
+    "R3": {"colours": {"J": "#a8323a", "L": "#bc3e44", "l": "#d8c8b0", "X": "#25131a", "x": "#5a1e26", "a": "#7a2430", "j": "#4a1a22",
+                       "U": "#8a8e96", "u": "#6e727a", "w": "#e8dcc8", "s": "#2a2228", "T": "#7a5a3a", "t": "#9a7a52", "e": "#4a2e1e",
+                       "k": "#c8ccd0", "B": "#3f5a3a", "b": "#26321f", "W": "#3f5a3a", "V": "#5a7a52", "n": "#e2d4b4",
+                       "H": "#a83a32", "h": "#7e2a26", "Q": "#8a2e28", "q": "#6a221e", "A": "#5a3a26", "D": "#6a4630", "S": "#a8323a"},
+           "hat": "watch", "buffalo": True, "beard": "trim", "build": "real", "details": True, "sleeves": "rolled",
+           "braces": True, "wellies": True},
     # study 11's pick: B's clothes, beanie and beard, in realistic proportions
     "B2": {"colours": {"S": "#a83a32", "J": "#a83a32", "j": "#4a2228", "T": "#3f5f8a", "B": "#4a3426", "H": "#943328",
                        "Q": "#6a241e", "A": "#5a3a26", "D": "#6a4630", "X": "#4a2228", "L": "#c4524a", "a": "#7a2a26"},
@@ -130,7 +149,7 @@ def draw(outfit, pose, bob=0):
     fa = p["far_leg"][2]
     c.limb(low([(fa[0] + 1, fa[1]), (fa[0] - 1.6, fa[1])]), [2.4, 2.4], "B")
     if p.get("far_arm"):
-        c.limb(up(p["far_arm"]), [2.6, 2.2, 2], "a")  # the far sleeve, in shade
+        arm(c, up(p["far_arm"]), [2.6, 2.2, 2], "a", o)  # the far sleeve, in shade
         hx, hy = up([p["far_arm"][2]])[0]
         c.blob([(hx - 1, hy - 1), (hx + 1, hy - 1), (hx + 1, hy + 1), (hx - 1, hy + 1)], "K")
     # the torso
@@ -165,6 +184,11 @@ def draw(outfit, pose, bob=0):
         c.blob(hd([(19.6, 10.4), (20.6, 6.8), (25.6, 6.4), (27.2, 9.8)]), "H")
         c.limb(hd([(17.4, 10.6), (29.4, 10.8)]), [1.6, 1.6], "H")
         c.blob(hd([(19.8, 9), (27, 8.6), (27.2, 9.8), (19.8, 10.2)]), "Q", clip=True)  # the band
+    elif o["hat"] == "watch":
+        # a knit watch cap: snug over the skull and the tops of the ears,
+        # the cuff turned up
+        c.blob(hd([(18.2, 11.6), (18.4, 8.4), (21.4, 6), (26.4, 6.2), (28.8, 9.2), (28.8, 12.6)]), "H")
+        c.limb(hd([(18.4, 10.8), (28.6, 11.6)]), [2.2, 2.2], "Q")
     elif o["hat"] == "beanie":
         dome = [(18.8, 11.2), (19.8, 8.4), (23.6, 7.4), (27.4, 8.4), (28.2, 11.6)] if real else [(18.8, 11.2), (19.8, 7.4), (23.6, 5.8), (27.4, 7.6), (28.2, 11.6)]
         c.blob(hd(dome), "H")
@@ -183,10 +207,19 @@ def draw(outfit, pose, bob=0):
     na = p["near_leg"][2]
     c.limb(low([(na[0] + 1, na[1]), (na[0] - 1.8, na[1])]), [2.6, 2.6], "B")
     if p.get("near_arm"):
-        c.limb(up(p["near_arm"]), [2.8, 2.4, 2.2], "L")  # the near sleeve, catching the light
+        arm(c, up(p["near_arm"]), [2.8, 2.4, 2.2], "L", o)  # the near sleeve, catching the light
         hx, hy = up([p["near_arm"][2]])[0]
         c.blob([(hx - 1.1, hy - 1.1), (hx + 1.1, hy - 1.1), (hx + 1.1, hy + 1.1), (hx - 1.1, hy + 1.1)], "K")
     g = c.grid()
+    if o.get("details"):
+        details(g, o)
+    if o.get("buffalo"):
+        # buffalo check: red and black squares, dark red where they cross
+        for y in range(FH):
+            for x in range(FW):
+                if g[y][x] in "JL":
+                    a, b = (x // 2) % 2, (y // 2) % 2
+                    g[y][x] = g[y][x] if (a, b) == (0, 0) else "X" if (a, b) == (1, 1) else "x"
     if o.get("check"):
         # buffalo check: dark lines across the flannel every few pixels
         for y in range(FH):
@@ -201,6 +234,110 @@ def draw(outfit, pose, bob=0):
             g[yy][xx] = "E"
     g[ey][ex] = "C"
     return g
+
+
+def arm(c, j, widths, ink, o):
+    """A sleeve: whole, rolled to the elbow (bare forearm), or with a
+    buttoned cuff at the wrist."""
+    if o.get("sleeves") == "rolled":
+        c.limb(j[:2], widths[:2], ink)
+        c.limb(j[1:], [widths[1] * 0.85, widths[2] * 0.85], "K")
+        ex, ey = j[1]
+        c.blob([(ex - 1.4, ey - 1.2), (ex + 1.4, ey - 1.2), (ex + 1.4, ey + 1), (ex - 1.4, ey + 1)], "l" if ink == "L" else ink)  # the roll
+    else:
+        c.limb(j, widths, ink)
+        if o.get("sleeves") == "cuffs":
+            (ex, ey), (hx, hy) = j[1], j[2]
+            cx, cy = ex + (hx - ex) * 0.78, ey + (hy - ey) * 0.78
+            c.limb([(cx, cy), (ex + (hx - ex) * 0.92, ey + (hy - ey) * 0.92)], [widths[2] + 0.4, widths[2] + 0.4], "j")
+
+
+def details(g, o):
+    """The clothes' details, placed from the drawn shapes: collar and
+    undershirt, placket and buttons, pocket, belt and buckle, faded and
+    turned-up jeans, boot soles and laces, the beanie's knit."""
+    H_, W_ = len(g), len(g[0])
+    rows = [y for y in range(H_) if "J" in g[y]]
+    if rows:
+        top, bot = rows[0], rows[-1]
+        front = {y: g[y].index("J") for y in rows}
+        back = {y: W_ - 1 - g[y][::-1].index("J") for y in rows}
+        fx = front[top]
+
+        def put(x, y, ch, over="JL"):
+            if 0 <= y < H_ and 0 <= x < W_ and g[y][x] in over:
+                g[y][x] = ch
+        if o.get("open"):
+            # the shirt-jacket hangs open over a waffle-knit thermal
+            for y in rows:
+                for dx in (0, 1):
+                    put(front[y] + dx, y, "u" if (front[y] + dx + y) % 2 else "U")
+        else:
+            put(fx, top, "U"), put(fx + 1, top, "U"), put(fx, top + 1, "U")  # the undershirt at the open collar
+            put(fx + 1, top + 1, "X")  # the collar point
+            for y in rows[2:]:
+                if (y - top) % 3 == 1:
+                    put(front[y] + 1, y, "w")  # buttons down the placket
+        for k in range(o.get("pockets", 1)):
+            px = fx + 2 + k * 3 + (2 if o.get("open") else 0)
+            for dx in range(3):
+                put(px + dx, top + 3, "X")  # the pocket's flap
+            put(px + 1, top + 4, "w")  # its button
+        if o.get("braces"):
+            for y in rows:
+                put(front[y] + 2, y, "s"), put(back[y] - 1, y, "s")
+        # the belt and its buckle
+        by = bot + 1
+        if by < H_:
+            for x in range(W_):
+                if g[by][x] == "T":
+                    g[by][x] = "e"
+            xs = [x for x in range(W_) if g[by][x] == "e"]
+            if xs:
+                g[by][xs[0] + 1] = "k"
+    # the trousers: faded thighs and knees, turned-up hems or rubber boots
+    trows = [y for y in range(H_) if "T" in g[y]]
+    for y in trows:
+        xs = [x for x in range(W_) if g[y][x] == "T"]
+        for x in xs:
+            below = y + 1 < H_ and g[y + 1][x] in "B"
+            if o.get("wellies") and y >= H_ - 9:
+                g[y][x] = "W" if y > H_ - 9 else "V"
+            elif below and o.get("hems"):
+                g[y][x] = "t"  # the turned-up hem
+            elif o.get("fade") and trows[0] + 3 <= y <= trows[0] + 9 and (x + 2 * y) % 4 == 0 and xs[0] < x < xs[-1]:
+                g[y][x] = "t"
+    # boots: the sole, and laces or the duck boot's leather upper
+    for x in range(W_):
+        ys = [y for y in range(H_) if g[y][x] == "B"]
+        if not ys:
+            continue
+        if o.get("wellies"):
+            for y in ys:
+                g[y][x] = "W"
+            g[ys[-1]][x] = "b"
+            continue
+        g[ys[-1]][x] = "b"
+        if o.get("duck"):
+            g[ys[0]][x] = "n"
+    if not o.get("duck") and not o.get("wellies"):
+        for y in range(H_):
+            xs = [x for x in range(W_) if g[y][x] == "B"]
+            if xs and y + 1 < H_ and "b" in g[y + 1]:
+                g[y][xs[0] + 1] = "n"  # laces
+    # the beanie's knit: ribs, and a patch on the cuff
+    for y in range(H_):
+        for x in range(W_):
+            if g[y][x] == "H" and x % 2 == 0:
+                g[y][x] = "h"
+            elif g[y][x] == "Q" and x % 2 == 0:
+                g[y][x] = "q"
+    if o.get("patch"):
+        for y in range(H_):
+            xs = [x for x in range(W_) if g[y][x] in "Qq"]
+            if xs:
+                g[y][xs[0] + 2] = "p"
+                break
 
 
 def frame(outfit, pose, bob=0):
@@ -223,7 +360,22 @@ def sheet(outfit):
     strip = Image.new("RGBA", (FW * len(frames), FH))
     for i, f in enumerate(frames):
         strip.alpha_composite(f, (i * FW, 0))
-    strip = lit(treat(strip, FW), FW)
+    flat = treat(strip, FW)
+    strip = lit(flat, FW)
+    # the knit cap keeps its own colours: lit as part of the mass, its
+    # crown went pale and read as a bald head
+    sp, fp = strip.load(), flat.load()
+    for i, pose in enumerate(ORDER):
+        g = outline(draw(outfit, pose, BOB.get(i, 0)))
+        for y in range(FH):
+            for x in range(FW):
+                if 12 <= i <= 15 and x < GRIP_X:
+                    continue
+                if g[y][x] in "HhQqp":
+                    sp[i * FW + x, y] = fp[i * FW + x, y]
+                elif g[y][x] == "o" and any(0 <= y + dy < FH and 0 <= x + dx < FW and g[y + dy][x + dx] in "HhQq"
+                                            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                    sp[i * FW + x, y] = (37, 19, 26, 255)  # a plain dark edge round the cap
     # the rod tips of the fishing frames, and where the hands hold it
     tips, grips = [], []
     for i in range(4, 8):

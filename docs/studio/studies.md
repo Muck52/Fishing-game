@@ -521,6 +521,19 @@ five heads tall), broad shoulders over a narrower waist, a shorter torso
 over longer legs, a trimmed beard, a flatter, darker beanie, a one-pixel
 eye with its catchlight.
 
+**Round three:** the beanie read as a shiny bald head (the mass light and
+the edge pass made its smooth crown pale and gave it a skin-toned rim, and
+it was drawn a touch smaller than the head). Now a knit watch cap over
+the head and ear tops, ribbed, with a turned cuff, kept out of the light
+pass with a plain dark edge. The clothes were checked against the real
+things and their details added (placed from the drawn shapes, so every
+frame gets them): buffalo check, collar and undershirt, placket buttons,
+flap pocket, rolled sleeves or buttoned cuffs, belt and buckle, faded
+indigo and turned-up hems, boot soles and laces. Three designs: 1 work
+flannel (work boots), 2 shirt-jacket open over a waffle thermal (duck
+boots, patched cap), 3 dock work (suspenders, canvas trousers, rubber
+knee boots).
+
 **Verdict:** waiting.
 
 <!--
