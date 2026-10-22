@@ -150,6 +150,36 @@ outflow runs between stones. It's in the game (`tools/scenery/bank.py`).
 - Wet rock is darker the nearer the water, with green where the spray
   falls.
 
+## Study 4: the bluff and its stream (2026-10-22)
+
+**Why:** you liked the cascade and asked for the mountain round it to
+change so it looks more natural, and for a stream at the top, for depth
+and a more complete, natural waterfall.
+
+**Versions** (`tools/studio/study_mountain.py`, images in
+[studies/04-mountain/](studies/04-mountain/), review page
+`review/study4.html`, with animated close-ups):
+- **A, ravine:** the bluff's top dips into a V; the stream winds down it
+  out of the forest.
+- **B, plateau river:** reaches stacked between rows of trees, swinging
+  back and forth, further ones thinner and paler.
+- **C, rapids gorge:** two small rapids down a narrow rocky gorge.
+
+All three: the bluff's top slopes into the notch with a lit rim; the
+recess walls are lit on the side facing the sun, shaded on the other;
+cedars cling to the ledges.
+
+**Along the way:** the first stream was thin lines with bright banks and
+read as wire; then as a grey tube laid on the forest, like a road. Water
+in the distance reads by the sky it reflects (pale far, darker near, sky
+ripples sliding toward you), and it sits in the forest only when rows of
+trees stand in front of it. Too many rows hid it to scattered sparkles;
+two sparse rows let it wind back between them.
+
+**Verdict:** waiting on you.
+
+**Learned:** (after the verdict)
+
 <!--
 ## Study N: <subject> (<date>)
 
