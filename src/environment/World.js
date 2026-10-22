@@ -14,7 +14,7 @@ export class World {
     this.backdrop = new Backdrop(scene);
     this.lake = new Lake(scene);
     this.pier = new Pier(scene);
-    this.daylight = new Daylight(scene, this.pier);
+    this.daylight = new Daylight(scene, this.pier, this.backdrop.unshaded);
 
     // seed fluff and pollen drifting over the water in the sun
     this.pollen = scene.add.particles(0, 0, 'mote', {

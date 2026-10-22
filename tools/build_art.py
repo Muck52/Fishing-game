@@ -133,14 +133,21 @@ BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
 # ---------------------------------------------------------------- backdrop
 def backdrop():
     mr = "craftpix-mountain-river"
-    save(load(f"{mr}/Plan 4.png"), "environments/sky.png")
-    save(load(f"{mr}/Plan 2.png"), "environments/mountains.png")
-    cloud = load(f"{mr}/Plan 3.png")
-    save(cloud.crop(cloud.getbbox()), "environments/cloud-big.png")
+    # the sky and the distant hills are ours (study 1, version B): one image
+    # per time of day, drawn in that time's light, and our drifting clouds
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "scenery"))
+    import sky
+    shades = set()
+    for name, img in sky.images().items():
+        save(img, f"environments/{name}.png", grade=False)
+        shades |= {"#%02x%02x%02x" % p[:3] for p in img.getdata() if p[3]}
+    manifest["anchors"]["sky"] = {"top": sky.TOP, "times": list(sky.TIMES), "clouds": len(sky.CLOUDS)}
+    fixed = json.loads((ROOT / "tools" / "palette.json").read_text())
+    fixed["scenery"] = sorted(shades)
+    (ROOT / "tools" / "palette.json").write_text(json.dumps(fixed, indent=1) + "\n")
     land = load(f"{mr}/Plan 1.png")
     save(land, "environments/land.png")
-    for i in (1, 2, 3):
-        save(load(f"pixelfrog-treasure-hunters/Background/Small Cloud {i}.png"), f"environments/cloud-{i}.png")
 
     # The waterfall and the river below it, animated: in each column the
     # water's own pixels are rolled downward a few rows per frame.
@@ -1142,7 +1149,7 @@ def palette_pass():
     # graded art snaps to the original colours; the creature shades (drawn
     # straight in the palette, never graded) are listed with them
     colors = np.array(sorted({rgb(h) for h in fixed["colours"]}), np.int32)
-    listed = np.array(sorted({rgb(h) for h in fixed["colours"] + fixed["creatures"]}), np.int32)
+    listed = np.array(sorted({rgb(h) for h in fixed["colours"] + fixed["creatures"] + fixed.get("scenery", [])}), np.int32)
     # sorted by brightness for the swatch sheet in the docs
     listed = listed[np.argsort(listed @ np.array([3, 6, 1]))]
     sw = Image.new("RGB", (len(listed) * 8, 8))

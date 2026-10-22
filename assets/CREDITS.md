@@ -7,8 +7,8 @@ Every image in the game is compiled from the packs below by
 | Pack | Author | License | Used for |
 | --- | --- | --- | --- |
 | [Fishing game assets](https://opengameart.org/content/fishing-game-assets-pixel-art) | CraftPix.net | OGA-BY 3.0 | the angler, fishing hut, posts, boat (rebuilt as a rowboat), barrel, cattails, water surface, bucket icon |
-| [Mountain river landscape](https://opengameart.org/content/mountain-river-landscape-pixel-game-background) | CraftPix.net | OGA-BY 3.0 | sky, mountains, cloud, the far bank and waterfall |
-| [Treasure Hunters](https://opengameart.org/content/treasure-hunters-demo) | Pixel Frog | CC-BY 4.0 | wooden boards and buttons, gold coin, splash, surface glints, bubbles, small clouds |
+| [Mountain river landscape](https://opengameart.org/content/mountain-river-landscape-pixel-game-background) | CraftPix.net | OGA-BY 3.0 | the far bank and waterfall |
+| [Treasure Hunters](https://opengameart.org/content/treasure-hunters-demo) | Pixel Frog | CC-BY 4.0 | wooden boards and buttons, gold coin, splash, surface glints, bubbles |
 | [Fishing bobbles](https://opengameart.org/content/fishing-bobbles-spritesheet-24x24) | Nelson Yiap | CC-BY 3.0 | the float |
 | [Underwater diving pack](https://opengameart.org/content/underwater-diving-pack) | ansimuz | CC0 | underwater light |
 | [Nature props: aquatic](https://opengameart.org/content/nature-props-aquatic-underwater) | Reactorcore | CC0 | weeds, sand, clam on the lakebed |

@@ -1,35 +1,48 @@
 import { W, BACK_X, DEPTH, LOOK_UP } from '../core/constants.js';
 import { ART } from '../core/Assets.js';
+import { hourNow, skyBlend } from './Daylight.js';
 
 // A point on the backdrop art, on screen.
 export const back = (x, y) => ({ x: x - BACK_X, y });
 
-// The far side of the lake: sky, snowy peaks, and the pine-covered bank
-// with its waterfall and the stream that runs down into the lake. Clouds
-// drift with the wind and spray rises where the falls land.
+// The far side of the lake: the sky and the low, forested hills behind it
+// (ours, drawn for each time of day; study 1 in docs/studio), and the
+// pine-covered bank with its waterfall and the stream that runs down into
+// the lake. Clouds drift with the wind and spray rises where the falls land.
+//
+// The sky, hills and clouds are already drawn in each hour's own light, so
+// the time-of-day grade (Daylight.js) leaves them alone: `unshaded` marks
+// where they show, and the grade is cut out there.
 export class Backdrop {
   constructor(scene) {
     this.scene = scene;
     const layer = (key, depth) => scene.add.image(-BACK_X, 0, key).setOrigin(0).setDepth(depth);
-    layer('sky', DEPTH.SKY);
-    this.upperSky(scene);
-    layer('mountains', DEPTH.MOUNTAINS);
+    const sky = ART.anchors.sky;
+    this.top = sky.top;
+    // two copies of the sky, blended between the two times of day either
+    // side of the hour
+    this.skies = [0, 1].map(() => scene.add.image(0, sky.top, `sky-${sky.times[0]}`).setOrigin(0).setDepth(DEPTH.SKY));
     layer('land', DEPTH.LAND);
     const f = back(ART.anchors.falls.x, ART.anchors.falls.y);
     scene.add.sprite(f.x, f.y, 'falls').setOrigin(0).setDepth(DEPTH.FALLS).play('falls');
 
+    // our clouds, each a pair blended the same way, drifting with the wind
     this.clouds = [
-      ['cloud-big', 20, 0.6, 1],
-      ['cloud-3', 75, 1, 0.9],
-      ['cloud-1', 125, 1.6, 0.85],
-      ['cloud-2', 45, 1.3, 0.8],
-      ['cloud-1', -LOOK_UP * 0.7, 0.8, 0.7],
-      ['cloud-3', -LOOK_UP * 0.3, 1.1, 0.8],
-    ].map(([key, y, speed, alpha], i) => {
-      const c = scene.add.image(i === 0 ? 30 : Math.random() * W, y, key).setOrigin(0, 0.5).setAlpha(alpha).setDepth(DEPTH.CLOUDS);
-      c.speed = speed;
-      return c;
+      [0, 20, 0.5],
+      [1, -LOOK_UP * 0.55, 0.9],
+      [2, 55, 1.3],
+      [0, -LOOK_UP * 0.15, 0.7],
+    ].map(([i, y, speed], k) => {
+      const pair = [0, 1].map(() => scene.add.image(0, y, `cloud-${sky.times[0]}-${i}`).setOrigin(0, 0.5).setDepth(DEPTH.CLOUDS));
+      return { i, pair, x: (k * 97 + 40) % W, speed };
     });
+
+    // where the sky shows, for the grade to leave alone: the sky's band,
+    // down to its bottom row, less the far bank and the falls in front of it
+    this.unshaded = {
+      bottom: sky.top + scene.textures.get(`sky-${sky.times[0]}`).getSourceImage().height,
+      bank: [['land', undefined, -BACK_X, 0], ['falls', 0, f.x, f.y]],
+    };
 
     // spray and mist rising off the plunge pool
     const foot = back(ART.anchors.fallsFoot.x, ART.anchors.fallsFoot.y);
@@ -53,30 +66,17 @@ export class Backdrop {
     }).setDepth(DEPTH.MIST);
   }
 
-  // The sky above the art, seen while the camera looks up: the art's pale
-  // bands carried on upward, deepening a step at a time with a dithered
-  // seam between each, and stars that come out at night.
-  upperSky(scene) {
-    const g = scene.add.graphics().setDepth(DEPTH.SKY);
-    const bands = [0xf2f4f3, 0xe5f6f6, 0xd3f0ee, 0xb0ecf0, 0xb2d0d0];
-    const step = Math.ceil((LOOK_UP + 8) / bands.length);
-    bands.forEach((c, i) => {
-      const y1 = -i * step;
-      g.fillStyle(c, 1).fillRect(0, y1 - step, W, step);
-      if (i) for (let x = i % 2; x < W; x += 2) g.fillStyle(bands[i - 1], 1).fillRect(x, y1, 1, 1);
-    });
-    this.stars = Array.from({ length: 26 }, () => {
-      const s = scene.add.image(Phaser.Math.Between(4, W - 4), Phaser.Math.Between(-LOOK_UP, 30), 'star').setDepth(DEPTH.GLOW);
-      s.phase = Math.random() * Math.PI * 2;
-      return s;
-    });
-  }
-
   update(dt, wind, night = 0, time = 0) {
-    for (const s of this.stars) s.setAlpha(night > 0.5 ? (night - 0.5) * 2 * (0.6 + 0.4 * Math.sin(time / 700 + s.phase)) : 0);
+    const [a, b, t] = skyBlend(hourNow());
+    this.skies[0].setTexture(`sky-${a}`).setAlpha(1);
+    this.skies[1].setTexture(`sky-${b}`).setAlpha(t);
     for (const c of this.clouds) {
       c.x += c.speed * (0.5 + wind * 1.5) * dt;
-      if (c.x > W) c.x = -c.width;
+      const w = c.pair[0].width;
+      if (c.x > W) c.x = -w;
+      c.pair[0].setTexture(`cloud-${a}-${c.i}`).setAlpha(1);
+      c.pair[1].setTexture(`cloud-${b}-${c.i}`).setAlpha(t);
+      for (const p of c.pair) p.x = Math.round(c.x);
     }
     this.mist.accelerationX = wind * 7;
   }

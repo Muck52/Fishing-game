@@ -1,4 +1,4 @@
-import { W, H, SURFACE_Y, DEPTH } from '../core/constants.js';
+import { W, H, SURFACE_Y, DEPTH, LOOK_UP } from '../core/constants.js';
 
 // The lake keeps the phone's own time, read afresh every frame, so it is
 // dark in the game when it is dark outside. Each moment of the day is a colour
@@ -30,6 +30,17 @@ export function hourNow() {
   return d.getHours() + d.getMinutes() / 60;
 }
 
+// The sky (Backdrop.js) is drawn for five times of day; at any hour it
+// blends between the two either side. Returns [from, to, how far].
+const SKY = [[0, 'night'], [4.5, 'night'], [6, 'dawn'], [9, 'day'], [16.5, 'day'], [18, 'golden'], [19.5, 'dusk'], [21, 'night'], [24, 'night']];
+export function skyBlend(h = hourNow()) {
+  let i = 0;
+  while (i < SKY.length - 2 && h >= SKY[i + 1][0]) i++;
+  const [h0, a] = SKY[i];
+  const [h1, b] = SKY[i + 1];
+  return [a, b, a === b ? 0 : Math.max(0, Math.min(1, (h - h0) / (h1 - h0)))];
+}
+
 export function partOfDay(h = hourNow()) {
   return h < 5 ? 'night' : h < 8 ? 'dawn' : h < 12 ? 'morning' : h < 17 ? 'afternoon' : h < 20 ? 'evening' : 'night';
 }
@@ -47,10 +58,30 @@ function sample(h) {
 }
 
 export class Daylight {
-  constructor(scene, pier) {
+  constructor(scene, pier, unshaded = null) {
     this.scene = scene;
-    this.shade = scene.add.image(0, 0, '__WHITE').setOrigin(0).setDisplaySize(W, H).setDepth(DEPTH.SHADE).setBlendMode(Phaser.BlendModes.MULTIPLY);
-    this.lift = scene.add.image(0, 0, '__WHITE').setOrigin(0).setDisplaySize(W, H).setDepth(DEPTH.SHADE + 0.1).setBlendMode(Phaser.BlendModes.ADD).setTint(LIFT);
+    // the sky is drawn in each hour's own light (Backdrop.js), so the grade
+    // leaves it alone: the grade is a white sheet with the sky cut out of it
+    // (a clear pixel neither multiplies nor adds), and birds up there are
+    // tinted by hand instead
+    const shade = (blend) => scene.add.image(0, 0, '__WHITE').setOrigin(0).setDisplaySize(W, H).setDepth(DEPTH.SHADE).setBlendMode(blend);
+    this.shade = shade(Phaser.BlendModes.MULTIPLY);
+    this.lift = shade(Phaser.BlendModes.ADD).setDepth(DEPTH.SHADE + 0.1).setTint(LIFT);
+    if (unshaded) {
+      // a sheet over the whole world the camera can see, a little extra for
+      // its shake, that scrolls with it
+      const m = 8;
+      const top = -LOOK_UP - m;
+      if (scene.textures.exists('shade-sheet')) scene.textures.remove('shade-sheet');
+      const sheet = scene.textures.addDynamicTexture('shade-sheet', W + m * 2, H - top + m);
+      sheet.fill(0xffffff, 1).erase(new Phaser.GameObjects.Rectangle(scene, 0, 0, W + m * 2, unshaded.bottom - top, 0xffffff).setOrigin(0));
+      for (const [key, frame, x, y] of unshaded.bank) sheet.draw(scene.make.image({ key, frame, x: x + m, y: y - top, add: false }).setOrigin(0).setTintFill(0xffffff));
+      for (const o of [this.shade, this.lift]) {
+        o.setTexture('shade-sheet').setPosition(-m, top).setDisplaySize(sheet.width, sheet.height);
+        o.inWorld = true;
+      }
+      this.masked = true;
+    }
     // lights that show through the dark: the hut's windows and doorway,
     // and fireflies over the reeds
     this.lights = scene.add.image(pier.hutAt.x, pier.hutAt.y, 'hut-lights').setOrigin(0).setDepth(DEPTH.GLOW);
@@ -70,6 +101,9 @@ export class Daylight {
     const { color, night } = sample(hourNow());
     this.night = night;
     this.shade.setTint(color);
+    if (this.masked) {
+      for (const o of this.scene.children.list) if (o.depth === DEPTH.BIRDS && o.setTint) o.setTint(color);
+    }
     this.lift.setAlpha(night);
     this.lights.setAlpha(Phaser.Math.Clamp((night - 0.3) / 0.5, 0, 1)); // on from dusk
     this.flies.setVisible(night > 0.5);

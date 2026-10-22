@@ -166,14 +166,9 @@ def spires(heights, rnd):
             rise = h - abs(k - (w - 1) / 2) * (2 * h / w)
             heights[xx] -= max(0, int(rise))
         x += w - rnd.choice((0, 1))
-    for _ in range(5):  # white pines, a head above the rest: flat, tiered, flagged by the wind
-        cx = rnd.randrange(12, W - 12)
-        top = min(heights[cx - 6:cx + 7]) - rnd.randint(7, 11)
-        for k, half, lean in ((0, 4, 2), (2, 7, 3), (4, 5, 1), (6, 9, 3), (8, 7, 2)):
-            for xx in range(cx - half + lean, cx + half + lean + 1):
-                heights[xx] = min(heights[xx], top + k)
-        for y in range(top, top + 12):
-            heights[cx] = min(heights[cx], top)
+    # no tall white pines here: drawn this small they read as random mounds
+    # in the treeline (study 1 verdict); they'll come back only as a proper
+    # tiered silhouette from a white pine study
 
 
 def hill_colours(time, n=3):
@@ -181,7 +176,10 @@ def hill_colours(time, n=3):
     horizon = bands[-1]
     forest = lit(ramps()["spruce-needles"][1], 1, 5, time)
     if time == "night":
-        return [lerp(horizon, "#000000", 0.2 + 0.2 * i) for i in range(n)]
+        # by moonlight the ridges step toward the near bank's night colour
+        # (the spruce under the game's night grade), not to black, so the
+        # nearest ridge meets the bank instead of reading as a hole
+        return [lerp(horizon, "#26344f", 0.25 + 0.75 * i / (n - 1)) for i in range(n)]
     far = lerp(horizon, bands[6], 0.4)
     return [lerp(far, forest, i / (n - 1) * 0.8) for i in range(n)]
 

@@ -26,6 +26,7 @@ export const LOOK_UP = Math.round((H * 0.25) / 2) * 2;
 // while the camera pans; everything else scrolls with the world.
 export function pinToScreen(scene) {
   for (const o of scene.children.list) {
+    if (o.inWorld) continue; // a grade that scrolls with the world
     if (o.depth >= 50 || (o.depth >= 30 && o.depth < 31)) pin(o);
   }
 }

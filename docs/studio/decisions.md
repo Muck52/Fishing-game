@@ -2,6 +2,14 @@
 
 Newest first. Each one: what we decided, when, and why.
 
+## 2026-10-22: The sky is study 1's version B
+
+Low forested hills in haze, the nearest edged in spruce and fir spires, a
+banded sky with the sun or moon, and our own rim-lit clouds, drawn for each
+time of day. No tall white pines in the treeline: at this size they read as
+random mounds. Replaces the pack sky, the snowy peaks and both cloud
+styles.
+
 ## 2026-10-22: The five calls from review 1
 
 1. **A clear lake.** Green-teal water you can see the bottom and the fish

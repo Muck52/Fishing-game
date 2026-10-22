@@ -62,11 +62,11 @@ we borrow is the thinking behind them.
    glides.
 
    **The camera breathes with the cast.** On the dock with the rod up, the
-   camera looks up into a big sky (the sky art's bands carried on upward,
-   with stars at night) and the dock sits low on screen. Casting pans slowly
+   camera looks up into a big sky (ours, drawn for each time of day, with
+   stars at night) and the dock sits low on screen. Casting pans slowly
    down until the whole lake, down to the lakebed, is in view with the dock
    near the top; when the fish is in (or gone) it drifts back up. The
-   interface and the time-of-day grade stay pinned to the screen.
+   interface stays pinned to the screen.
 
 8. **Lettering is part of the art, and it's all one hand.** Every word in
    the game is set in Monogram (datagoblin, CC0), a small, friendly pixel
@@ -326,7 +326,8 @@ and character sheet: see [docs/characters/olive.md](characters/olive.md).
 
 | Piece | Source pack | Size on grid | Outline | Motion |
 | --- | --- | --- | --- | --- |
-| Sky, peaks, far bank | CraftPix mountain river | 576 x 324, 1x, cropped to 360 | none | clouds drift; waterfall and stream roll 4 frames |
+| Sky, hills, clouds | ours: `tools/scenery/sky.py` (study 1, version B) | 360 x 260, 1x, one image per time of day | none | blends through the day; clouds drift |
+| Far bank | CraftPix mountain river | 576 x 324, 1x, cropped to 360 | none | waterfall and stream roll 4 frames |
 | Underwater, shelf, lakebed | built in `build_art.py` from the palette | full width | none | displacement wobble; shafts pulse |
 | Weeds, sand, clam | Reactorcore aquatic | 1x | none | 4-frame sway |
 | Hut, posts, barrel, cattails | CraftPix fishing | 1x | shared | cattails sway; hut windows lit at night |
