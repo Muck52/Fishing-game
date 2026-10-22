@@ -225,7 +225,7 @@ def parts_for(name, pose, level):
         # the drake's and hen's speculum marks and tips were on the wing; the
         # feather pass replaces them
         marks = MARKS.get(name, {}).get("fly", [])
-    elif name == "sparrow" and pose == "rest":
+    elif name == "sparrow" and pose in ("rest", "perch"):
         # perched on top of a cattail's brown head, gripping it, tail down
         parts = [("limb", "B", [(8, 12), (8.4, 21)], [1, 1]), ("limb", "u", [(8, 11.2), (8, 16.6)], [2.6, 2.4]),
                  ("limb", "y", [(6.6, 9), (7.4, 11)], [0.8, 0.8]), ("limb", "y", [(8.6, 9), (8.8, 11)], [0.8, 0.8]),
@@ -233,6 +233,8 @@ def parts_for(name, pose, level):
                  ("body", "O", [(4, 5), (7, 3.8), (10, 4.6), (11, 6.6), (9.6, 8.8), (6.4, 9.4), (4, 8)]),
                  ("mark", "W", [(3.6, 7), (8.4, 8), (7.4, 9.6), (4, 9.2)]),
                  ("wing", NEAR, [(5.4, 4.8), (8.6, 4.4), (11.6, 7.4), (9, 8.2), (6, 7.2)])] + sb.sparrow_parts(([], []))[3:]
+        if pose == "perch":
+            parts = parts[2:]  # the bird alone, for the game's own cattails
         marks = MARKS["sparrow"]["rest"]
     else:
         parts = []
@@ -254,7 +256,7 @@ def parts_for(name, pose, level):
 
 def draw(name, pose, level):
     spec = SPECS[name]
-    p = spec["poses"][pose]
+    p = spec["poses"]["rest" if pose == "perch" else pose]
     k = 4 / 3 if level == "C" else 1
     W, H = p["frame"]
     W, H = math.ceil(W * k), math.ceil(H * k)

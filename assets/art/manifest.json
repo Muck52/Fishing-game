@@ -221,6 +221,30 @@
    "frameHeight": 15,
    "frames": 2
   },
+  "gull-stand": {
+   "url": "assets/art/characters/gull-stand.png",
+   "frameWidth": 31,
+   "frameHeight": 22,
+   "frames": 1
+  },
+  "eagle-perch": {
+   "url": "assets/art/characters/eagle-perch.png",
+   "frameWidth": 22,
+   "frameHeight": 32,
+   "frames": 1
+  },
+  "sparrow-perch": {
+   "url": "assets/art/characters/sparrow-perch.png",
+   "frameWidth": 15,
+   "frameHeight": 12,
+   "frames": 1
+  },
+  "mallard-swim": {
+   "url": "assets/art/characters/mallard-swim.png",
+   "frameWidth": 25,
+   "frameHeight": 12,
+   "frames": 2
+  },
   "minnow": {
    "url": "assets/art/characters/minnow.png",
    "frameWidth": 14,
@@ -855,6 +879,49 @@
      "loop": false
     },
     "dive": {
+     "frames": [
+      1
+     ],
+     "fps": 1,
+     "loop": false
+    }
+   },
+   "gull-stand": {
+    "stand": {
+     "frames": [
+      0
+     ],
+     "fps": 1,
+     "loop": false
+    }
+   },
+   "eagle-perch": {
+    "perch": {
+     "frames": [
+      0
+     ],
+     "fps": 1,
+     "loop": false
+    }
+   },
+   "sparrow-perch": {
+    "perch": {
+     "frames": [
+      0
+     ],
+     "fps": 1,
+     "loop": false
+    }
+   },
+   "mallard-swim": {
+    "drake": {
+     "frames": [
+      0
+     ],
+     "fps": 1,
+     "loop": false
+    },
+    "hen": {
      "frames": [
       1
      ],

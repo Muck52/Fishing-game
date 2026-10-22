@@ -1,5 +1,6 @@
-// The animals of the lake. Birds cross the sky, a loon fishes the shallows
-// and fish leap now and then;
+// The animals of the lake. Birds cross the sky, now and then come down to
+// rest (a gull or the eagle on the sand, a sparrow on a cattail, a pair of
+// mallards paddling the shallows), a loon fishes the shallows and fish leap;
 // every so often a doe or buck, fox, hare or bear comes down to the bank, and
 // gets a field note.
 import { W, SURFACE_Y, DEPTH } from '../core/constants.js';
@@ -51,7 +52,8 @@ export class Wildlife {
     this.scene = scene;
     this.note = onNote;
     const now = scene.time.now;
-    this.next = { visitor: now + 4000, birds: now + 1500, jump: now + 6000, eagle: now + 9000, loon: now + 20000 };
+    this.next = { visitor: now + 4000, birds: now + 1500, jump: now + 6000, eagle: now + 9000, loon: now + 20000, rest: now + 12000 };
+    this.sand = null; // who's on the open sand, so two don't stand in one spot
     this.last = null;
   }
 
@@ -73,6 +75,10 @@ export class Wildlife {
       this.eagle();
       n.eagle = time + R(30000, 50000);
     }
+    if (time > n.rest) {
+      this.rest();
+      n.rest = time + R(20000, 35000);
+    }
     if (time > n.loon) {
       this.loon();
       n.loon = time + R(45000, 75000);
@@ -83,12 +89,14 @@ export class Wildlife {
   // for a while, then turns round and goes back into the trees. It moves
   // only when its walk cycle advances a frame, by that frame's step.
   visit(key = null) {
+    if (this.sand) return; // a bird is resting there; come back later
     const keys = Object.keys(VISITORS).filter((k) => k !== this.last && (k !== 'bear' || Math.random() < 0.4));
     key = key || keys[R(0, keys.length - 1)];
     this.last = key;
     const v = VISITORS[key];
     const s = this.scene;
     const walk = `${key}-walk`;
+    this.sand = 'visitor';
     const a = s.add.sprite(-30, BANK_Y, key, 0).setOrigin(0.5, 1).setDepth(DEPTH.SHORE_LIFE);
     // a soft shadow on the sand under it, going where it goes
     const shadow = s.add.ellipse(a.x, BANK_Y - 1, Math.round(a.width * 0.7), 3, 0x2a2418, 0.35).setDepth(DEPTH.SHORE_LIFE - 0.1);
@@ -119,6 +127,7 @@ export class Wildlife {
         dir = 0;
         a.anims.stop();
         s.time.delayedCall(0, () => a.destroy());
+        this.sand = null;
       }
     });
   }
@@ -158,6 +167,89 @@ export class Wildlife {
     s.tweens.add({ targets: e, x: W + 45, duration: 15000, onComplete: () => e.destroy() });
     s.tweens.add({ targets: e, y: e.y + 25, duration: 3500, yoyo: true, repeat: 1, ease: 'Sine.easeInOut' });
     this.note('A bald eagle circles high over the lake.');
+  }
+
+  // A bird comes down to rest for a while.
+  rest() {
+    const pick = ['gull', 'gull', 'sparrow', 'sparrow', 'ducks', 'eagle'];
+    const k = pick[R(0, pick.length - 1)];
+    if ((k === 'gull' || k === 'eagle') && this.sand) return this.perch();
+    ({ gull: () => this.land('gull'), eagle: () => this.land('eagle'), sparrow: () => this.perch(), ducks: () => this.paddle() })[k]();
+  }
+
+  // A gull (or the eagle) glides down from the right onto the open sand,
+  // stands a while with a shadow under it, then beats off over the lake.
+  land(key) {
+    const s = this.scene;
+    const big = key === 'eagle';
+    const stand = big ? 'eagle-perch' : 'gull-stand';
+    const glide = ART.anchors.creatures[key].glide.frames[0];
+    const x = R(140, 176);
+    this.sand = key;
+    const b = s.add.sprite(W + 30, R(150, 200), key, glide).setDepth(DEPTH.SHORE_LIFE + 0.1);
+    s.tweens.add({
+      targets: b, x, y: BANK_Y - 10, duration: big ? 6500 : 5000, ease: 'Sine.easeOut',
+      onComplete: () => {
+        // feet down on the sand
+        b.setTexture(stand).setOrigin(0.5, 1).setPosition(x, BANK_Y + (big ? 2 : 0));
+        const shadow = s.add.ellipse(x, BANK_Y - 1, big ? 14 : 12, 3, 0x2a2418, 0.35).setDepth(DEPTH.SHORE_LIFE);
+        this.note(big ? 'The bald eagle lands on the shore to watch the water.' : 'A gull drops onto the sand and settles.');
+        // now and then it turns to look the other way
+        const look = s.time.addEvent({ delay: R(2500, 4000), loop: true, callback: () => b.setFlipX(!b.flipX) });
+        s.time.delayedCall(R(9000, 16000), () => {
+          look.remove();
+          shadow.destroy();
+          this.sand = null;
+          b.setTexture(key).setOrigin(0.5, 0.5).setFlipX(false).setPosition(x, BANK_Y - 10).play(`${key}-fly`);
+          s.tweens.add({ targets: b, x: -50, y: R(40, 120), duration: big ? 9000 : 7000, ease: 'Sine.easeIn', onComplete: () => b.destroy() });
+        });
+      },
+    });
+  }
+
+  // A sparrow flits in to a cattail head, perches, then flits away.
+  perch() {
+    const s = this.scene;
+    const top = { x: 33, y: SURFACE_Y + 6 - 52 + 19 }; // the tallest cattail's head (shore-reeds)
+    const b = s.add.sprite(-15, top.y - 40, 'sparrow').setDepth(DEPTH.REEDS + 0.1).setFlipX(true).play('sparrow-fly');
+    s.tweens.add({
+      targets: b, x: top.x, y: top.y - 5, duration: 2200, ease: 'Sine.easeOut',
+      onComplete: () => {
+        b.anims.stop();
+        b.setTexture('sparrow-perch').setOrigin(0.5, 1).setPosition(top.x, top.y + 1);
+        this.note('A song sparrow perches on a cattail.');
+        // a little bob now and then, as sparrows do
+        const bob = s.time.addEvent({ delay: R(1200, 2200), loop: true, callback: () => { b.y = top.y + 2; s.time.delayedCall(150, () => (b.y = top.y + 1)); } });
+        s.time.delayedCall(R(7000, 12000), () => {
+          bob.remove();
+          b.setTexture('sparrow').setOrigin(0.5, 0.5).play('sparrow-fly');
+          s.tweens.add({ targets: b, x: W + 20, y: R(60, 140), duration: 6000, onComplete: () => b.destroy() });
+        });
+      },
+    });
+  }
+
+  // A drake and his hen paddle in along the shallows, dabble a while, and
+  // paddle back out.
+  paddle() {
+    const s = this.scene;
+    const fh = ART.sheets['mallard-swim'].frameHeight;
+    const top = SURFACE_Y + 13 - fh;
+    const stop = R(70, 110);
+    const pair = [['drake', 0], ['hen', 1]].map(([who, i]) => {
+      const d = s.add.sprite(-25 - i * 20, top, 'mallard-swim', ART.anchors.creatures['mallard-swim'][who].frames[0])
+        .setOrigin(0.5, 0).setDepth(DEPTH.SURFACE + 0.1).setFlipX(true);
+      d.bob = s.tweens.add({ targets: d, y: top + 1, duration: 1200 + i * 300, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      s.tweens.add({ targets: d, x: stop - i * 18, duration: 14000, ease: 'Sine.easeOut' });
+      return d;
+    });
+    this.note('A pair of mallards paddles along the shallows.');
+    s.time.delayedCall(R(24000, 32000), () => {
+      pair.forEach((d, i) => {
+        d.setFlipX(false);
+        s.tweens.add({ targets: d, x: -30 - i * 10, duration: 12000, ease: 'Sine.easeIn', onComplete: () => { d.bob.remove(); d.destroy(); } });
+      });
+    });
   }
 
   // A common loon swims in low on the water, dives, comes up further on,

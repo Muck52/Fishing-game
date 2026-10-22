@@ -463,6 +463,11 @@ through the detail pass at level B.
 - Detail on a small moving sprite comes cheapest from structure, worked
   out from the shape (feather bands along and across a wing), not placed
   by hand per frame, so every frame of a beat agrees.
+- (Later, the rest poses joined the game: now and then a gull, or the
+  eagle, glides down onto the open sand, stands a while looking about and
+  beats off; a sparrow perches on the tallest cattail's head, bobbing; a
+  drake and hen paddle in along the shallows and back out. A bird on the
+  sand and a visiting animal never share it.)
 - Placed spots read as a pattern (the hen's first mottling looked like a
   leopard's); a texture keyed to the body's interior reads as feathers.
 

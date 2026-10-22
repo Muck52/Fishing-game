@@ -1,0 +1,13 @@
+{
+ "frameWidth": 15,
+ "frameHeight": 12,
+ "animations": {
+  "perch": {
+   "frames": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  }
+ }
+}

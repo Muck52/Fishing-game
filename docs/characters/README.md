@@ -48,7 +48,10 @@ journal and the backpack, and from the research below.
    look, with study 9b's detail: feather bands on each wing, field marks,
    feather texture. Gulls and the eagle beat and glide on level wings; ducks beat
    fast and never glide; sparrows fly in bounds, a burst of beats then
-   wings shut. The loon swims low and dives.
+   wings shut. The loon swims low and dives. At rest: the gull stands and
+   the eagle perches on the sand, the sparrow on a cattail, the drake and
+   hen paddle the shallows (`gull-stand`, `eagle-perch`, `sparrow-perch`,
+   `mallard-swim`).
 
    (Before study 9 the birds were seen from below, as described next; the
    kit's wing tools are kept for reference.)

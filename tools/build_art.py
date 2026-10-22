@@ -394,8 +394,8 @@ def angler():
 
 
 # ---------------------------------------------------------------- wildlife
-CREATURES = ["deer", "buck", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "loon", "minnow"]
-BIRDS = ["gull", "sparrow", "mallard", "eagle", "loon"]  # all drawn in tools/characters/birds.py
+CREATURES = ["deer", "buck", "fox", "hare", "bear", "gull", "sparrow", "mallard", "eagle", "loon", "gull-stand", "eagle-perch", "sparrow-perch", "mallard-swim", "minnow"]
+BIRDS = ["gull", "sparrow", "mallard", "eagle", "loon", "gull-stand", "eagle-perch", "sparrow-perch", "mallard-swim"]  # all drawn in tools/characters/birds.py
 ANIMALS = ["deer", "buck", "fox", "hare", "bear"]  # animated from study 8 in tools/characters/land.py
 
 

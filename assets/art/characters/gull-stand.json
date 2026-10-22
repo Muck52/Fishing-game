@@ -1,0 +1,13 @@
+{
+ "frameWidth": 31,
+ "frameHeight": 22,
+ "animations": {
+  "stand": {
+   "frames": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  }
+ }
+}

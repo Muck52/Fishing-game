@@ -38,6 +38,11 @@ def frame(spec, pose, water=None):
     return image(outline(bd.draw(name, pose, DETAIL)), bd.colours(name), water=water)
 
 
+def crop(img):
+    """Trimmed to the bird, so its lowest pixel is the frame's bottom."""
+    return img.crop(img.getbbox())
+
+
 def anims(name):
     """name -> {animation: ([images], fps, loop)}"""
     if name == "gull":
@@ -48,6 +53,15 @@ def anims(name):
         return {"fly": ([frame(sb.MALLARD, p) for p in BEAT], 12, True), "hen": ([frame(sb.HEN, p) for p in BEAT], 12, True)}
     if name == "sparrow":
         return {"fly": ([frame(sb.SPARROW, p) for p in BEAT + BEAT + ["fold", "fold", "fold"]], 16, True)}
+    # at rest: on the sand, on a cattail, on the water
+    if name == "gull-stand":
+        return {"stand": ([crop(frame(sb.GULL, "rest"))], 1, False)}
+    if name == "eagle-perch":
+        return {"perch": ([crop(frame(sb.EAGLE, "rest"))], 1, False)}
+    if name == "sparrow-perch":
+        return {"perch": ([crop(image(outline(bd.draw("sparrow", "perch", DETAIL)), bd.colours("sparrow")))], 1, False)}
+    if name == "mallard-swim":
+        return {"drake": ([frame(sb.MALLARD, "rest", 9)], 1, False), "hen": ([frame(sb.HEN, "rest", 9)], 1, False)}
     if name == "loon":
         return {"swim": ([frame(sb.LOON, "rest", 9)], 1, False), "dive": ([frame(sb.LOON, "dive", 9)], 1, False)}
     raise KeyError(name)
@@ -71,5 +85,5 @@ def sheet(name):
 
 
 if __name__ == "__main__":
-    for n in ("gull", "eagle", "mallard", "sparrow", "loon"):
+    for n in ("gull", "eagle", "mallard", "sparrow", "loon", "gull-stand", "eagle-perch", "sparrow-perch", "mallard-swim"):
         sheet(n)
