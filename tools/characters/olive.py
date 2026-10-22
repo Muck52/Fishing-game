@@ -215,7 +215,7 @@ def animations():
 
 def sheet():
     """Her sheet and animation table, and her previews in docs/characters."""
-    return write("olive", animations(), INK, FW, FH, folder="olive")
+    return write("olive", animations(), INK, FW, FH, folder="olive", keep="ENneF")
 
 
 if __name__ == "__main__":

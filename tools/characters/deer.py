@@ -118,7 +118,7 @@ def animations():
 
 
 def sheet():
-    return write("deer", animations(), INK, FW, FH)
+    return write("deer", animations(), INK, FW, FH, keep="ENP")
 
 
 if __name__ == "__main__":

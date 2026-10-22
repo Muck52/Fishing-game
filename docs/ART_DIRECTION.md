@@ -37,7 +37,9 @@ we borrow is the thinking behind them.
    redrawing art never shifts it. This is what makes art from many packs
    and our own drawings look like one game.
 3. **Outlines say "this moves."** Characters, animals, fish, the boat, the
-   hut and props carry the shared dark outline. The backdrop, water and
+   hut and props carry the shared dark outline (on the creatures it gives
+   way to a deep shade of the colour inside along the lit top edge of light
+   parts: a selective outline, see `docs/characters/README.md`). The backdrop, water and
    lakebed have none, so actors always read in front of scenery.
 4. **Light from above and behind.** Sun shafts slant down into the water,
    the surface twinkles, and depth darkens and cools everything. Glows are

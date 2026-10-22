@@ -51,7 +51,7 @@ def animations():
 
 
 def sheet():
-    return write("minnow", animations(), INK, FW, FH)
+    return write("minnow", animations(), INK, FW, FH, keep="E")
 
 
 if __name__ == "__main__":

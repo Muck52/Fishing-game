@@ -79,7 +79,7 @@ def animations():
 
 
 def sheet():
-    return write("gull", animations(), INK, FW, FH)
+    return write("gull", animations(), INK, FW, FH, keep="ENYy")
 
 
 if __name__ == "__main__":

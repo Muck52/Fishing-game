@@ -65,7 +65,7 @@ def animations():
 
 
 def sheet():
-    return write("sparrow", animations(), INK, FW, FH)
+    return write("sparrow", animations(), INK, FW, FH, keep="Eg")
 
 
 if __name__ == "__main__":

@@ -119,7 +119,7 @@ def animations():
 
 
 def sheet():
-    return write("fox", animations(), INK, FW, FH)
+    return write("fox", animations(), INK, FW, FH, keep="EN")
 
 
 if __name__ == "__main__":

@@ -87,7 +87,7 @@ def animations():
 
 
 def sheet():
-    return write("mallard", animations(), INK, FW, FH)
+    return write("mallard", animations(), INK, FW, FH, keep="ENYOWF")
 
 
 if __name__ == "__main__":

@@ -59,8 +59,49 @@ journal and the backpack, and from the research below.
    slips up through the air. Wings are drawn four times larger and brought
    down to the grid by vote (`supersampled`), so their slanted and curved
    edges come out as clean, even steps.
-8. **Moving with the feet.** A creature moves only when its walk advances a
+8. **Finished the same way.** Every frame goes through the kit's
+   finishing passes (`finish()` in `kit.py`):
+   - *cleanup*: outline pixels left touching nothing go, and a lone pixel
+     of one colour in a patch of another takes its surroundings' colour
+     (eyes, noses and the like are protected);
+   - *hue-shifted light and shade*: the top pixel of each run of colour,
+     where it meets the sky, takes a light step of that colour warmed
+     toward yellow, and the bottom pixel a shade cooled toward blue-violet,
+     so forms read as round and lit from above, and shadows look like the
+     same material in shade rather than the colour with black mixed in;
+   - *selective outline*: along the top edge of light-coloured parts
+     (white fur, a gull, a doe's sunlit back) the outline takes a deep,
+     cool shade of the colour inside it instead of the plum-black, so
+     light forms aren't hemmed in where the light falls; underneath and
+     round dark parts it stays the shared outline.
+
+   Tilted frames (Olive's leap) are turned the **RotSprite** way: blown up
+   eight times with Scale2x, which keeps lines and curves clean, turned,
+   and brought back down by vote, so a small sprite keeps its shape.
+   The new light, shade and outline steps join the palette's creature
+   shades in `tools/palette.json`.
+9. **Moving with the feet.** A creature moves only when its walk advances a
    frame, by a step that comes from its gait, so its feet don't slide.
+
+## Editing in Pixelorama
+
+Every creature has a [Pixelorama](https://orama-interactive.itch.io/pixelorama)
+project, `assets/source/pixelorama/<name>.pxo`, kept in step by the build:
+
+- a locked **drawn** layer: what its script draws, rewritten each build;
+- a **touch-ups** layer for hand edits, kept between builds and laid over
+  the drawing (paint `#ff00ff` to erase a drawn pixel);
+- one frame per animation frame, a tag per animation (named as in the
+  game), and the game's palette as the project palette ("Reel It In").
+
+Open a project, paint on touch-ups, save, and rebuild the art.
+`tools/characters/pixelorama.py` drives Pixelorama itself, headless:
+`verify` has it open every project and export it, and checks the export
+matches the game's sheet pixel for pixel; `export` exports one; `paint` and
+`clear` change touch-ups from the command line.
+
+Touch-ups so far: the fox's eyes are amber, as a red fox's are; the hare
+has a pale ring of fur round its eye.
 
 ## Who's who
 
@@ -102,5 +143,7 @@ lineup above.
   [*Nature*, 1888](https://www.nature.com/articles/037369a0.pdf));
   [Small birds, 2D Animation: Animate Flying Creatures](https://origin-www.lynda.com/3D-Animation-tutorials/Small-birds/501129/602246-4.html)
   (the wings reverse and fold on the upstroke; the body moves against the wings)
+- Pixel-art technique and tools: [Pixelorama](https://github.com/Orama-Interactive/Pixelorama) (MIT),
+  the RotSprite and Scale2x algorithms, hue-shifted ramps and selective outlining
 - The CC0 [animated wild animals](https://opengameart.org/content/animated-wild-animals) by ScratchIO,
   studied for a canid's body plan and walk at sprite size (nothing copied)

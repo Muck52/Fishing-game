@@ -75,7 +75,7 @@ def animations():
 
 
 def sheet():
-    return write("eagle", animations(), INK, FW, FH)
+    return write("eagle", animations(), INK, FW, FH, keep="ENYy")
 
 
 if __name__ == "__main__":

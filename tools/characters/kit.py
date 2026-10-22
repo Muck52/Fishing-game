@@ -22,6 +22,7 @@ the same way, so they read as one world (see docs/characters/README.md):
 - **Stepped motion.** Creatures move by a fixed step as each walk frame
   changes, so feet don't slide; the step comes from the gait itself.
 """
+import colorsys
 import json
 import math
 from pathlib import Path
@@ -105,28 +106,52 @@ def outline(g):
     return g
 
 
-def rotate(g, deg, cx, cy):
-    """Turns a frame on the pixel grid (positive lifts the nose of a
-    left-facing creature), sampling each pixel four times so the outline
-    holds together."""
+def scale2x(g):
+    """Doubles a frame the Scale2x (EPX) way: each pixel becomes four, and a
+    corner takes its neighbours' colour where two of them meet, so diagonal
+    edges stay clean diagonals instead of becoming staircases."""
     h, w = len(g), len(g[0])
+    out = blank(w * 2, h * 2)
+    at = lambda y, x: g[y][x] if 0 <= y < h and 0 <= x < w else "."  # noqa: E731
+    for y in range(h):
+        for x in range(w):
+            p = g[y][x]
+            a, b, c, d = at(y - 1, x), at(y, x + 1), at(y, x - 1), at(y + 1, x)
+            out[2 * y][2 * x] = c if c == a and c != d and a != b else p
+            out[2 * y][2 * x + 1] = b if a == b and a != c and b != d else p
+            out[2 * y + 1][2 * x] = c if d == c and d != b and c != a else p
+            out[2 * y + 1][2 * x + 1] = b if b == d and b != a and d != c else p
+    return out
+
+
+def rotate(g, deg, cx, cy):
+    """Turns a frame on the pixel grid the RotSprite way (positive lifts the
+    nose of a left-facing creature): blown up eight times with Scale2x,
+    which keeps lines and curves smooth, turned there, then brought back
+    down, each pixel taking the colour that fills most of it. Small pixel
+    art keeps its shape this way instead of breaking into jagged bits."""
+    h, w = len(g), len(g[0])
+    k = 8
+    big = scale2x(scale2x(scale2x(g)))
+    bh, bw = len(big), len(big[0])
     a = math.radians(deg)
     c, s = math.cos(a), math.sin(a)
     out = blank(w, h)
     for y in range(h):
         for x in range(w):
             votes = {}
-            for sy in (0.25, 0.75):
-                for sx in (0.25, 0.75):
-                    X, Y = x + sx - cx, y + sy - cy
-                    u, v = math.floor(c * X + s * Y + cx), math.floor(-s * X + c * Y + cy)
-                    ch = g[v][u] if 0 <= v < h and 0 <= u < w else "."
+            for yy in range(y * k, y * k + k, 2):
+                for xx in range(x * k, x * k + k, 2):
+                    X, Y = xx + 0.5 - cx * k, yy + 0.5 - cy * k
+                    u, v = math.floor(c * X + s * Y + cx * k), math.floor(-s * X + c * Y + cy * k)
+                    ch = big[v][u] if 0 <= v < bh and 0 <= u < bw else "."
                     votes[ch] = votes.get(ch, 0) + 1
-            if votes.get(".", 0) >= 3:
+            if votes.get(".", 0) >= 8:
                 continue
-            fill = {k: n for k, n in votes.items() if k not in ".o"}
-            out[y][x] = max(fill, key=fill.get) if sum(fill.values()) >= 2 else "o"
-    return outline(out)
+            votes.pop(".", None)
+            fill = {kk: n for kk, n in votes.items() if kk != "o"}
+            out[y][x] = max(fill, key=fill.get) if fill and sum(fill.values()) >= 6 else "o"
+    return outline(cleanup(out))
 
 
 def walk_legs(t, legs, stance=0.65, lift=2, reach=3, ground=23, knee=4):
@@ -174,35 +199,190 @@ def image(g, colours, water=None, water_rgb=(46, 93, 120)):
     return img
 
 
-def sheet(anims, colours, fw, fh):
-    """anims: name -> (frames, fps, loop[, extra]) where extra is a dict of
-    more facts for the game (a walk's step, a waterline). Returns every
-    frame in one strip and the table of where each animation is."""
-    frames, index = [], {}
+# ---------------------------------------------------------------- finishing
+# Every frame goes through the same finishing passes before it's saved.
+
+def cleanup(g, keep=""):
+    """Tidies a frame: outline pixels left touching nothing are removed, and
+    a lone pixel of one colour sitting in a patch of another (noise left by
+    shading or turning) takes its surroundings' colour. Letters in `keep`
+    (eyes, noses: details that are meant to be one pixel) are left alone."""
+    h, w = len(g), len(g[0])
+    at = lambda y, x: g[y][x] if 0 <= y < h and 0 <= x < w else "."  # noqa: E731
+    for y in range(h):
+        for x in range(w):
+            ch = g[y][x]
+            n4 = [at(y - 1, x), at(y + 1, x), at(y, x - 1), at(y, x + 1)]
+            if ch == "o" and all(n in ".o" for n in n4) and not any(
+                at(y + a, x + b) not in ".o" for a in (-1, 1) for b in (-1, 1)
+            ):
+                g[y][x] = "."
+            elif ch not in ".o" and ch not in keep and len(set(n4)) == 1 and n4[0] not in ".o" and n4[0] != ch:
+                g[y][x] = n4[0]
+    return g
+
+
+def _hsv(c):
+    return colorsys.rgb_to_hsv(*(int(c[i:i + 2], 16) / 255 for i in (1, 3, 5)))
+
+
+def _hex(h, s, v):
+    return "#%02x%02x%02x" % tuple(round(max(0, min(1, x)) * 255) for x in colorsys.hsv_to_rgb(h % 1, s, v))
+
+
+def _toward(h, target, amount):
+    """Moves a hue toward another the short way round."""
+    d = (target - h + 0.5) % 1 - 0.5
+    return h + max(-amount, min(amount, d))
+
+
+def shift(c, kind):
+    """A hue-shifted step of a colour: light warms toward yellow and loses a
+    little saturation, shade cools toward blue-violet and gains it, so a
+    shaded colour reads as the same material in another light rather than
+    the same colour with black mixed in. 'sel' is the deep, cool shade used
+    for a selective outline."""
+    h, s, v = _hsv(c)
+    if kind == "light":
+        return _hex(_toward(h, 50 / 360, 14 / 360), s * 0.85, min(1, v * 1.12 + 0.05))
+    if kind == "shade":
+        return _hex(_toward(h, 250 / 360, 16 / 360), min(1, s * 1.1 + 0.05), v * 0.8)
+    return _hex(_toward(h, 250 / 360, 22 / 360), min(1, s * 1.15 + 0.1), v * 0.55)
+
+
+def _lum(c):
+    r, g, b = (int(c[i:i + 2], 16) for i in (1, 3, 5))
+    return (r * 3 + g * 6 + b) / 10
+
+
+def finish(frames, colours, keep="ENne"):
+    """The finishing passes, the same for every creature:
+
+    - cleanup (above);
+    - light and shade: the top pixel of each run of colour, where it meets
+      the sky, takes a hue-shifted light step of that colour, and the bottom
+      pixel a hue-shifted shade, so every form reads as round and lit from
+      above;
+    - selective outline: along the top edge of light-coloured parts (white
+      fur, a gull's back) the outline takes a deep, cool shade of the colour
+      it surrounds instead of the plum-black, so light forms aren't hemmed
+      in by a hard dark line where the light falls on them; underneath and
+      round dark parts it stays the shared outline.
+
+    Returns the finished frames and the colours with the new steps added
+    (each one also joins the palette's creature shades)."""
+    colours = dict(colours)
+    made = {}
+    pool = iter(chr(c) for c in range(0x100, 0x2000))
+
+    def step(ch, kind):
+        key = (ch, kind)
+        if key not in made:
+            hexc = shift(colours[ch], kind)
+            letter = next(pool)
+            while letter in colours:
+                letter = next(pool)
+            colours[letter] = hexc
+            made[key] = letter
+            register(hexc)
+        return made[key]
+
+    out = []
+    for g in frames:
+        g = cleanup([row[:] for row in g], keep)
+        h, w = len(g), len(g[0])
+        at = lambda y, x: g[y][x] if 0 <= y < h and 0 <= x < w else "."  # noqa: E731
+        lit = [row[:] for row in g]
+        for y in range(h):
+            for x in range(w):
+                ch = g[y][x]
+                if ch in ".o" or ch in keep:
+                    continue
+                up, down = at(y - 1, x), at(y + 1, x)
+                if up in ".o" and down == ch:
+                    lit[y][x] = step(ch, "light")
+                elif down in ".o" and up == ch:
+                    lit[y][x] = step(ch, "shade")
+        for y in range(h):
+            for x in range(w):
+                if g[y][x] != "o" or at(y - 1, x) != ".":
+                    continue
+                below = at(y + 1, x)
+                if below not in ".o" and below not in keep and _lum(colours[below]) > 150:
+                    lit[y][x] = step(below, "sel")
+        out.append(lit)
+    return out, colours
+
+
+_added = set()
+
+
+def register(hexc):
+    """Adds a colour to the palette's creature shades (tools/palette.json)."""
+    hexc = hexc.lower()
+    if hexc in PALETTE or hexc in _added:
+        return
+    _added.add(hexc)
+    PALETTE.add(hexc)
+    path = ROOT / "tools" / "palette.json"
+    data = json.loads(path.read_text())
+    if hexc not in data["creatures"]:
+        data["creatures"].append(hexc)
+        path.write_text(json.dumps(data, indent=1) + "\n")
+
+
+# ---------------------------------------------------------------- output
+
+PROJECTS = ROOT / "assets" / "source" / "pixelorama"
+
+
+def frames_of(anims, colours, keep="ENne"):
+    """Every frame of every animation, finished and as images, with the
+    table of where each animation is and the tags for Pixelorama."""
+    names, grids, waters, index, tags = [], [], [], {}, []
     for name, a in anims.items():
         fs, fps, loop = a[:3]
         extra = a[3] if len(a) > 3 else {}
-        water = extra.get("water")
-        index[name] = {"frames": list(range(len(frames), len(frames) + len(fs))), "fps": fps, "loop": loop, **{k: v for k, v in extra.items() if k != "water"}}
-        frames += [image(f, colours, water) for f in fs]
-    strip = Image.new("RGBA", (fw * len(frames), fh))
-    for k, f in enumerate(frames):
-        strip.alpha_composite(f, (k * fw, 0))
-    return strip, index
+        n0 = len(grids)
+        index[name] = {"frames": list(range(n0, n0 + len(fs))), "fps": fps, "loop": loop, **{k: v for k, v in extra.items() if k != "water"}}
+        tags.append((name, n0 + 1, n0 + len(fs)))
+        grids += fs
+        waters += [extra.get("water")] * len(fs)
+    done, colours = finish(grids, colours, keep)
+    images = [image(g, colours, w) for g, w in zip(done, waters)]
+    return images, index, tags
 
 
-def preview(name, anims, colours, fw, fh, scale=6):
+def project(name, images, tags, fps, fw, fh):
+    """Keeps the creature's Pixelorama project (assets/source/pixelorama/
+    <name>.pxo) in step: the "drawn" layer is rewritten from the script, the
+    "touch-ups" layer, painted by hand in Pixelorama, is kept and laid over
+    it. Returns the frames with the touch-ups applied."""
+    import pxo
+    path = PROJECTS / f"{name}.pxo"
+    touch = [Image.new("RGBA", (fw, fh)) for _ in images]
+    if path.exists():
+        layers, size = pxo.read(path)
+        old = layers.get("touch-ups")
+        if old and size == (fw, fh) and len(old) == len(images):
+            touch = old
+        elif old and any(t.getbbox() for t in old):
+            print(f"  {name}: its frames changed shape, so the old touch-ups were set aside in {name}.old.pxo")
+            path.replace(path.with_suffix(".old.pxo"))
+    pal = json.loads((ROOT / "tools" / "palette.json").read_text())
+    pxo.write(path, (fw, fh), [("drawn", images, True), ("touch-ups", touch, False)], tags, fps, palette=pal["colours"] + pal["creatures"])
+    return pxo.apply_touchups(images, touch)
+
+
+def preview(name, anims_images, fw, fh, scale=6):
     """Every animation row by row, enlarged, as docs/characters/<name>-sheet.png,
-    and an animated GIF of each."""
+    and an animated GIF of each. anims_images: name -> (images, fps)."""
     DOCS.mkdir(parents=True, exist_ok=True)
-    most = max(len(a[0]) for a in anims.values())
-    img = Image.new("RGBA", (most * fw * scale, len(anims) * fh * scale), PREVIEW_BG)
+    most = max(len(f) for f, _ in anims_images.values())
+    img = Image.new("RGBA", (most * fw * scale, len(anims_images) * fh * scale), PREVIEW_BG)
     for old in DOCS.glob(f"{name}-*.gif"):
         old.unlink()
-    for r, (an, a) in enumerate(anims.items()):
-        fs, fps = a[0], a[1]
-        water = a[3].get("water") if len(a) > 3 else None
-        frames = [image(f, colours, water) for f in fs]
+    for r, (an, (frames, fps)) in enumerate(anims_images.items()):
         for k, f in enumerate(frames):
             img.alpha_composite(f.resize((fw * scale, fh * scale), Image.NEAREST), (k * fw * scale, r * fh * scale))
         big = [Image.alpha_composite(Image.new("RGBA", (fw, fh), PREVIEW_BG), f).resize((fw * scale, fh * scale), Image.NEAREST).convert("P", palette=Image.ADAPTIVE) for f in frames]
@@ -210,15 +390,21 @@ def preview(name, anims, colours, fw, fh, scale=6):
     img.save(DOCS / f"{name}-sheet.png")
 
 
-def write(name, anims, colours, fw, fh, folder=None, anchors=None):
-    """Writes a creature's sheet and animation table (and previews), the way
-    the art build and `python3 tools/characters/<name>.py` both do."""
+def write(name, anims, colours, fw, fh, folder=None, anchors=None, keep="ENne"):
+    """Writes a creature's sheet and animation table, its Pixelorama project
+    and its previews, the way the art build and `python3 tools/characters/
+    <name>.py` both do."""
+    images, index, tags = frames_of(anims, colours, keep)
+    fps = max(a[1] for a in anims.values())
+    images = project(name, images, tags, fps, fw, fh)
     out = ART / (folder or "")
     out.mkdir(parents=True, exist_ok=True)
-    strip, index = sheet(anims, colours, fw, fh)
+    strip = Image.new("RGBA", (fw * len(images), fh))
+    for k, f in enumerate(images):
+        strip.alpha_composite(f, (k * fw, 0))
     strip.save(out / f"{name}.png")
     (out / f"{name}.json").write_text(json.dumps({"frameWidth": fw, "frameHeight": fh, "animations": index, **({"anchors": anchors} if anchors else {})}, indent=1) + "\n")
-    preview(name, anims, colours, fw, fh)
+    preview(name, {an: ([images[i] for i in t["frames"]], t["fps"]) for an, t in index.items()}, fw, fh)
     return strip, index
 
 

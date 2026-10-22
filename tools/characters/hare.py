@@ -172,7 +172,7 @@ def animations():
 
 
 def sheet():
-    return write("hare", animations(), INK, FW, FH)
+    return write("hare", animations(), INK, FW, FH, keep="ENn")
 
 
 if __name__ == "__main__":
