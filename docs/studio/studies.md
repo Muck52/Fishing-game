@@ -338,6 +338,40 @@ after making their edges selective.
 - An animal has to be seen to be enjoyed: stage it in the open, give it
   a shadow to stand on.
 
+## Study 8: the land animals, redesigned (2026-10-22)
+
+**Why:** you still wanted the land animals redesigned: stiff and blocky
+(bodies like boxes, legs like sticks) and not cozy enough.
+
+**How:** a new way of drawing them (`tools/characters/anatomy.py`): each
+animal described as rounded masses that smooth curves run through, and
+legs as tapering chains of joints, drawn 4x larger and voted down to the
+grid. A style reshapes the same anatomy (head scale, leg length, body
+roundness, eye), so one description gives all three directions, and
+later every animation.
+
+**Versions** (`tools/studio/study_creatures.py`, images in
+[studies/08-creatures/](studies/08-creatures/), review page
+`review/study8.html`), each standing and in a pose of its own (Olive
+sitting, the deer drinking, the fox sniffing, the hare sitting up, the
+bear sitting):
+- **A, natural curves:** true proportions, the stiffness gone.
+- **B, cozy storybook:** heads a third bigger, shorter legs, rounder
+  bodies, big eyes with a catchlight, a touch of blush.
+- **C, cozy naturalist:** in between.
+
+**Along the way:** the first deer came out a pony (a deep body on short,
+thick legs); real proportions (a shallow body, legs as long as the body
+is deep) fixed it. Every leg gets an outline on both sides, so a 1 px
+leg is 3 px wide on screen: legs have to be drawn thin, and near and far
+legs spaced apart, or they merge into stumps. A sitting bear with its
+legs tucked inside its body is a black egg; legs set forward of the chest
+read.
+
+**Verdict:** waiting on you.
+
+**Learned:** (after the verdict)
+
 <!--
 ## Study N: <subject> (<date>)
 
