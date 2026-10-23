@@ -315,8 +315,9 @@ export class FishingScene extends Phaser.Scene {
     }
     // the fish chases the lure, just behind it
     const s = this.fishSprite;
-    s.x += (t.x - 12 - s.x) * Math.min(1, dt * 4);
-    s.y += (t.hookY - s.y) * Math.min(1, dt * 4);
+    const b = t.bait; // its nose just behind the lure itself
+    s.x += (b.x - this.striker.half - 3 - s.x) * Math.min(1, dt * 4);
+    s.y += (b.y - 1 - s.y) * Math.min(1, dt * 4);
     s.setFlipX(true);
     this.chase.lag = holding ? 0 : this.chase.lag + dt;
     if (this.chase.lag > 1.5 || t.x >= dock) this.lose('It turned away\nKeep reeling through');

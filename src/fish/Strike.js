@@ -59,8 +59,10 @@ export class Striker {
   }
 
   // Where it hangs while deciding: `gap` pixels in front of its mouth.
+  // (its mouth, a pixel below its middle, level with the bait)
   hover(gap = this.p.gap) {
-    return { x: this.tackle.x + this.side * (this.half + gap), y: this.tackle.hookY + 1 };
+    const b = this.tackle.bait;
+    return { x: b.x + this.side * (this.half + gap), y: b.y - 1 };
   }
 
   face(x) {
@@ -90,6 +92,7 @@ export class Striker {
     const settle = () => {
       this.face(this.tackle.x);
       this.pace(0.6);
+      this.tackle.still = true; // it's at the bait: the bait hangs still for it
     };
     if (this.from) {
       // seen at the surface: it turns down from its shadow or its spot and
@@ -239,7 +242,8 @@ export class Striker {
   // ---- a fake-out nibble. Returns how long it lasts (ms).
   nibble() {
     const s = this.sprite;
-    const toBait = this.tackle.x - this.mouthX();
+    this.tackle.still = true;
+    const toBait = this.tackle.bait.x - this.mouthX(); // nose to the bait itself, not the line
     const kind = this.p.nibble;
     this.scene.tweens.killTweensOf(s);
     if (kind === 'peck') {
@@ -322,7 +326,12 @@ export class Striker {
     const sc = this.scene;
     sc.tweens.killTweensOf(s);
     this.face(this.tackle.x);
-    const onBait = () => ({ x: this.tackle.x - (s.flipX ? this.half : -this.half), y: this.tackle.hookY - 1 });
+    this.tackle.still = true;
+    // its mouth on the bait itself (not the line above it)
+    const onBait = () => {
+      const b = this.tackle.bait;
+      return { x: b.x - (s.flipX ? this.half : -this.half), y: b.y - 1 };
+    };
     const kind = this.p.strike;
     this.holding = true;
     const take = onBait();
