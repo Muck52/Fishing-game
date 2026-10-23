@@ -1,4 +1,5 @@
-import { W, H, SURFACE_Y, BED_Y, DEPTH, webgl } from '../core/constants.js';
+import { W, H, SURFACE_Y, BED_Y, VIEW_BED, DEPTH, webgl } from '../core/constants.js';
+import { takes } from '../fish/Lures.js';
 import { ART } from '../core/Assets.js';
 import { tinyRipple } from './Effects.js';
 import { FISH } from '../../data/fish/fish.js';
@@ -118,9 +119,10 @@ export class Lake {
       return m;
     });
 
-    // a few fish of the lake cruising slowly, out of reach
+    // a few fish of the lake cruising slowly through the water you can see:
+    // each will come to the bait if it likes what's on the hook
     this.cruisers = [];
-    for (let i = 0; i < 3; i++) this.cruisers.push(this.newCruiser(true));
+    for (let i = 0; i < 4; i++) this.cruisers.push(this.newCruiser(true));
 
     // the deep wavers like real water
     if (webgl(scene)) {
@@ -132,14 +134,27 @@ export class Lake {
   newCruiser(anywhere) {
     const fish = FISH[R(0, FISH.length - 1)];
     const fromLeft = Math.random() < 0.5;
-    const y = R(SURFACE_Y + 80, BED_Y - 40);
+    const y = R(SURFACE_Y + 28, VIEW_BED - 16);
     const s = this.scene.add.sprite(anywhere ? R(0, W) : fromLeft ? -60 : W + 60, y, `fish-${fish.id}`).setDepth(DEPTH.FISH - 0.5).setAlpha(0.9).play(`swim-${fish.id}`);
     s.setFlipX(fromLeft).setTint(depthTint(y)); // the art faces left
     s.vx = (fromLeft ? 1 : -1) * R(9, 20);
     s.anims.timeScale = Math.abs(s.vx) / 14; // tail beats faster when it swims faster
     s.baseY = y;
     s.phase = Math.random() * 6;
+    s.fishId = fish.id;
     return s;
+  }
+
+  // A cruising fish near the bait that goes for what's on the hook leaves
+  // its course for it: where it was, and which fish.
+  takeCruiser(x, y, lure) {
+    const i = this.cruisers.findIndex((c) => Math.abs(c.x - x) < 70 && Math.abs(c.y - y) < 45 && takes(c.fishId, lure));
+    if (i < 0) return null;
+    const c = this.cruisers[i];
+    const got = { id: c.fishId, x: Math.round(c.x), y: Math.round(c.y) };
+    c.destroy();
+    this.cruisers[i] = this.newCruiser(false);
+    return got;
   }
 
   update(time, dt, wind) {

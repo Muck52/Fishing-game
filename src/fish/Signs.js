@@ -1,30 +1,55 @@
-// Where the fish are: what you can see of them from the dock, on and just
-// under the surface. A shadow of a fish cruising near the top, a spot of
-// bubbles where a bottom feeder grubs in the mud, rings where a fish rises
-// to take something off the surface. Each one is a fish of a certain kind;
-// its size hints at which. Cast to one and that fish comes to the bait.
+// Where the fish are: what you can see of them from the dock. Two kinds of
+// sign on the open water:
+//
+//   a shadow  a fish cruising just under the surface, dimpling it now and
+//             then. Its size says how big a fish it is (small, medium,
+//             large, huge), not which: the species is one of the fish of
+//             that size, found out when it bites. Your bait tips it toward
+//             the ones that like what's on the hook.
+//   sparkles  something glinting on the water. Always a fish, of any kind,
+//             and a treasure with it.
+//
+// Cast to one and that fish comes to the bait, whatever is on the hook.
 import { SURFACE_Y, DEPTH, clamp } from '../core/constants.js';
-import { FISH } from '../../data/fish/fish.js';
-import { pickFish } from './FishSpawner.js';
-import { ripple, tinyRipple, bubbles } from '../environment/Effects.js';
+import { FISH, RARITY } from '../../data/fish/fish.js';
+import { takes } from './Lures.js';
+import { tinyRipple } from '../environment/Effects.js';
 
 const R = (a, b) => Phaser.Math.Between(a, b);
 
-// How each species shows itself, and how big its sign is: shadows by the
-// size of the fish (like Animal Crossing's), bubbles for the bottom
-// feeders, rings for the fish that rise.
-const SIGN = {
-  bluegill: ['shadow', 'small'], pumpkinseed: ['shadow', 'small'], perch: ['shadow', 'small'], crappie: ['rise', 'small'],
-  whitebass: ['rise', 'medium'], carp: ['bubbles', 'large'], bass: ['shadow', 'medium'], largemouth: ['shadow', 'large'],
-  trout: ['rise', 'medium'], rainbow: ['rise', 'large'], channelcat: ['bubbles', 'medium'], drum: ['bubbles', 'medium'],
-  walleye: ['shadow', 'large'], catfish: ['bubbles', 'medium'], pike: ['shadow', 'long'], muskie: ['shadow', 'longer'],
-  golden: ['bubbles', 'huge'],
+// The fish of each size, by their true length.
+export const CLASS = {
+  small: ['bluegill', 'pumpkinseed', 'perch', 'crappie'],
+  medium: ['whitebass', 'bass', 'largemouth', 'trout'],
+  large: ['carp', 'rainbow', 'channelcat', 'drum', 'walleye', 'catfish'],
+  huge: ['pike', 'muskie', 'golden'],
 };
-// shadow sizes in pixels (length, depth of body)
-const SIZE = { small: [8, 3], medium: [12, 4], large: [17, 5], long: [22, 3], longer: [28, 4], huge: [30, 6] };
-const BUBBLES = { small: 1, medium: 2, large: 3, huge: 5 };
+// shadow sizes in pixels (length, depth of body), clearly apart
+const SIZE = { small: [8, 3], medium: [13, 4], large: [19, 5], huge: [28, 6] };
+// how often each size shows (small fish are everywhere, huge ones rare)
+const ODDS = { small: 5, medium: 3, large: 2, huge: 1 };
 export const WATER = { from: 16, to: 204 }; // the open water you can cast to, left of the pier
 const MAX = 3;
+
+const TREASURES = [
+  { name: 'an old brass compass', value: 40 },
+  { name: 'a silver spoon lure', value: 25 },
+  { name: 'a pocket watch', value: 60 },
+  { name: 'a message in a bottle', value: 30 },
+  { name: 'a gold ring', value: 80 },
+  { name: 'a stone arrowhead', value: 35 },
+  { name: 'a lost fishing medal', value: 50 },
+  { name: 'a pearl button', value: 20 },
+];
+
+// One fish from a list, by how common each is, three times likelier if it
+// goes for what's on the hook.
+function roll(ids, lure) {
+  const pool = ids.map((id) => FISH.find((f) => f.id === id)).map((f) => ({ f, w: RARITY[f.rarity].weight * (takes(f.id, lure) ? 3 : 1) }));
+  let r = Math.random() * pool.reduce((a, p) => a + p.w, 0);
+  for (const p of pool) if ((r -= p.w) <= 0) return p.f;
+  return pool[0].f;
+}
 
 // A fish-shaped shadow, a pixel silhouette: a body tapering to a tail fin.
 function shadowTexture(scene, size) {
@@ -32,7 +57,7 @@ function shadowTexture(scene, size) {
   if (scene.textures.exists(key)) return key;
   const [L, D] = SIZE[size];
   const g = scene.make.graphics({ add: false });
-  g.fillStyle(0x0c1c26, 1);
+  g.fillStyle(0x0a1820, 1);
   const body = Math.round(L * 0.78);
   for (let x = 0; x < body; x++) {
     const t = x / (body - 1);
@@ -56,22 +81,21 @@ export class Signs {
     for (let i = 0; i < 2; i++) this.spawn();
   }
 
-  // A new fish shows itself somewhere on the open water. Farther out, the
-  // fish run bigger and rarer.
-  spawn() {
+  spawn(kind = null) {
     const s = this.scene;
-    const x = R(WATER.from + 10, WATER.to - 6);
-    if (this.list.some((g) => Math.abs(g.x - x) < 24)) return;
-    const far = clamp((WATER.to - x) / (WATER.to - WATER.from), 0, 1);
-    const fish = pickFish(far);
-    const [kind, size] = SIGN[fish.id];
-    const sign = { fish, kind, size, x, born: s.time.now, until: s.time.now + R(20000, 35000), next: 0, dir: Math.random() < 0.5 ? -1 : 1 };
+    const x = R(WATER.from + 14, WATER.to - 10);
+    if (this.list.some((g) => Math.abs(g.x - x) < 28)) return;
+    if (!kind) kind = !this.list.some((g) => g.kind === 'sparkle') && Math.random() < 0.2 ? 'sparkle' : 'shadow';
+    const sign = { kind, x, until: s.time.now + R(20000, 35000), next: 0, dir: Math.random() < 0.5 ? -1 : 1 };
     if (kind === 'shadow') {
-      sign.w = SIZE[size][0];
-      sign.sprite = s.add.image(x, SURFACE_Y + 13, shadowTexture(s, size)).setDepth(DEPTH.SURFACE + 0.07).setAlpha(0).setFlipX(sign.dir > 0);
-      s.tweens.add({ targets: sign.sprite, alpha: 0.6, duration: 1500 });
+      const sizes = Object.keys(ODDS);
+      let r = Math.random() * sizes.reduce((a, k) => a + ODDS[k], 0);
+      sign.size = sizes.find((k) => (r -= ODDS[k]) <= 0) || 'small';
+      sign.w = SIZE[sign.size][0];
+      sign.sprite = s.add.image(x, SURFACE_Y + 12, shadowTexture(s, sign.size)).setDepth(DEPTH.SURFACE + 0.07).setAlpha(0).setFlipX(sign.dir > 0);
+      s.tweens.add({ targets: sign.sprite, alpha: 0.7, duration: 1500 });
     } else {
-      sign.w = kind === 'bubbles' ? 6 + BUBBLES[size] * 3 : 10;
+      sign.w = 12;
     }
     this.list.push(sign);
   }
@@ -88,25 +112,25 @@ export class Signs {
       }
       if (g.kind === 'shadow') {
         // it cruises slowly, turning now and then
-        g.x += g.dir * dt * (3 + SIZE[g.size][0] * 0.15);
+        g.x += g.dir * dt * (3 + g.w * 0.15);
         if (g.x < WATER.from + g.w / 2 || g.x > WATER.to - g.w / 2 || Math.random() < dt * 0.08) g.dir *= -1;
         g.x = clamp(g.x, WATER.from + g.w / 2, WATER.to - g.w / 2);
-        g.sprite.setPosition(Math.round(g.x), SURFACE_Y + 13).setFlipX(g.dir > 0);
-      } else if (time > g.next) {
-        if (g.kind === 'bubbles') {
-          // a bottom feeder's bubbles, rising in a cluster
-          bubbles(this.scene, g.x, SURFACE_Y + 16, BUBBLES[g.size]);
-          g.next = time + R(900, 1600);
-        } else {
-          // a rise: rings spreading where it took something off the top
-          (g.size === 'small' ? tinyRipple : ripple)(this.scene, g.x);
+        g.sprite.setPosition(Math.round(g.x), SURFACE_Y + 12).setFlipX(g.dir > 0);
+        if (time > g.next) {
+          // it dimples the surface: a ring that catches your eye
+          tinyRipple(this.scene, Math.round(g.x - g.dir * g.w * 0.2));
           g.next = time + R(1800, 3200);
         }
+      } else if (time > g.next) {
+        // a glint off something on the water, here and there round the spot
+        const sp = this.scene.add.image(g.x + R(-6, 6), SURFACE_Y + R(1, 6), 'spark').setDepth(DEPTH.GLOW).setBlendMode('ADD').setTint(0xffe9a0);
+        this.scene.tweens.add({ targets: sp, alpha: 0, duration: 420, ease: 'Quad.easeIn', onComplete: () => sp.destroy() });
+        g.next = time + R(140, 380);
       }
     }
   }
 
-  // The fish whose sign the bait landed on (or near), if any.
+  // The sign the bait landed on (or near), if any.
   near(x) {
     let best = null;
     for (const g of this.list) {
@@ -116,14 +140,20 @@ export class Signs {
     return best;
   }
 
-  // That fish leaves its sign to come to the bait.
-  take(g) {
+  // The fish under that sign leaves it for the bait: which fish it is, and
+  // the treasure if it was sparkling.
+  take(g, lure) {
     this.list = this.list.filter((o) => o !== g);
     if (g.sprite) this.scene.tweens.add({ targets: g.sprite, alpha: 0, duration: 500, onComplete: () => g.sprite.destroy() });
+    if (g.kind === 'sparkle') {
+      return { fish: roll(FISH.map((f) => f.id), lure), treasure: TREASURES[R(0, TREASURES.length - 1)] };
+    }
+    return { fish: roll(CLASS[g.size], lure), treasure: null };
   }
 
   remove(g) {
-    this.take(g);
+    this.list = this.list.filter((o) => o !== g);
+    if (g.sprite) this.scene.tweens.add({ targets: g.sprite, alpha: 0, duration: 500, onComplete: () => g.sprite.destroy() });
   }
 
   // A fish that got away scares the others off for a while.
@@ -132,6 +162,3 @@ export class Signs {
     this.nextAt = this.scene.time.now + R(3000, 6000);
   }
 }
-
-export const signOf = (id) => SIGN[id];
-export const COMMON = FISH.filter((f) => f.rarity === 'common');

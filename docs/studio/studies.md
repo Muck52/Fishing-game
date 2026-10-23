@@ -632,6 +632,25 @@ main view.
   In open water a passing sunfish or perch finds it now and then;
   otherwise "Nothing biting here".
 
+**Round two** (your notes: the signs weren't distinct enough, and the
+fish swimming below added confusion):
+- Two kinds of sign. **Shadows** in four clearly different sizes (small,
+  medium, large, huge), dimpling the surface with a ring now and then; the
+  species is one of the fish of that size, rolled when it bites, three
+  times likelier for those that like your bait. **Sparkles** glinting on
+  the water: always a fish of any kind, and a treasure (an old compass, a
+  gold ring, a message in a bottle...), worth coins, kept in the save.
+- **Five baits and lures** (`src/fish/Lures.js`), each fish going for one,
+  as anglers rig for them: a worm (bluegill, pumpkinseed, perch, brook
+  trout), a minnow (crappie, walleye, burbot), a plastic worm (smallmouth
+  and largemouth), a spinner (white bass, rainbow, pike, muskie), a dough
+  ball or cut bait (carp, channel catfish, drum, sturgeon). Picked in the
+  tackle box at the top of the screen (`src/ui/TackleBox.js`); the bait
+  shows on the hook.
+- **The fish swimming below** (now in the water you can see) come to the
+  bait only if it's what they go for. Open water with the wrong bait:
+  "Nothing biting here".
+
 **Verdict:** waiting (play it).
 
 <!--

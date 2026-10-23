@@ -13,7 +13,8 @@ import { BarFight } from '../fishing/BarFight.js';
 import { rollWeight, catchValue } from '../fish/FishSpawner.js';
 import { Striker, strikeOf } from '../fish/Strike.js';
 import { FISH } from '../../data/fish/fish.js';
-import { Signs, COMMON } from '../fish/Signs.js';
+import { Signs } from '../fish/Signs.js';
+import { TackleBox } from '../ui/TackleBox.js';
 import { PowerMeter } from '../ui/PowerMeter.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
 import { pill } from '../ui/Panels.js';
@@ -55,6 +56,7 @@ export class FishingScene extends Phaser.Scene {
     this.olive = new Olive(this, (text) => this.fieldNote(text));
     this.tackle = new Tackle(this);
     this.signs = new Signs(this);
+    this.tackleBox = new TackleBox(this, this.save, () => this.state === STATE.IDLE && !this.charging, (l) => this.setHint(`${l.name}\n${l.note}`, 1800));
     this.power = new PowerMeter(this);
     this.hud = new Hud(this);
     this.hud.update(this.save.data);
@@ -157,6 +159,7 @@ export class FishingScene extends Phaser.Scene {
     this.castPower = power;
     this.setHint('');
     const t = this.tackle;
+    t.hook.setTexture(`bait-${this.tackleBox.current}`);
     const from = this.angler.tip;
     const landX = Math.round(lerp(from.x - 18, 16, power));
     this.angler.cast(() => {
@@ -191,23 +194,31 @@ export class FishingScene extends Phaser.Scene {
     // ?fish=walleye in the address forces a species, for trying them out
     const forced = FISH.find((f) => f.id === new URLSearchParams(window.location.search).get('fish'));
     const now = this.time.now;
-    // whose shadow or spot did it land on? that fish comes to the bait
-    const sign = forced ? null : this.signs.near(this.tackle.x);
+    const lure = this.tackleBox.current;
     this.from = null;
-    if (sign) {
-      this.fish = sign.fish;
-      this.from = { x: sign.x, y: SURFACE_Y + 8 };
-      this.signs.take(sign);
-    } else if (forced || Math.random() < 0.3) {
-      // open water: now and then a passing sunfish or perch finds it anyway
-      this.fish = forced || COMMON[R(0, COMMON.length - 1)];
+    this.treasure = null;
+    this.fish = null;
+    // did it land on a shadow or a sparkle? the fish there comes to the bait
+    const sign = forced ? null : this.signs.near(this.tackle.x);
+    if (forced) {
+      this.fish = forced;
+    } else if (sign) {
+      const got = this.signs.take(sign, lure);
+      this.fish = got.fish;
+      this.treasure = got.treasure;
+      this.from = { x: sign.x, y: SURFACE_Y + 12 };
     } else {
-      this.fish = null;
+      // open water: only a passing fish that likes this bait will come
       this.nibbleTimes = [];
       this.biteAt = Infinity;
-      this.emptyAt = now + 7000;
+      this.emptyAt = now + 9000;
       return;
     }
+    this.schedule(now);
+  }
+
+  // The fish is on its way: when it arrives, its nibbles, and the bite.
+  schedule(now) {
     this.time.delayedCall(this.from ? 500 : 900, () => this.state === STATE.WAITING && this.spawnFish());
     // The fish takes about two and a half seconds to arrive. Then come the
     // fake-out nibbles that keep you guessing, as many as the species tends
@@ -313,6 +324,14 @@ export class FishingScene extends Phaser.Scene {
       value += loot;
       bonus.push(`Treasure +${loot}`);
     }
+    if (this.treasure) {
+      // the sparkle was something lost in the lake, caught up with the fish
+      const t = this.treasure;
+      value += t.value;
+      bonus.push(`Found ${t.name}! +${t.value}`);
+      this.save.data.treasures = [...(this.save.data.treasures || []), t.name];
+      this.treasure = null;
+    }
     if (bonus.length) this.pop(bonus.join('  '), INK.gold);
     const { isNew, isRecord } = this.save.recordCatch(this.fish, this.weight, value);
     this.time.delayedCall(750, () => {
@@ -385,7 +404,17 @@ export class FishingScene extends Phaser.Scene {
     if (this.charging) this.power.set(time - this.charging.from);
 
     if (this.state === STATE.WAITING) {
-      if (!this.fish && time > this.emptyAt) this.lose('Nothing biting here\nTry a shadow or a spot');
+      if (!this.fish) {
+        // a fish swimming by that goes for this bait turns toward it
+        const c = this.world.lake.takeCruiser(t.x, t.hookY, this.tackleBox.current);
+        if (c) {
+          this.fish = FISH.find((f) => f.id === c.id);
+          this.from = { x: c.x, y: c.y };
+          this.schedule(time - 1500); // already close by, so it gets there sooner
+        } else if (time > this.emptyAt) {
+          this.lose('Nothing biting here\nTry a shadow, or another bait');
+        }
+      }
       if (this.nibbleTimes.length && time >= this.nibbleTimes[0]) {
         this.nibbleTimes.shift();
         const ms = this.striker?.nibble() ?? 300;
