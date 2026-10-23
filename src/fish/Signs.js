@@ -4,15 +4,13 @@
 //   a shadow  a fish cruising just under the surface, dimpling it now and
 //             then. Its size says how big a fish it is (small, medium,
 //             large, huge), not which: the species is one of the fish of
-//             that size, found out when it bites. Your bait tips it toward
-//             the ones that like what's on the hook.
+//             that size, found out when it bites.
 //   sparkles  something glinting on the water. Always a fish, of any kind,
 //             and a treasure with it.
 //
-// Cast to one and that fish comes to the bait, whatever is on the hook.
+// Fish it and that fish comes to the bait, whatever is on the hook.
 import { SURFACE_Y, DEPTH, clamp } from '../core/constants.js';
 import { FISH, RARITY } from '../../data/fish/fish.js';
-import { takes } from './Lures.js';
 import { tinyRipple } from '../environment/Effects.js';
 
 const R = (a, b) => Phaser.Math.Between(a, b);
@@ -42,10 +40,9 @@ const TREASURES = [
   { name: 'a pearl button', value: 20 },
 ];
 
-// One fish from a list, by how common each is, three times likelier if it
-// goes for what's on the hook.
-function roll(ids, lure) {
-  const pool = ids.map((id) => FISH.find((f) => f.id === id)).map((f) => ({ f, w: RARITY[f.rarity].weight * (takes(f.id, lure) ? 3 : 1) }));
+// One fish from a list, by how common each is.
+function roll(ids) {
+  const pool = ids.map((id) => FISH.find((f) => f.id === id)).map((f) => ({ f, w: RARITY[f.rarity].weight }));
   let r = Math.random() * pool.reduce((a, p) => a + p.w, 0);
   for (const p of pool) if ((r -= p.w) <= 0) return p.f;
   return pool[0].f;
@@ -131,24 +128,24 @@ export class Signs {
   }
 
   // The sign the bait landed on (or near), if any.
-  near(x) {
+  near(x, reach = 10) {
     let best = null;
     for (const g of this.list) {
       const d = Math.abs(g.x - x);
-      if (d <= g.w / 2 + 10 && (!best || d < Math.abs(best.x - x))) best = g;
+      if (d <= g.w / 2 + reach && (!best || d < Math.abs(best.x - x))) best = g;
     }
     return best;
   }
 
   // The fish under that sign leaves it for the bait: which fish it is, and
   // the treasure if it was sparkling.
-  take(g, lure) {
+  take(g) {
     this.list = this.list.filter((o) => o !== g);
     if (g.sprite) this.scene.tweens.add({ targets: g.sprite, alpha: 0, duration: 500, onComplete: () => g.sprite.destroy() });
     if (g.kind === 'sparkle') {
-      return { fish: roll(FISH.map((f) => f.id), lure), treasure: TREASURES[R(0, TREASURES.length - 1)] };
+      return { fish: roll(FISH.map((f) => f.id)), treasure: TREASURES[R(0, TREASURES.length - 1)] };
     }
-    return { fish: roll(CLASS[g.size], lure), treasure: null };
+    return { fish: roll(CLASS[g.size]), treasure: null };
   }
 
   remove(g) {

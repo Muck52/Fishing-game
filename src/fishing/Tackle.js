@@ -36,14 +36,16 @@ export class Tackle {
     this.hookY = 0;
     this.dip = 0; // how far a fish pulls the float under, in px (less than 0 lifts it)
     this.shake = 0; // how hard it trembles, in px
+    this.float = true; // a float on the line; jigs and lures are fished without
   }
 
   get visible() {
-    return this.bobber.visible;
+    return !!this.shown;
   }
 
   show(on) {
-    this.bobber.setVisible(on);
+    this.shown = on;
+    this.bobber.setVisible(on && this.float);
     this.hook.setVisible(on);
     if (!on) {
       this.alert.setVisible(false);
@@ -65,7 +67,9 @@ export class Tackle {
   // Lines from the rod tip to the float, and from the float down to `end`
   // (the hook, or the mouth of a hooked fish).
   draw(tip, time, { tension = 0, flying = false, end = null } = {}) {
-    const fy = flying ? this.y : SURFACE_Y + Math.round(Math.sin(time / 500) + this.dip);
+    if (!this.shown) return;
+    // with no float, the line enters the water just over the bait
+    const fy = flying ? this.y : this.float ? SURFACE_Y + Math.round(Math.sin(time / 500) + this.dip) : SURFACE_Y;
     this.bobber.setPosition(this.x + (this.shake ? Phaser.Math.Between(-this.shake, this.shake) : 0), fy);
     this.alert.setPosition(this.x, fy - 13 + Math.round(Math.sin(time / 120) * 2));
     const g = this.line;
@@ -78,7 +82,7 @@ export class Tackle {
       100,
       Math.round(tension * 100),
     );
-    pixelLine(g, curve(tip, mid, { x: this.x, y: fy - 3 }), Phaser.Display.Color.GetColor(color.r, color.g, color.b), 0.9);
+    pixelLine(g, curve(tip, mid, { x: this.x, y: this.float || flying ? fy - 3 : fy }), Phaser.Display.Color.GetColor(color.r, color.g, color.b), 0.9);
 
     const u = this.underLine;
     u.clear();
@@ -86,8 +90,8 @@ export class Tackle {
       this.hook.setVisible(false);
       return;
     }
-    const hookEnd = end || { x: this.x + Math.round(Math.sin(time / 1300) * 3), y: this.hookY };
-    pixelLine(u, curve({ x: this.x, y: fy + 2 }, { x: (this.x + hookEnd.x) / 2, y: (fy + hookEnd.y) / 2 }, hookEnd, 16), 0xdfe8e4, 0.55);
+    const hookEnd = end || { x: this.x + (this.float ? Math.round(Math.sin(time / 1300) * 3) : 0), y: this.hookY };
+    pixelLine(u, curve({ x: this.x, y: this.float ? fy + 2 : fy }, { x: (this.x + hookEnd.x) / 2, y: (fy + hookEnd.y) / 2 }, hookEnd, 16), 0xdfe8e4, 0.55);
     this.hook.setVisible(!end).setPosition(hookEnd.x, hookEnd.y);
   }
 }

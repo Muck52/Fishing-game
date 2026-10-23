@@ -651,6 +651,22 @@ fish swimming below added confusion):
   bait only if it's what they go for. Open water with the wrong bait:
   "Nothing biting here".
 
+**Round three** (your notes: keep hold to cast; give each kind of bait
+its own way of fishing; every fish bites everything; the fish below are
+only for life):
+- **Float** (worm, dough ball): the float sits still on a shadow or a
+  sparkle; wait for it to go under, then tap.
+- **Jig** (minnow jig, plastic worm): no float. It sinks; tap to jig it
+  (it hops and drops, a little nearer the dock). A fish from the sign
+  hangs by it and noses closer with each jig; after two to four it
+  strikes (tap to hook). Stop jigging for a few seconds and it loses
+  interest.
+- **Lure** (spinner): no float. Cast past a sign and hold to reel it back
+  just under the surface (let go and it sinks). Passing through a sign,
+  that fish gives chase and, if you keep reeling, hits it and hooks
+  itself. Reel it all the way in with nothing: "Nothing followed it in".
+- No bait preferences for now; the fish cruising below never bite.
+
 **Verdict:** waiting (play it).
 
 <!--

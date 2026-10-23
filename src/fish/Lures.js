@@ -1,37 +1,22 @@
-// The five baits and lures in the tackle box, and which fish go for each,
-// as anglers on Midwest lakes rig for them:
+// The five baits and lures in the tackle box. Every fish will take any of
+// them; what differs is how you fish each one:
 //
-//   worm      a nightcrawler on a small hook under a float: the panfish
-//             bait (bluegill, pumpkinseed, yellow perch) and the classic
-//             for stocked brook trout.
-//   minnow    a live minnow on a jig or under a slip float: crappie and
-//             walleye feed on minnows above all, and the burbot hunts
-//             small fish along the bottom at night.
-//   plastic   a soft plastic worm, Texas-rigged: the bass bait, for
-//             largemouth in the weeds and smallmouth on the rocks.
-//   spinner   a flashing spinner or spoon: the white bass chase it, the
-//             rainbow trout hit in-line spinners, and pike and muskie
-//             strike big spoons and bucktails.
-//   dough     a dough ball or cut bait on the bottom: carp take dough and
-//             corn, channel catfish and drum go for cut bait and stink
-//             bait, sturgeon vacuum up nightcrawler gobs and cut bait.
+//   float  worm, dough ball: on a hook under a float that sits still on
+//          the water; you wait for it to go under.
+//   jig    minnow jig, plastic worm: no float. The bait sinks and you tap
+//          to work it, lifting it and letting it drop; a fish nearby
+//          only strikes once it's been worked a few times.
+//   reel   spinner: cast past the fish and hold to reel it back in at a
+//          steady pace; a fish strikes as it flashes by, and hooks
+//          itself if you keep reeling.
 export const LURES = [
-  { id: 'worm', name: 'Worm', note: 'Panfish and trout' },
-  { id: 'minnow', name: 'Minnow', note: 'Crappie, walleye, burbot' },
-  { id: 'plastic', name: 'Plastic worm', note: 'Bass' },
-  { id: 'spinner', name: 'Spinner', note: 'White bass, rainbows, pike, muskie' },
-  { id: 'dough', name: 'Dough ball', note: 'Carp, catfish, drum, sturgeon' },
+  { id: 'worm', name: 'Worm', mech: 'float', note: 'On a float: wait for it to go under' },
+  { id: 'dough', name: 'Dough ball', mech: 'float', note: 'On a float: wait for it to go under' },
+  { id: 'minnow', name: 'Minnow jig', mech: 'jig', note: 'Tap to jig it: work it till one strikes' },
+  { id: 'plastic', name: 'Plastic worm', mech: 'jig', note: 'Tap to hop it: work it till one strikes' },
+  { id: 'spinner', name: 'Spinner', mech: 'reel', note: 'Cast past a fish, hold to reel it through' },
 ];
-
-export const PREFERS = {
-  bluegill: 'worm', pumpkinseed: 'worm', perch: 'worm', trout: 'worm',
-  crappie: 'minnow', walleye: 'minnow', catfish: 'minnow',
-  bass: 'plastic', largemouth: 'plastic',
-  whitebass: 'spinner', rainbow: 'spinner', pike: 'spinner', muskie: 'spinner',
-  carp: 'dough', channelcat: 'dough', drum: 'dough', golden: 'dough',
-};
-
-export const takes = (fishId, lure) => PREFERS[fishId] === lure;
+export const lureOf = (id) => LURES.find((l) => l.id === id);
 
 // Each one drawn twice on the pixel grid, from the same few pixels: an
 // icon for the tackle box (11 x 11) and the bait on the hook (7 x 9).

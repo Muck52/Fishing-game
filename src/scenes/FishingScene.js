@@ -15,6 +15,7 @@ import { Striker, strikeOf } from '../fish/Strike.js';
 import { FISH } from '../../data/fish/fish.js';
 import { Signs } from '../fish/Signs.js';
 import { TackleBox } from '../ui/TackleBox.js';
+import { lureOf } from '../fish/Lures.js';
 import { PowerMeter } from '../ui/PowerMeter.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
 import { pill } from '../ui/Panels.js';
@@ -160,6 +161,9 @@ export class FishingScene extends Phaser.Scene {
     this.setHint('');
     const t = this.tackle;
     t.hook.setTexture(`bait-${this.tackleBox.current}`);
+    // how this bait is fished: on a float, jigged, or reeled through
+    this.mech = lureOf(this.tackleBox.current).mech;
+    t.float = this.mech === 'float';
     const from = this.angler.tip;
     const landX = Math.round(lerp(from.x - 18, 16, power));
     this.angler.cast(() => {
@@ -181,9 +185,11 @@ export class FishingScene extends Phaser.Scene {
           t.x = landX;
           splash(this, landX, 0.6);
           this.state = STATE.WAITING;
-          // the bait sinks; a longer cast reaches deeper water
+          // the bait sinks; a longer cast reaches deeper water. A lure
+          // starts near the top, where it's reeled.
           t.hookY = SURFACE_Y + 10;
-          this.tweens.add({ targets: t, hookY: Math.round(lerp(SURFACE_Y + 40, BED_Y - 30, power)), duration: 1400, ease: 'Sine.easeOut' });
+          if (this.mech === 'reel') t.hookY = SURFACE_Y + 14;
+          else this.tweens.add({ targets: t, hookY: Math.round(lerp(SURFACE_Y + 40, BED_Y - 30, this.mech === 'jig' ? power * 0.8 : power)), duration: 1400, ease: 'Sine.easeOut' });
           this.startWaiting();
         },
       });
@@ -194,27 +200,106 @@ export class FishingScene extends Phaser.Scene {
     // ?fish=walleye in the address forces a species, for trying them out
     const forced = FISH.find((f) => f.id === new URLSearchParams(window.location.search).get('fish'));
     const now = this.time.now;
-    const lure = this.tackleBox.current;
     this.from = null;
     this.treasure = null;
     this.fish = null;
+    this.nibbleTimes = [];
+    this.biteAt = Infinity;
+    this.nibbleUntil = 0;
+    this.jig = { count: 0, need: 0, last: 0, arrive: Infinity };
+    this.chase = null;
+    this.emptyAt = now + 9000;
+    if (this.mech === 'reel') {
+      // a lure meets its fish on the way in (see reelIn)
+      this.emptyAt = Infinity;
+      this.setHint('Hold to reel it in', 1500);
+      return;
+    }
     // did it land on a shadow or a sparkle? the fish there comes to the bait
     const sign = forced ? null : this.signs.near(this.tackle.x);
+    if (forced || sign) this.meet(forced, sign, now);
+    if (this.mech === 'jig') this.setHint('Tap to jig it', 1500);
+  }
+
+  // The fish under a sign leaves it for the bait: which fish, and the
+  // treasure if it was sparkling.
+  meet(forced, sign, now) {
     if (forced) {
       this.fish = forced;
-    } else if (sign) {
-      const got = this.signs.take(sign, lure);
+    } else {
+      const got = this.signs.take(sign);
       this.fish = got.fish;
       this.treasure = got.treasure;
       this.from = { x: sign.x, y: SURFACE_Y + 12 };
+    }
+    if (this.mech === 'float') {
+      this.schedule(now);
+    } else if (this.mech === 'jig') {
+      // it comes and hangs by the jig, and strikes once it's been worked
+      // a few times
+      this.time.delayedCall(500, () => this.state === STATE.WAITING && this.spawnFish());
+      this.jig.need = R(2, 4);
+      this.jig.arrive = now + 2600;
+      this.emptyAt = Infinity;
+    }
+  }
+
+  // A tap on a jig: it hops up and drops back, a little nearer the dock.
+  // A fish hanging by it noses closer each time; worked enough, it strikes.
+  jigIt() {
+    const t = this.tackle;
+    const now = this.time.now;
+    if (now - this.jig.last < 220) return;
+    this.jig.last = now;
+    this.tweens.add({ targets: t, hookY: t.hookY - 6, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
+    t.x = Math.min(t.x + 2, this.angler.tip.x - 20);
+    this.tweens.add({ targets: this.angler, lift: 4, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
+    if (this.striker && now > this.jig.arrive) {
+      this.jig.count++;
+      this.striker.nibble();
+      if (this.jig.count >= this.jig.need && this.biteAt === Infinity) this.biteAt = now + R(200, 700);
+    }
+  }
+
+  // A lure, while you hold: it comes in toward the dock just under the
+  // surface; let go and it sinks. Passing through a shadow or a sparkle, the
+  // fish there gives chase, and strikes if you keep reeling.
+  reelIn(time, dt) {
+    const t = this.tackle;
+    const holding = this.input.activePointer.isDown;
+    const dock = this.angler.tip.x - 22;
+    if (holding) {
+      t.x = Math.min(dock, t.x + dt * 30);
+      t.hookY = Math.max(SURFACE_Y + 12, t.hookY - dt * 20);
+      this.angler.crank += dt * 14;
     } else {
-      // open water: only a passing fish that likes this bait will come
-      this.nibbleTimes = [];
-      this.biteAt = Infinity;
-      this.emptyAt = now + 9000;
+      t.hookY = Math.min(BED_Y - 20, t.hookY + dt * 8);
+    }
+    if (!this.fish) {
+      const sign = this.signs.near(t.x, 6);
+      if (sign) {
+        this.meet(null, sign, time);
+        this.spawnFish();
+        this.tweens.killTweensOf(this.striker.sprite);
+        this.chase = { until: time + R(700, 1300), lag: 0 };
+      } else if (t.x >= dock) {
+        this.resetToIdle();
+        this.setHint('Nothing followed it in', 1500);
+      }
       return;
     }
-    this.schedule(now);
+    // the fish chases the lure, just behind it
+    const s = this.fishSprite;
+    s.x += (t.x - 12 - s.x) * Math.min(1, dt * 4);
+    s.y += (t.hookY - s.y) * Math.min(1, dt * 4);
+    s.setFlipX(true);
+    this.chase.lag = holding ? 0 : this.chase.lag + dt;
+    if (this.chase.lag > 1.5 || t.x >= dock) this.lose('It turned away\nKeep reeling through');
+    else if (time > this.chase.until && holding) {
+      // it hits the lure and hooks itself
+      this.pop('Fish on!', INK.gold);
+      this.hook();
+    }
   }
 
   // The fish is on its way: when it arrives, its nibbles, and the bite.
@@ -357,8 +442,11 @@ export class FishingScene extends Phaser.Scene {
     } else if (this.state === STATE.BITE) {
       this.hook();
     } else if (this.state === STATE.WAITING) {
-      if (this.time.now < this.nibbleUntil) this.lose('Too early! You spooked it.');
-      else this.setHint('Wait for the float to go under', 1500);
+      if (this.mech === 'jig') this.jigIt();
+      else if (this.mech === 'float') {
+        if (this.time.now < this.nibbleUntil) this.lose('Too early! You spooked it.');
+        else this.setHint('Wait for the float to go under', 1500);
+      }
     } else if (this.state === STATE.RESULT && this.popup.canClose) {
       this.popup.hide();
       this.resetToIdle();
@@ -403,17 +491,13 @@ export class FishingScene extends Phaser.Scene {
     const t = this.tackle;
     if (this.charging) this.power.set(time - this.charging.from);
 
-    if (this.state === STATE.WAITING) {
-      if (!this.fish) {
-        // a fish swimming by that goes for this bait turns toward it
-        const c = this.world.lake.takeCruiser(t.x, t.hookY, this.tackleBox.current);
-        if (c) {
-          this.fish = FISH.find((f) => f.id === c.id);
-          this.from = { x: c.x, y: c.y };
-          this.schedule(time - 1500); // already close by, so it gets there sooner
-        } else if (time > this.emptyAt) {
-          this.lose('Nothing biting here\nTry a shadow, or another bait');
-        }
+    if (this.state === STATE.WAITING && this.mech === 'reel') {
+      this.reelIn(time, dt);
+    } else if (this.state === STATE.WAITING) {
+      if (!this.fish && time > this.emptyAt) this.lose('Nothing biting here\nTry a shadow or a sparkle');
+      // a jigged fish loses interest if the jig stops moving
+      if (this.mech === 'jig' && this.fish && time > this.jig.arrive + 1500 && time - Math.max(this.jig.last, this.jig.arrive) > 4500 && this.biteAt === Infinity) {
+        this.lose('It lost interest\nKeep the jig moving');
       }
       if (this.nibbleTimes.length && time >= this.nibbleTimes[0]) {
         this.nibbleTimes.shift();
