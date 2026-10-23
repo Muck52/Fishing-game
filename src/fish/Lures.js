@@ -18,6 +18,24 @@ export const LURES = [
 ];
 export const lureOf = (id) => LURES.find((l) => l.id === id);
 
+// Each fish's favourite, as anglers rig for it on Midwest lakes, shown in
+// the journal. (In the game for now every fish will take any bait.)
+//   worm     the panfish bait, and the classic for brook trout
+//   minnow   crappie and walleye feed on minnows above all; the burbot
+//            hunts small fish along the bottom at night
+//   plastic  the bass bait, Texas-rigged in the weeds or on the rocks
+//   spinner  white bass chase it, rainbows hit in-line spinners, pike and
+//            muskie strike spoons and bucktails
+//   dough    carp take dough and corn; catfish, drum and sturgeon go for
+//            cut bait, stink bait and nightcrawler gobs on the bottom
+export const BEST = {
+  bluegill: 'worm', pumpkinseed: 'worm', perch: 'worm', trout: 'worm',
+  crappie: 'minnow', walleye: 'minnow', catfish: 'minnow',
+  bass: 'plastic', largemouth: 'plastic',
+  whitebass: 'spinner', rainbow: 'spinner', pike: 'spinner', muskie: 'spinner',
+  carp: 'dough', channelcat: 'dough', drum: 'dough', golden: 'dough',
+};
+
 // Each one drawn twice on the pixel grid, from the same few pixels: an
 // icon for the tackle box (11 x 11) and the bait on the hook (7 x 9).
 // Letters: k dark steel, s steel, w worm, W worm lit, m minnow, M minnow

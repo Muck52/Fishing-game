@@ -5,6 +5,7 @@ import { FISH, RARITY } from '../../data/fish/fish.js';
 import { JOURNAL } from '../../data/fish/journal.js';
 import { Swimmer } from '../fish/Swim.js';
 import { Flopper } from '../fish/Flop.js';
+import { BEST, lureOf, makeLureArt } from '../fish/Lures.js';
 
 // The book as you hold it to read (journal-held.png): the left half lifted
 // toward you on its spine, the right-hand page flat and facing you, with
@@ -230,10 +231,15 @@ export class Journal {
       fishImg.setPosition(photo.x + photo.w / 2, photo.y + photo.h / 2).setTintFill(0x25131a).setAlpha(0.85);
       t(photo.x + photo.w / 2, photo.y + photo.h / 2, '?', { font: 'head', size: 2, color: INK.cream });
     }
-    // the photo's caption: how rare it is, and a nudge to tap it
+    // the photo's caption: how rare it is, and the bait it goes for (known
+    // or not, so you can go after it); a nudge to tap the photo, in its corner
     const cap = photo.y + photo.h + 9;
     t(photo.x, cap, RARITY[fish.rarity].label.toUpperCase(), { font: 'ink-bold', color: STAMP[fish.rarity] }).setOrigin(0, 0.5);
-    if (known) t(photo.x + photo.w, cap, 'tap it!', { color: PENCIL }).setOrigin(1, 0.5);
+    makeLureArt(s);
+    const bait = lureOf(BEST[fish.id]);
+    const name = this.fit(t(photo.x + photo.w, cap, bait.name, { color: PEN }).setOrigin(1, 0.5), photo.w / 2 - 22, [16]);
+    pg.c.add(s.add.image(photo.x + photo.w - name.getTextBounds(true).local.width - 9, cap, `lure-${bait.id}`));
+    if (known) t(photo.x + photo.w - 4, photo.y + photo.h - 11, 'tap it!', { color: INK.cream }).setOrigin(1, 0.5);
 
     let y = cap + 22;
     if (known) {
