@@ -15,7 +15,7 @@ Every session starts by reading it.
 | [audit.md](audit.md) | How every piece of art in the game measures up against the rules, and what to redo first. |
 | [research/](research/) | The research behind it all, with sources: pixel-art technique for each material, the real north-woods lake, and how other games keep their look cohesive. |
 | [audit/](audit/) | The audit's measurements (`audit.json`) and contact sheets. |
-| [review/](review/) | The review pages you open on your phone: `research.html` (review 1), `materials.html` (review 2), `study1.html` (study 1), `study2.html` (study 2), `study3.html` (study 3), `study4.html` (study 4), `study5.html` (study 5), `study6.html` (study 6), `study7.html` (study 7), `study8.html` (study 8), `study9.html` (study 9), `study9b.html` (study 9b), `study10.html` (study 10), `study11.html` (study 11), `study12.html` (study 12), `study13.html` (study 13). |
+| [review/](review/) | The review pages you open on your phone: `research.html` (review 1), `materials.html` (review 2), `study1.html` (study 1), `study2.html` (study 2), `study3.html` (study 3), `study4.html` (study 4), `study5.html` (study 5), `study6.html` (study 6), `study7.html` (study 7), `study8.html` (study 8), `study9.html` (study 9), `study9b.html` (study 9b), `study10.html` (study 10), `study11.html` (study 11), `study12.html` (study 12), `study13.html` (study 13), `mechanics.html` (research: fishing mechanics). |
 | [studies/](studies/) | Each study's images. |
 
 Tools: `tools/studio/audit.py` re-measures every image in the game.

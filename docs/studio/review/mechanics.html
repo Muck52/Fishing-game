@@ -1,0 +1,229 @@
+<title>Fishing Mechanics Research</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single reading column like a field-station report, with full-bleed image plates and swatch strips drawn from the lake itself. */
+:root {
+  --bg: #eef1ec;
+  --panel: #e2e8e2;
+  --ink: #1b2826;
+  --muted: #566764;
+  --line: #c3cec7;
+  --accent: #a24f45;
+  --pine: #2d5747;
+  --display: "Pixelify Sans", "Courier New", monospace;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1918; --panel: #172423; --ink: #e2e9e4; --muted: #97a9a4; --line: #2a3b39;
+    --accent: #e29a8b; --pine: #86bba4; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1918; --panel: #172423; --ink: #e2e9e4; --muted: #97a9a4; --line: #2a3b39;
+  --accent: #e29a8b; --pine: #86bba4; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+main { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(32px, 7vw, 46px); letter-spacing: 0.5px; }
+h2 { font-size: 26px; color: var(--pine); }
+h3 { font-size: 19px; font-weight: 500; }
+p { margin: 0; max-width: 65ch; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 19px; }
+a { color: var(--accent); }
+figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+figure img { width: 100%; image-rendering: pixelated; border-radius: 4px; display: block; }
+figcaption { font-size: 14px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat { border-top: 3px solid var(--pine); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+.stat b { font-family: var(--display); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 14px; color: var(--muted); }
+ol.findings { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 12px; }
+ol.findings li::marker { font-family: var(--mono); color: var(--accent); }
+ol.findings b { font-weight: 600; }
+.meter { display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; align-items: center; font-size: 14px; }
+.meter .bars { display: flex; flex-direction: column; gap: 3px; }
+.bar { height: 10px; border-radius: 2px; background: var(--line); position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; }
+.bar.ours i { background: var(--pine); }
+.bar.pack i { background: var(--accent); }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.legend .l-ours::before { background: var(--pine); }
+.legend .l-pack::before { background: var(--accent); }
+.skies { display: flex; flex-direction: column; gap: 6px; }
+.sky { display: grid; grid-template-columns: 7.5em 1fr; align-items: center; gap: 12px; font-size: 14px; }
+.sky div { height: 30px; border-radius: 3px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.sw { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.sw .strip { display: flex; height: 34px; border-radius: 3px; overflow: hidden; }
+.sw .strip i { flex: 1; }
+.sw b { font-weight: 600; font-size: 15px; }
+.sw span { font-size: 13px; color: var(--muted); font-family: var(--mono); overflow-wrap: anywhere; }
+.lessons { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px 24px; }
+.lessons div { display: flex; flex-direction: column; gap: 4px; }
+.lessons h3 { color: var(--accent); }
+.lessons p { font-size: 15px; }
+ol.rules { margin: 0; padding: 0; list-style: none; counter-reset: r; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+ol.rules li { counter-increment: r; display: grid; grid-template-columns: 2.4em 1fr; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+ol.rules li::before { content: counter(r, decimal-leading-zero); font-family: var(--mono); color: var(--muted); font-size: 14px; padding-top: 3px; }
+.qs { display: flex; flex-direction: column; gap: 14px; }
+.q { background: var(--panel); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.q h3 { font-size: 18px; }
+.q ul { margin: 0; padding-left: 1.2em; font-size: 15px; display: flex; flex-direction: column; gap: 4px; }
+.q .rec { font-size: 14px; color: var(--pine); font-family: var(--mono); }
+.next { font-size: 15px; color: var(--muted); }
+code { font-family: var(--mono); font-size: 0.85em; }
+.viewer { display: flex; flex-direction: column; gap: 10px; }
+.viewer img { width: 100%; height: auto; image-rendering: pixelated; border-radius: 4px; display: block; aspect-ratio: 1200 / 296; background: var(--panel); }
+.pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick button { font: 600 14px var(--mono); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; min-width: 44px; }
+.pick button[aria-pressed="true"] { background: var(--pine); color: var(--bg); border-color: var(--pine); }
+.pick button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cap { font-size: 15px; min-height: 3em; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+.card { display: flex; flex-direction: column; gap: 6px; }
+.card h3 { color: var(--accent); }
+.card p { font-size: 15px; }
+.card ul { margin: 0; padding-left: 1.1em; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 3px; }
+.motion { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.motion figure img { aspect-ratio: 390 / 630; height: auto; }
+.wide { overflow-x: auto; }
+.wide img { max-width: none; width: 1824px; height: auto; image-rendering: pixelated; }
+@media (max-width: 520px) { .motion { grid-template-columns: repeat(2, 1fr); } }
+table { border-collapse: collapse; font-size: 13px; width: 100%; }
+th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent); white-space: nowrap; }
+td.big { font-weight: 700; }
+.x { opacity: 0.6; }
+.tablewrap { overflow-x: auto; }
+.stage { display:flex; flex-direction:column; gap:12px; }
+.mech { border-left: 3px solid color-mix(in srgb, currentColor 25%, transparent); padding: 4px 0 4px 12px; }
+.mech h3 { margin: 0 0 4px; font-size: 16px; }
+.mech p { margin: 2px 0; }
+.tag { display:inline-block; font-size: 11px; padding: 1px 6px; border-radius: 9px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); margin-right: 4px; }
+.ours { font-weight: 700; }
+.src { font-size: 13px; }
+.src li { margin: 2px 0; }
+</style>
+
+<main>
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <span class="eyebrow">Reel It In · Research · 23 Oct 2026</span>
+    <h1>Fishing mechanics</h1>
+    <p class="lede">Fishing games break a catch into the same few stages. At each stage, what the best-known games do, what players say about it on Steam, the game forums and in reviews, and how well it suits our game: a phone held in one hand, portrait, a lake seen side-on from the surface to the bed. What we already do is marked.</p>
+  </header>
+  <section class="stage">
+    <span class="eyebrow">Where and what to fish for, before any line goes in.</span>
+    <h2>1 · Finding the fish</h2>
+    <div class="mech"><h3>Shadows and signs </h3><p>Fish are visible as shadows, ripples or birds diving; their size hints at the species before you cast.</p><p><b>Seen in:</b> Animal Crossing (eight shadow sizes), Stardew (bubbling spots), Cast n Chill (the dog alerts you to a good spot)</p><p><b>Players like:</b> Reading the water feels like real angling knowledge; big shadows create excitement.</p><p><b>Players dislike:</b> Little, as long as the hints are honest.</p><p><b>For us (phone, one thumb, portrait):</b> Strong fit: our lake is side-on, so shadows and silhouettes can be seen under the surface. Olive could bark at a good spot.</p></div>
+    <div class="mech"><h3>Conditions decide the catch </h3><p>Each species keeps its own time of day, weather, season, depth and spot.</p><p><b>Seen in:</b> Stardew, Pokémon, Persona, Cast n Chill (16 spots with their own fish)</p><p><b>Players like:</b> Gives a reason to come back at dawn or in the rain; turns the journal into a puzzle.</p><p><b>Players dislike:</b> Lookup-table grinding when the conditions are hidden or too narrow.</p><p><b>For us (phone, one thumb, portrait):</b> We already run on the phone's real clock, so the time-of-day half is nearly free.</p></div>
+    <div class="mech"><h3>Bait and lure choice </h3><p>What's on the hook filters which fish bite: worms for panfish, minnows for walleye, lures for pike.</p><p><b>Seen in:</b> Fishing Life (catches used as bait), Zelda (sinking lure), Entropia (lures as hard filters)</p><p><b>Players like:</b> A small, meaningful decision before every cast.</p><p><b>Players dislike:</b> Inventory fiddling on a small screen.</p><p><b>For us (phone, one thumb, portrait):</b> Good fit if it's one tap: a bait tin of three or four choices.</p></div>
+  </section>
+  <section class="stage">
+    <span class="eyebrow">Getting the line where you want it.</span>
+    <h2>2 · The cast</h2>
+    <div class="mech"><h3>Tap to cast </h3><p>One tap; the line goes to a set distance.</p><p><b>Seen in:</b> Webfishing, many idle games</p><p><b>Players like:</b> Instant, zero friction.</p><p><b>Players dislike:</b> No skill or choice at all.</p><p><b>For us (phone, one thumb, portrait):</b> Fine as a fallback; too thin alone.</p></div>
+    <div class="mech"><h3>Hold for power </h3><p>Hold to charge, release to cast; longer holds cast further.</p><p><b>Seen in:</b> Fishing Life, Stardew (power meter)</p><p><b>Players like:</b> Simple, tactile, lets you aim for deeper water.</p><p><b>Players dislike:</b> Overshooting a spot with no way to correct.</p><p><b>For us (phone, one thumb, portrait):</b> Natural on a phone.</p></div>
+    <div class="mech"><h3>Swipe to cast <span class="tag ours">in our game now</span></h3><p>Flick upward; the length and speed of the swipe set the distance.</p><p><b>Seen in:</b> Mobile sports-fishing games</p><p><b>Players like:</b> Feels like a real cast.</p><p><b>Players dislike:</b> Inconsistent on small screens.</p><p><b>For us (phone, one thumb, portrait):</b> This is what we do now.</p></div>
+    <div class="mech"><h3>Brake and feather </h3><p>Tap again while the line flies to stop it on the spot.</p><p><b>Seen in:</b> Zelda: Ocarina of Time (brake while casting)</p><p><b>Players like:</b> Precision: drop right on a shadow.</p><p><b>Players dislike:</b> One more thing to learn.</p><p><b>For us (phone, one thumb, portrait):</b> A nice second layer on top of the swipe.</p></div>
+  </section>
+  <section class="stage">
+    <span class="eyebrow">What you do between the cast and the bite.</span>
+    <h2>3 · Waiting and working the bait</h2>
+    <div class="mech"><h3>Just wait </h3><p>Watch the float; the fish comes in its own time.</p><p><b>Seen in:</b> Animal Crossing, Stardew, Webfishing</p><p><b>Players like:</b> Calm, cozy, lets the scene breathe.</p><p><b>Players dislike:</b> Coral Island and Webfishing players call the wait dull when it runs long.</p><p><b>For us (phone, one thumb, portrait):</b> Keep waits short, and keep the scene alive with wildlife (we have a lot).</p></div>
+    <div class="mech"><h3>Species that come to the bait differently <span class="tag ours">in our game now</span></h3><p>Each fish approaches, nibbles and takes the bait its own way; the float tells you who it is.</p><p><b>Seen in:</b> Animal Crossing (nibbles, then the plunge), Zelda</p><p><b>Players like:</b> Expert players learn to read a fish before they see it.</p><p><b>Players dislike:</b> Fake nibbles that punish you without a clear tell.</p><p><b>For us (phone, one thumb, portrait):</b> We already model 17 species' approaches and nibbles; making their tells clearer is cheap.</p></div>
+    <div class="mech"><h3>Jigging and retrieving </h3><p>Twitch or reel the bait to make it move; some fish only bite a moving lure.</p><p><b>Seen in:</b> Zelda (wiggle the lure), Fishing Life (tap to reel in a little)</p><p><b>Players like:</b> Active, skillful, real angling.</p><p><b>Players dislike:</b> Busywork if it doesn't change which fish come.</p><p><b>For us (phone, one thumb, portrait):</b> A tap to jig fits; we already animate the float jig.</p></div>
+    <div class="mech"><h3>Depth control </h3><p>Choose or let the bait sink to the depth where a species lives.</p><p><b>Seen in:</b> Fishing Life (line sinks as you watch), Pokémon (deeper water, rarer fish)</p><p><b>Players like:</b> Our side view shows the whole water column, so depth is visible.</p><p><b>Players dislike:</b> Hard to judge without a gauge.</p><p><b>For us (phone, one thumb, portrait):</b> Great fit: our lake is seen in section, top to bottom.</p></div>
+  </section>
+  <section class="stage">
+    <span class="eyebrow">The moment of truth.</span>
+    <h2>4 · The bite and the hook</h2>
+    <div class="mech"><h3>Strike on the plunge <span class="tag ours">in our game now</span></h3><p>React when the float goes under; too early scares the fish, too late it spits the hook.</p><p><b>Seen in:</b> Animal Crossing (press as the bobber sinks), Stardew (the '!' prompt)</p><p><b>Players like:</b> A sharp, satisfying moment; rarer fish give a shorter window.</p><p><b>Players dislike:</b> Missed bites feel unfair without a clear audio or haptic cue.</p><p><b>For us (phone, one thumb, portrait):</b> We do this, with a vibration. Players recommend listening for the splash.</p></div>
+    <div class="mech"><h3>Shake or confirm prompts </h3><p>Tap a prompt (or several) before the fight starts.</p><p><b>Seen in:</b> Fisch (shake icons that move around; miss one and you recast)</p><p><b>Players like:</b> Keeps you engaged while it 'bites'.</p><p><b>Players dislike:</b> Losing the whole cast to one missed prompt.</p><p><b>For us (phone, one thumb, portrait):</b> Weak fit; extra taps without much meaning.</p></div>
+  </section>
+  <section class="stage">
+    <span class="eyebrow">Where most fishing games differ, and where players are most opinionated.</span>
+    <h2>5 · The fight</h2>
+    <div class="mech"><h3>Keep the fish in the zone <span class="tag ours">in our game now</span></h3><p>A fish icon moves up and down a bar; you hold to raise your green zone and keep it on the fish; a progress meter fills while you do.</p><p><b>Seen in:</b> Stardew Valley, Fisch (horizontal), Sun Haven</p><p><b>Players like:</b> Real skill and a clear learning curve; each species moves its own way (carp lazy, lava eel wild).</p><p><b>Players dislike:</b> Hard for reaction speed or hand pain; a regular stream of accessibility requests on the Stardew forum; feels like a minigame, not fishing.</p><p><b>For us (phone, one thumb, portrait):</b> This is our default fight now, styled as a bar.</p></div>
+    <div class="mech"><h3>Tension: reel, then ease off </h3><p>Hold to reel in; tension rises; let go when the fish runs or the line snaps; the fish tires.</p><p><b>Seen in:</b> Ace Fishing, Reel Fishing, Cast n Chill, Fishing Clash (keep the tension centred)</p><p><b>Players like:</b> Feels like real fishing: feel the fish, give it line, take it back.</p><p><b>Players dislike:</b> Opaque when the meter isn't readable; deaths by sudden spikes.</p><p><b>For us (phone, one thumb, portrait):</b> Very good on a phone (one thumb); we have this mode in code (hold-reel).</p></div>
+    <div class="mech"><h3>Risk zone bonus </h3><p>Pushing tension into the red, without snapping, builds a bonus meter for a bigger reward.</p><p><b>Seen in:</b> Ace Fishing (Strength meter)</p><p><b>Players like:</b> A thrilling risk-reward layer on top of tension.</p><p><b>Players dislike:</b> Punishing if the snap is unpredictable.</p><p><b>For us (phone, one thumb, portrait):</b> A good optional depth layer on top of the tension fight.</p></div>
+    <div class="mech"><h3>Pull against the run </h3><p>The fish swims left or right; you pull the rod the opposite way; reel only when it tires.</p><p><b>Seen in:</b> Sea of Thieves (rod creaks when you're wrong), Final Fantasy XV (tilt with the fish)</p><p><b>Players like:</b> Reads the fish's body language; rumble and creaks give feedback.</p><p><b>Players dislike:</b> Twitchy on touch screens without a stick.</p><p><b>For us (phone, one thumb, portrait):</b> Possible with left and right swipes; our fish already have 'cover' they run for.</p></div>
+    <div class="mech"><h3>Fish stamina and line durability </h3><p>Two bars: the fish tires as you hold on, your line wears as it fights; better rods resist.</p><p><b>Seen in:</b> Final Fantasy XV</p><p><b>Players like:</b> Big fish feel like an endurance fight; gear upgrades matter.</p><p><b>Players dislike:</b> Long fights get repetitive.</p><p><b>For us (phone, one thumb, portrait):</b> Pairs well with tension; makes the muskie and sturgeon epic.</p></div>
+    <div class="mech"><h3>Beats and jumps </h3><p>The fish pulls in rhythmic tugs; tap in time; when it leaps, stop reeling ('bow to the fish').</p><p><b>Seen in:</b> Final Fantasy XV (jump prompts), Zelda Switch (don't reel while it faces away)</p><p><b>Players like:</b> Reacting to a jump is a great moment.</p><p><b>Players dislike:</b> Pure QTEs feel like button prompts, not fishing.</p><p><b>For us (phone, one thumb, portrait):</b> We have this mode in code (rhythm), with jumps and cover.</p></div>
+    <div class="mech"><h3>Timing rings </h3><p>Hit a moving marker as it passes targets on a spinning ring; bigger fish give more rings.</p><p><b>Seen in:</b> Dredge</p><p><b>Players like:</b> Fast, readable, works on any input.</p><p><b>Players dislike:</b> One slip loses all progress; no clearly defined hit zone.</p><p><b>For us (phone, one thumb, portrait):</b> Fits touch well, but has nothing to do with the fish's behaviour.</p></div>
+    <div class="mech"><h3>Hold and click </h3><p>Hold to reel; tap at 'yank' moments; very forgiving.</p><p><b>Seen in:</b> Webfishing</p><p><b>Players like:</b> Never frustrating; social and relaxed.</p><p><b>Players dislike:</b> Little challenge; some reviews call it simplistic.</p><p><b>For us (phone, one thumb, portrait):</b> A good gentle or accessible mode.</p></div>
+    <div class="mech"><h3>Auto or idle </h3><p>The fish reels itself in; playing the minigame just speeds it up.</p><p><b>Seen in:</b> Dredge (automatic fallback), Cast n Chill (idle mode, even offline)</p><p><b>Players like:</b> Removes the failure stress; great for relaxing.</p><p><b>Players dislike:</b> Some feel it hollows out the game.</p><p><b>For us (phone, one thumb, portrait):</b> An easy accessibility or assist option.</p></div>
+  </section>
+  <section class="stage">
+    <span class="eyebrow">The payoff.</span>
+    <h2>6 · Landing it</h2>
+    <div class="mech"><h3>The catch moment <span class="tag ours">in our game now</span></h3><p>The fish is lifted, flops, is weighed and measured; a popup shows the species, size and record.</p><p><b>Seen in:</b> Stardew, Animal Crossing (the pun line), Zelda (weigh-in at the pond)</p><p><b>Players like:</b> The reward beat; records make each catch matter.</p><p><b>Players dislike:</b> Popups that interrupt too often.</p><p><b>For us (phone, one thumb, portrait):</b> We have the flop, the popup and the journal.</p></div>
+    <div class="mech"><h3>Net it at the dock </h3><p>A last timing tap to scoop the fish as it comes to the surface.</p><p><b>Seen in:</b> Real angling; some sports-fishing sims</p><p><b>Players like:</b> A tense final moment for big fish.</p><p><b>Players dislike:</b> One more way to lose a fish at the end.</p><p><b>For us (phone, one thumb, portrait):</b> Could be just for big fish.</p></div>
+    <div class="mech"><h3>Arcade payoffs </h3><p>Fish fly out of the water and you shoot or catch them for points.</p><p><b>Seen in:</b> Ridiculous Fishing (descend dodging, ascend collecting, then shoot)</p><p><b>Players like:</b> Wild, spectacular, very mobile.</p><p><b>Players dislike:</b> Not cozy, and not realistic.</p><p><b>For us (phone, one thumb, portrait):</b> Off-tone for us, but its three-phase descent (dodge on the way down, catch on the way up) is a clever use of a vertical lake like ours.</p></div>
+  </section>
+  <section class="stage">
+    <span class="eyebrow">Long-term systems.</span>
+    <h2>7 · Why you come back</h2>
+    <div class="mech"><h3>The collection </h3><p>A journal of every species, with the biggest caught, where and when.</p><p><b>Seen in:</b> Animal Crossing (museum), Stardew, Cast n Chill (record book)</p><p><b>Players like:</b> The single most loved loop; completionists stay for months.</p><p><b>Players dislike:</b> Missing fish with no hints.</p><p><b>For us (phone, one thumb, portrait):</b> We have the journal; adding conditions as hints would help.</p></div>
+    <div class="mech"><h3>Gear upgrades </h3><p>Better rods, lines, reels and floats make harder fish catchable.</p><p><b>Seen in:</b> Cast n Chill, Ace Fishing, Fishing Life</p><p><b>Players like:</b> Visible progress; old enemies become easy.</p><p><b>Players dislike:</b> Gear gates and paywalls (Ace Fishing reviewers felt progress slowed).</p><p><b>For us (phone, one thumb, portrait):</b> Good, kept gentle and earned in-game.</p></div>
+    <div class="mech"><h3>Trophy sizes and records </h3><p>Each fish has a weight; personal bests and trophy weights.</p><p><b>Seen in:</b> Zelda (weight prizes), Fishing Clash</p><p><b>Players like:</b> Every catch might be a record.</p><p><b>Players dislike:</b> Pure randomness without skill.</p><p><b>For us (phone, one thumb, portrait):</b> Cheap to add on top of the journal.</p></div>
+    <div class="mech"><h3>Bounties and quests </h3><p>Requests for a certain fish at a certain time, for rewards.</p><p><b>Seen in:</b> Stardew (bundles), Dredge (orders)</p><p><b>Players like:</b> Direction when you don't know what to do next.</p><p><b>Players dislike:</b> Chore lists.</p><p><b>For us (phone, one thumb, portrait):</b> Could come from the field notes and Olive's story.</p></div>
+    <div class="mech"><h3>Idle and offline catches </h3><p>The game fishes for you while you're away.</p><p><b>Seen in:</b> Cast n Chill, Hooked Inc</p><p><b>Players like:</b> Coming back to a full bucket.</p><p><b>Players dislike:</b> Can make active play feel pointless.</p><p><b>For us (phone, one thumb, portrait):</b> Optional; it fits a phone game well.</p></div>
+    <div class="mech"><h3>Companion </h3><p>A pet or friend who helps: alerts, fetches, keeps you company.</p><p><b>Seen in:</b> Cast n Chill (dog points out spots)</p><p><b>Players like:</b> Warmth and charm.</p><p><b>Players dislike:</b> None reported.</p><p><b>For us (phone, one thumb, portrait):</b> We have Olive; she could help as well as keep him company.</p></div>
+  </section>
+  <section>
+    <span class="eyebrow">What players keep saying</span>
+    <h2>Patterns across the forums</h2>
+    <ol class="rules">
+      <li><b>It should feel like fishing, not a button prompt.</b> Tension, giving line and reading the fish win; rhythm prompts and QTEs with no link to the fish lose.</li>
+      <li><b>Skill should be learnable, and fail gently.</b> Stardew is praised because you can "git gud", and criticised because some players never can. Dredge's "one slip and it's gone" draws complaints.</li>
+      <li><b>Each species should fight its own way.</b> It's what makes a rare catch memorable.</li>
+      <li><b>Waiting is fine if the world is alive</b>, and dull if it isn't, or runs long.</li>
+      <li><b>Offer an easier path.</b> Accessibility requests (hand pain, reaction speed) are constant for the Stardew fight; Dredge and Cast n Chill let the fish come in on its own.</li>
+      <li><b>The collection is the long game.</b> The journal, records and conditions bring players back more than any single fight.</li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="eyebrow">Your call</span>
+    <h2>What to study next</h2>
+    <p>Mark the ones that appeal (and any you'd rule out), stage by stage. I'd suggest we start where the game is decided, the fight: three playable prototypes side by side (for example the zone bar we have, a tension fight with fish stamina, and pulling against the run), each with an easier assist mode, played in the game on your phone.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Sources</span>
+    <h2>Where this comes from</h2>
+    <ul class="src">
+      <li><a href="https://lemmy.korz.dev/post/2146521/2812098">Lemmy thread on fishing minigames (Stardew's skill/randomness balance)</a></li>
+      <li><a href="https://blog.thermaltake.com.au/?p=3972">Thermaltake blog on fishing minigames</a>, <a href="https://strategywiki.org/wiki/DREDGE/Fishing">StrategyWiki: Dredge fishing</a>, <a href="https://bossrush.net/2026/03/game-review-dredge/?nb=1">Boss Rush: Dredge review</a></li>
+      <li><a href="https://steamcommunity.com/app/1562430/discussions/0/5440953210428359132">Steam: Dredge minigame discussion</a>, <a href="https://primagames.com/featured/dredge-review-the-horror-at-fish-hook">Prima: Dredge review</a>, <a href="https://press-start.com.au/reviews/ps5-reviews/2023/03/24/dredge-review-a-trophy-catch/">Press Start: Dredge review</a>, <a href="https://gamasutra.com/design/trawling-in-the-deep-how-black-salt-games-made-spooky-fishing-rpg-i-dredge-i-">Game Developer: making Dredge</a></li>
+      <li><a href="https://www.pocketgamer.com/ace-fishing-paradise-blue/review/">PocketGamer: Ace Fishing review</a>, <a href="https://apps.apple.com/app/id1151811380">Fishing Clash on the App Store</a>, <a href="https://www.nintendojo.com/?p=110113">Nintendojo: Reel Fishing Paradise 3D</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Webfishing">Wikipedia: Webfishing</a>, <a href="https://webfishing.wiki.gg/wiki/Fishing">Webfishing wiki: Fishing</a>, <a href="https://the-tartan.org/2024/11/25/webfishing-review-maybe-fishing-can-be-fun/">The Tartan: Webfishing review</a>, <a href="https://www.inverse.com/gaming/steam-webfishing-cozy-chatroom-game-animal-crossing">Inverse on Webfishing</a>, <a href="https://itch.io/post/5906839">itch.io comment</a></li>
+      <li><a href="https://www.shacknews.com/article/144913/cast-n-chill-review-score">Shacknews: Cast n Chill review</a>, <a href="https://thetwingeeks.com/2025/06/21/cast-chill-hook-line-and-sinker/">The Twin Geeks: Cast n Chill</a>, <a href="https://www.gamingonlinux.com/2025/02/cast-n-chill-is-a-gorgeous-looking-pixel-art-idle-fishing-game-coming-soon">GamingOnLinux: Cast n Chill</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Ridiculous_Fishing">Wikipedia: Ridiculous Fishing</a>, <a href="https://www.engadget.com/2013-03-14-ridiculous-fishing-review.html">Engadget review</a>, <a href="https://www.pocketgamer.com/ridiculous-fishing/review/">PocketGamer review</a></li>
+      <li><a href="https://play.nintendo.com/news-tips/tips-tricks/fishing-new-horizons-tips-and-tricks/">Nintendo: New Horizons fishing tips</a>, <a href="https://animalcrossing.fandom.com/wiki/Shadow">Animal Crossing wiki: Shadow</a>, <a href="https://nintendowire.com/guides/animal-crossing-new-horizons/fishing/">Nintendo Wire: fishing guide</a></li>
+      <li><a href="https://zeldawiki.wiki/wiki/Lure_Fishing">Zelda Wiki: Lure Fishing</a>, <a href="https://StrategyWiki.org/wiki/The_Legend_of_Zelda:_Ocarina_of_Time/Minigames">StrategyWiki: Ocarina minigames</a></li>
+      <li><a href="https://steamcommunity.com/app/1158160/discussions/0/3467235293767482163">Steam: Coral Island fishing discussion</a></li>
+      <li><a href="https://steamcommunity.com/app/380600/discussions/0/1753525797594706391">Steam: Fishing Planet drag discussion</a>, <a href="https://steamcommunity.com/app/766570/discussions/9/5570437336440874300">Steam: Russian Fishing 4 discussion</a></li>
+      <li><a href="https://www.inverse.com/article/25236-final-fantasy-xv-fishing-tips-and-tricks-guide">Inverse: Final Fantasy XV fishing</a>, <a href="https://gamerguides.com/final-fantasy-xv/guide/the-basics/skills/fishing">GamerGuides: FFXV fishing</a></li>
+      <li><a href="https://androidcentral.com/fishing-life-android-game-week">Android Central: Fishing Life</a></li>
+      <li><a href="https://www.sportskeeda.com/roblox-news/roblox-fisch-a-beginner-s-guide">Sportskeeda: Fisch guide</a>, <a href="https://videogameschronicle.com/guide/fisch-fishing-tips">VGC: Fisch tips</a></li>
+      <li><a href="https://seaofthieves.wiki.gg/wiki/Fishing">Sea of Thieves wiki: Fishing</a>, <a href="https://www.pcgamer.com/sea-of-thieves-fishing-guide">PC Gamer: Sea of Thieves fishing</a>, <a href="https://www.shacknews.com/article/111513/how-to-go-fishing-in-sea-of-thieves">Shacknews: Sea of Thieves fishing</a></li>
+      <li><a href="https://forums.stardewvalley.net/threads/settings-for-fishing-accessibility.27349/latest">Stardew forum: fishing accessibility</a>, <a href="https://forums.stardewvalley.net/threads/accessibility-quality-of-life-suggestions-for-1-7.44861/latest">Stardew forum: 1.7 accessibility suggestions</a></li>
+      <li><a href="https://godisageek.com/?p=279902">God is a Geek: Dave the Diver</a>, <a href="https://caniplaythat.com/?p=12576">Can I Play That: Dave the Diver accessibility</a></li>
+      <li><a href="https://www.pocketgamer.com/ahead-of-the-game/fishing-inc/">PocketGamer: Fishing Inc</a>, <a href="https://mobilesyrup.com/2019/01/13/hooked-inc-game-for-passing-time-game-of-the-week/">MobileSyrup: Hooked Inc</a></li>
+      <li><a href="https://megatenwiki.com/wiki/Fishing">Megami Tensei wiki: Fishing (Persona)</a>, <a href="https://stardewvalleywiki.com/Special:MobileDiff/107614...169661">Stardew wiki: fishing</a></li>
+    </ul>
+  </section>
+</main>
