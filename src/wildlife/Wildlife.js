@@ -1,8 +1,7 @@
 // The animals of the lake. Birds cross the sky, now and then come down to
 // rest (a gull or the eagle on the sand, a sparrow on a cattail, a pair of
 // mallards paddling the shallows), a loon fishes the shallows and fish leap;
-// every so often a doe or buck, fox, hare or bear comes down to the bank, and
-// gets a field note.
+// every so often a doe or buck, fox, hare or bear comes down to the bank.
 import { W, SURFACE_Y, DEPTH } from '../core/constants.js';
 import { FISH } from '../../data/fish/fish.js';
 import { splash } from '../environment/Effects.js';
@@ -35,11 +34,11 @@ const BANK_Y = SURFACE_Y - 4; // where the far bank meets the water
 // They come through the cattails along the left of the shore and stop on
 // the open sand beyond them (reach), where they can be seen.
 const VISITORS = {
-  deer: { reach: 150, note: 'A white-tailed doe steps down to the water to drink.' },
-  buck: { reach: 150, note: 'A white-tailed buck lowers his antlers to drink.' },
-  fox: { reach: 142, note: 'A red fox trots along the bank, nose to the ground.' },
-  hare: { reach: 128, note: 'A snowshoe hare stops to nibble clover by the water.' },
-  bear: { reach: 146, note: 'A black bear ambles out of the pines. Best keep your distance.' },
+  deer: { reach: 150 },
+  buck: { reach: 150 },
+  fox: { reach: 142 },
+  hare: { reach: 128 },
+  bear: { reach: 146 },
 };
 // how far a creature moves on frame i of its walk
 const stepOf = (key, i) => {
@@ -48,9 +47,8 @@ const stepOf = (key, i) => {
 };
 
 export class Wildlife {
-  constructor(scene, onNote = () => {}) {
+  constructor(scene) {
     this.scene = scene;
-    this.note = onNote;
     const now = scene.time.now;
     this.next = { visitor: now + 4000, birds: now + 1500, jump: now + 6000, eagle: now + 9000, loon: now + 20000, rest: now + 12000 };
     this.sand = null; // who's on the open sand, so two don't stand in one spot
@@ -114,7 +112,6 @@ export class Wildlife {
         // switching animation inside its own frame event confuses Phaser,
         // so stand still on the next tick
         s.time.delayedCall(0, () => a.scene && stand());
-        this.note(v.note);
         s.time.delayedCall(R(6000, 10000), () => {
           if (!a.scene) return;
           // turn round, then set off back the way it came
@@ -166,7 +163,6 @@ export class Wildlife {
     flapAndGlide(s, e, 'eagle-fly', ART.anchors.creatures.eagle.glide.frames[0], 2500);
     s.tweens.add({ targets: e, x: W + 45, duration: 15000, onComplete: () => e.destroy() });
     s.tweens.add({ targets: e, y: e.y + 25, duration: 3500, yoyo: true, repeat: 1, ease: 'Sine.easeInOut' });
-    this.note('A bald eagle circles high over the lake.');
   }
 
   // A bird comes down to rest for a while.
@@ -193,7 +189,6 @@ export class Wildlife {
         // feet down on the sand
         b.setTexture(stand).setOrigin(0.5, 1).setPosition(x, BANK_Y + (big ? 2 : 0));
         const shadow = s.add.ellipse(x, BANK_Y - 1, Math.max(4, Math.round(b.width * 0.8)), 2, 0x2a2418, 0.35).setDepth(DEPTH.SHORE_LIFE);
-        this.note(big ? 'The bald eagle lands on the shore to watch the water.' : 'A gull drops onto the sand and settles.');
         // now and then it turns to look the other way
         const look = s.time.addEvent({ delay: R(2500, 4000), loop: true, callback: () => b.setFlipX(!b.flipX) });
         s.time.delayedCall(R(9000, 16000), () => {
@@ -217,7 +212,6 @@ export class Wildlife {
       onComplete: () => {
         b.anims.stop();
         b.setTexture('sparrow-perch').setOrigin(0.5, 1).setPosition(top.x, top.y + 1);
-        this.note('A song sparrow perches on a cattail.');
         // a little bob now and then, as sparrows do
         const bob = s.time.addEvent({ delay: R(1200, 2200), loop: true, callback: () => { b.y = top.y + 2; s.time.delayedCall(150, () => (b.y = top.y + 1)); } });
         s.time.delayedCall(R(7000, 12000), () => {
@@ -242,7 +236,6 @@ export class Wildlife {
       s.tweens.add({ targets: d, x: stop - i * 18, duration: 14000, ease: 'Sine.easeOut' });
       return d;
     });
-    this.note('A pair of mallards paddles along the shallows.');
     s.time.delayedCall(R(24000, 32000), () => {
       pair.forEach((d, i) => {
         d.setFlipX(false);
@@ -278,7 +271,6 @@ export class Wildlife {
           onComplete: () => dive(() => { bob.remove(); b.destroy(); }) });
       })),
     });
-    this.note('A common loon fishes the shallows, then slips under.');
   }
 
   // A fish clears the water and drops back with a splash.

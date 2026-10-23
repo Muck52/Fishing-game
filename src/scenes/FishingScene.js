@@ -66,9 +66,9 @@ export class FishingScene extends Phaser.Scene {
   create() {
     this.save = new SaveManager();
     this.world = new World(this);
-    this.wildlife = new Wildlife(this, (text) => this.fieldNote(text));
+    this.wildlife = new Wildlife(this);
     this.angler = new Angler(this);
-    this.olive = new Olive(this, (text) => this.fieldNote(text));
+    this.olive = new Olive(this);
     this.tackle = new Tackle(this);
     this.signs = new Signs(this);
     this.tackleBox = new TackleBox(this, this.save, () => this.state === STATE.IDLE && !this.charging, (l) => this.setHint(`${l.name}\n${l.note}`, 1800));
@@ -83,7 +83,6 @@ export class FishingScene extends Phaser.Scene {
     // hints sit on a little wooden plaque, like the counters
     this.plaque = pill(this, W / 2, 165, 40, 20).setDepth(DEPTH.UI).setVisible(false);
     this.hint = label(this, W / 2, 165, '', { font: 'head', size: 2 }).setDepth(DEPTH.UI);
-    this.note = label(this, W / 2, 95, '', { width: W - 40 }).setDepth(DEPTH.UI).setAlpha(0);
     this.fishSprite = null;
 
     this.input.on('pointerdown', this.onDown, this);
@@ -103,15 +102,6 @@ export class FishingScene extends Phaser.Scene {
     this.plaque.setVisible(!!text).setAlpha(1).setSize(Math.ceil(b.width / 2) * 2 + 16, Math.ceil(b.height / 2) * 2 + 8);
     if (text === 'TAP!') this.tweens.add({ targets: this.hint, alpha: 0.4, duration: 90, yoyo: true, repeat: 3 });
     if (fadeAfter) this.tweens.add({ targets: both, alpha: 0, delay: fadeAfter, duration: 400 });
-  }
-
-  // Quiet captions about the wildlife, held back while a fish is on.
-  fieldNote(text) {
-    if (this.state !== STATE.IDLE && this.state !== STATE.WAITING) return;
-    if (this.bag?.isOpen || this.journal?.isOpen) return;
-    this.tweens.killTweensOf(this.note);
-    this.note.setText(text).setAlpha(0);
-    this.tweens.chain({ targets: this.note, tweens: [{ alpha: 1, duration: 700 }, { alpha: 1, duration: 4200 }, { alpha: 0, duration: 900 }] });
   }
 
   // ---- the fish on the line --------------------------------------------------
@@ -378,8 +368,6 @@ export class FishingScene extends Phaser.Scene {
   hook() {
     this.state = STATE.REELING;
     this.tackle.shout(false);
-    this.tweens.killTweensOf(this.note);
-    this.note.setAlpha(0);
     this.weight = rollWeight(this.fish);
     const start = 40 + this.castPower * 60;
     this.fight = BAR ? new BarFight(this.fish, start) : HOLD_REEL ? new ReelFight(this.fish, start) : new RhythmFight(this.fish, start);

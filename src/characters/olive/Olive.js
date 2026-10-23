@@ -29,9 +29,8 @@ const stepOf = (anim, i) => ART.anchors.olive[anim].steps[i];
 const SWIM_SPEED = 16; // px per second
 
 export class Olive {
-  constructor(scene, onNote = () => {}) {
+  constructor(scene) {
     this.scene = scene;
-    this.note = onNote;
     ({ feet: this.FEET, wet: this.WET } = origin());
     this.s = scene.add.sprite(R(DECK.min + 10, DECK.max), DECK_Y, 'olive', 0).setOrigin(0.5, this.FEET).setDepth(DEPTH.ANGLER - 0.5);
     this.dir = 0; // -1 walking left, +1 right
@@ -118,7 +117,6 @@ export class Olive {
     this.mode = 'leap';
     s.anims.stop();
     s.setFrame(this.frames('leap')[0]).setDepth(DEPTH.SPLASH - 0.5);
-    this.note('Olive takes a flying leap off the dock!');
     const x0 = s.x;
     const x1 = x0 - R(50, 70);
     sc.time.delayedCall(220, () => {

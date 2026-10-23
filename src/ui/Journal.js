@@ -232,14 +232,13 @@ export class Journal {
       t(photo.x + photo.w / 2, photo.y + photo.h / 2, '?', { font: 'head', size: 2, color: INK.cream });
     }
     // the photo's caption: how rare it is, and the bait it goes for (known
-    // or not, so you can go after it); a nudge to tap the photo, in its corner
+    // or not, so you can go after it)
     const cap = photo.y + photo.h + 9;
     t(photo.x, cap, RARITY[fish.rarity].label.toUpperCase(), { font: 'ink-bold', color: STAMP[fish.rarity] }).setOrigin(0, 0.5);
     makeLureArt(s);
     const bait = lureOf(BEST[fish.id]);
     const name = this.fit(t(photo.x + photo.w, cap, bait.name, { color: PEN }).setOrigin(1, 0.5), photo.w / 2 - 22, [16]);
     pg.c.add(s.add.image(photo.x + photo.w - name.getTextBounds(true).local.width - 9, cap, `lure-${bait.id}`));
-    if (known) t(photo.x + photo.w - 4, photo.y + photo.h - 11, 'tap it!', { color: INK.cream }).setOrigin(1, 0.5);
 
     let y = cap + 22;
     if (known) {
