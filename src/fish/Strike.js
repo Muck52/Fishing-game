@@ -77,7 +77,7 @@ export class Striker {
   }
 
   pace(k) {
-    this.sprite.anims.timeScale = k; // tail beats faster when it hurries
+    if (this.sprite.anims) this.sprite.anims.timeScale = k; // tail beats faster when it hurries
   }
 
   // ---- arriving (about 2.4 s, before the first nibble can come)
@@ -436,6 +436,8 @@ export class Striker {
   }
 
   destroy() {
+    // stop its movements first, so none finishes on a fish that's gone
+    this.scene.tweens.killTweensOf([this.sprite, ...this.friends]);
     for (const f of this.friends) f.destroy();
     this.friends = [];
     if (this.sprite.active) this.sprite.destroy();

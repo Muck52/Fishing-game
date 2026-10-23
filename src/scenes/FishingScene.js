@@ -10,7 +10,7 @@ import { Tackle } from '../fishing/Tackle.js';
 import { ReelFight } from '../fishing/ReelFight.js';
 import { RhythmFight } from '../fishing/RhythmFight.js';
 import { BarFight } from '../fishing/BarFight.js';
-import { rollWeight, catchValue } from '../fish/FishSpawner.js';
+import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
 import { Striker, strikeOf } from '../fish/Strike.js';
 import { FISH } from '../../data/fish/fish.js';
 import { Signs } from '../fish/Signs.js';
@@ -43,6 +43,20 @@ const COVER = {
 const COVER_NAME = { weeds: 'the weeds', posts: 'the posts', bottom: 'the bottom' };
 const ARROW = { left: '<<', right: '>>', up: '^^' };
 const R = (a, b) => Phaser.Math.Between(a, b);
+
+// The chance of a fish, for each way of fishing. In open water at most
+// CAP of casts bring a fish, by the end of the wait or the retrieve; the
+// rest come up empty. On a shadow or a sparkle there is always a fish, and
+// it takes the bait within SIGN_BY.
+//   float  a chance each second, adding up to CAP by WAIT
+//   jig    a chance each jig, adding up to CAP by the jig that brings it in
+//   reel   a chance each pixel reeled, adding up to CAP over a full retrieve
+const CAP = 0.6;
+const WAIT = 30000; // ms on a float (or since the last jig) before giving up
+const SIGN_BY = 8000;
+const JIG_STEP = 6; // px a jig comes in each hop
+const PER_SECOND = 1 - (1 - CAP) ** (1 / (WAIT / 1000)); // about 3%
+const chanceOver = (n) => 1 - (1 - CAP) ** (1 / Math.max(1, n)); // per step, CAP after n
 
 export class FishingScene extends Phaser.Scene {
   constructor() {
@@ -200,47 +214,56 @@ export class FishingScene extends Phaser.Scene {
     // ?fish=walleye in the address forces a species, for trying them out
     const forced = FISH.find((f) => f.id === new URLSearchParams(window.location.search).get('fish'));
     const now = this.time.now;
+    const dock = this.angler.tip.x - 22;
     this.from = null;
     this.treasure = null;
     this.fish = null;
     this.nibbleTimes = [];
     this.biteAt = Infinity;
     this.nibbleUntil = 0;
-    this.jig = { count: 0, need: 0, last: 0, arrive: Infinity };
+    this.jig = { count: 0, need: 0, last: now, arrive: Infinity };
     this.chase = null;
-    this.emptyAt = now + 9000;
+    this.emptyAt = now + WAIT;
+    this.nextTick = now + 1000;
     if (this.mech === 'reel') {
-      // a lure meets its fish on the way in (see reelIn)
+      // a chance each pixel reeled: CAP over a full-length retrieve
+      this.reelP = chanceOver(dock - 16);
       this.emptyAt = Infinity;
       this.setHint('Hold to reel it in', 1500);
       return;
     }
+    if (this.mech === 'jig') {
+      // a chance each jig: CAP by the jig that brings it to the dock
+      this.jig.p = chanceOver(Math.ceil((dock - this.tackle.x) / JIG_STEP));
+      this.setHint('Tap to jig it', 1500);
+    }
     // did it land on a shadow or a sparkle? the fish there comes to the bait
     const sign = forced ? null : this.signs.near(this.tackle.x);
     if (forced || sign) this.meet(forced, sign, now);
-    if (this.mech === 'jig') this.setHint('Tap to jig it', 1500);
   }
 
-  // The fish under a sign leaves it for the bait: which fish, and the
-  // treasure if it was sparkling.
+  // A fish comes for the bait: from under a sign (with its treasure, if it
+  // was sparkling), or from open water, any fish of the lake.
   meet(forced, sign, now) {
     if (forced) {
       this.fish = forced;
-    } else {
+    } else if (sign) {
       const got = this.signs.take(sign);
       this.fish = got.fish;
       this.treasure = got.treasure;
       this.from = { x: sign.x, y: SURFACE_Y + 12 };
+    } else {
+      this.fish = pickFish(this.castPower);
     }
+    this.emptyAt = Infinity;
     if (this.mech === 'float') {
-      this.schedule(now);
+      this.schedule(now, !!sign);
     } else if (this.mech === 'jig') {
-      // it comes and hangs by the jig, and strikes once it's been worked
-      // a few times
-      this.time.delayedCall(500, () => this.state === STATE.WAITING && this.spawnFish());
-      this.jig.need = R(2, 4);
-      this.jig.arrive = now + 2600;
-      this.emptyAt = Infinity;
+      // it comes and hangs by the jig, and strikes once it's been worked;
+      // from a sign quickly enough to take it within SIGN_BY
+      this.time.delayedCall(sign ? 300 : 500, () => this.state === STATE.WAITING && this.spawnFish());
+      this.jig.need = sign ? R(2, 3) : R(1, 2);
+      this.jig.arrive = now + (sign ? 1500 : 2600);
     }
   }
 
@@ -252,8 +275,14 @@ export class FishingScene extends Phaser.Scene {
     if (now - this.jig.last < 220) return;
     this.jig.last = now;
     this.tweens.add({ targets: t, hookY: t.hookY - 6, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
-    t.x = Math.min(t.x + 2, this.angler.tip.x - 20);
+    const dock = this.angler.tip.x - 22;
+    t.x = Math.min(t.x + JIG_STEP, dock);
     this.tweens.add({ targets: this.angler, lift: 4, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
+    if (!this.fish) {
+      if (Math.random() < this.jig.p) this.meet(null, null, now);
+      else if (t.x >= dock) this.lose('Nothing biting here\nTry a shadow or a sparkle');
+      return;
+    }
     if (this.striker && now > this.jig.arrive) {
       this.jig.count++;
       this.striker.nibble();
@@ -268,8 +297,10 @@ export class FishingScene extends Phaser.Scene {
     const t = this.tackle;
     const holding = this.input.activePointer.isDown;
     const dock = this.angler.tip.x - 22;
+    let moved = 0;
     if (holding) {
-      t.x = Math.min(dock, t.x + dt * 30);
+      moved = Math.min(dock, t.x + dt * 30) - t.x;
+      t.x += moved;
       t.hookY = Math.max(SURFACE_Y + 12, t.hookY - dt * 20);
       this.angler.crank += dt * 14;
     } else {
@@ -277,10 +308,14 @@ export class FishingScene extends Phaser.Scene {
     }
     if (!this.fish) {
       const sign = this.signs.near(t.x, 6);
-      if (sign) {
+      // through a sign always; in open water, a chance for each pixel reeled
+      const hit = sign || (moved > 0 && Math.random() < 1 - (1 - this.reelP) ** moved);
+      if (hit) {
         this.meet(null, sign, time);
         this.spawnFish();
         this.tweens.killTweensOf(this.striker.sprite);
+        // from open water it comes up from behind and below
+        if (!sign) this.striker.sprite.setPosition(t.x - 34, Math.min(BED_Y - 12, t.hookY + 24));
         this.chase = { until: time + R(700, 1300), lag: 0 };
       } else if (t.x >= dock) {
         this.resetToIdle();
@@ -303,7 +338,8 @@ export class FishingScene extends Phaser.Scene {
   }
 
   // The fish is on its way: when it arrives, its nibbles, and the bite.
-  schedule(now) {
+  // From a sign it all happens within SIGN_BY.
+  schedule(now, fromSign = false) {
     this.time.delayedCall(this.from ? 500 : 900, () => this.state === STATE.WAITING && this.spawnFish());
     // The fish takes about two and a half seconds to arrive. Then come the
     // fake-out nibbles that keep you guessing, as many as the species tends
@@ -311,12 +347,13 @@ export class FishingScene extends Phaser.Scene {
     // second or so apart, and then the real bite.
     const [lo, hi] = strikeOf(this.fish.id).nibbles;
     this.nibbleTimes = [];
-    let at = now + 3500 + R(0, 600);
+    let at = now + (fromSign ? 2600 : 3500) + R(0, 600);
     for (let i = R(lo, hi); i > 0; i--) {
       this.nibbleTimes.push(at);
-      at += R(800, 1400);
+      at += fromSign ? R(700, 950) : R(800, 1400);
     }
-    this.biteAt = at + R(300, 1200);
+    this.biteAt = at + (fromSign ? R(200, 600) : R(300, 1200));
+    if (fromSign) this.biteAt = Math.min(this.biteAt, now + SIGN_BY - 300);
     this.nibbleUntil = 0;
   }
 
@@ -494,7 +531,15 @@ export class FishingScene extends Phaser.Scene {
     if (this.state === STATE.WAITING && this.mech === 'reel') {
       this.reelIn(time, dt);
     } else if (this.state === STATE.WAITING) {
-      if (!this.fish && time > this.emptyAt) this.lose('Nothing biting here\nTry a shadow or a sparkle');
+      if (!this.fish && this.mech === 'float') {
+        // open water: each second a chance that a fish finds the bait
+        while (time >= this.nextTick && !this.fish) {
+          this.nextTick += 1000;
+          if (Math.random() < PER_SECOND) this.meet(null, null, time);
+        }
+      }
+      const idle = this.mech === 'jig' ? time - this.jig.last > WAIT : time > this.emptyAt;
+      if (!this.fish && idle) this.lose('Nothing biting here\nTry a shadow or a sparkle');
       // a jigged fish loses interest if the jig stops moving
       if (this.mech === 'jig' && this.fish && time > this.jig.arrive + 1500 && time - Math.max(this.jig.last, this.jig.arrive) > 4500 && this.biteAt === Infinity) {
         this.lose('It lost interest\nKeep the jig moving');

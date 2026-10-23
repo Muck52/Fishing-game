@@ -667,6 +667,20 @@ only for life):
   itself. Reel it all the way in with nothing: "Nothing followed it in".
 - No bait preferences for now; the fish cruising below never bite.
 
+**Round four, the odds:** in open water at most 60% of casts bring a fish
+and 40% come up empty, and the chance adds up as you fish (constants at
+the top of `FishingScene.js`):
+- float: about 3% each second (1 - 0.4^(1/30)), 60% by 30 seconds, then
+  "Nothing biting here";
+- jig: a chance each jig, worked out from how many jigs bring it in from
+  where it landed (each hops 6 px nearer the dock), 60% by the last;
+  also given up after 30 seconds without a jig;
+- spinner: a chance each pixel reeled, 60% over a full-length retrieve
+  (a short cast, less);
+- on a shadow or a sparkle, always a fish, taking the bait within 8
+  seconds (the float's nibbles packed closer; a jigged fish arrives
+  sooner; reeling through a sign brings a chase at once).
+
 **Verdict:** waiting (play it).
 
 <!--
