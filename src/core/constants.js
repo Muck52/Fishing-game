@@ -19,8 +19,11 @@ export const BED_Y = H - 48;
 // the water toward the left, and the angler stands near its end.
 // How far above the scene the camera looks while you're on the dock with
 // the rod up: the sky runs on above the art, so the dock sits low on screen.
-// Casting pans down to the whole lake.
+// The camera stays here: the whole game is played from this view.
 export const LOOK_UP = Math.round((H * 0.25) / 2) * 2;
+// The lowest water you can see from there: fish, bait and fights keep
+// above it, so nothing happens off screen.
+export const VIEW_BED = Math.min(BED_Y, H - LOOK_UP - 14);
 
 // The interface (and the time-of-day grade over the whole screen) stays put
 // while the camera pans; everything else scrolls with the world.

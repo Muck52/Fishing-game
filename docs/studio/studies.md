@@ -609,6 +609,31 @@ cards keep their size.
   hops and waterlines all scale with the drawing, and only the steps need
   rounding back to whole pixels.
 
+## Mechanics 1: finding the fish, and the cast (2026-10-23)
+
+**Why:** from the mechanics research, one stage at a time. You disliked the
+camera scrolling down when you cast, and wanted to find the fish from the
+main view.
+
+**In the game:**
+- The camera stays on the main view; bait, fish and fights keep to the
+  water you can see (`VIEW_BED`).
+- Signs of fish on the open water (`src/fish/Signs.js`), up to three at a
+  time, each a fish of one species: a shadow just under the surface,
+  sized by the fish (sunfish small, bass medium, walleye large, pike and
+  muskie long), bubbles where a bottom feeder grubs (carp, catfish,
+  drum, burbot, sturgeon), rings where a fish rises (crappie, white bass,
+  trout). Farther out, bigger and rarer fish. They last 20 to 35 seconds;
+  losing a fish scares some off.
+- Hold to cast: a power meter beside the angler fills, falls back if you
+  hold too long, and rises again; let go and the line goes straight out
+  as far as it was full (`src/ui/PowerMeter.js`).
+- Land on or beside a sign and that fish turns down from it to the bait.
+  In open water a passing sunfish or perch finds it now and then;
+  otherwise "Nothing biting here".
+
+**Verdict:** waiting (play it).
+
 <!--
 ## Study N: <subject> (<date>)
 

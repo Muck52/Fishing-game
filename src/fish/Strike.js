@@ -1,4 +1,4 @@
-import { W, BED_Y, DEPTH } from '../core/constants.js';
+import { W, VIEW_BED as BED_Y, DEPTH } from '../core/constants.js';
 import { ART } from '../core/Assets.js';
 import { bubbles } from '../environment/Effects.js';
 import { depthTint } from '../environment/Lake.js';
@@ -41,8 +41,9 @@ export const strikeOf = (id) => STRIKE[id];
 
 // One fish at the bait, from first sight to the take.
 export class Striker {
-  constructor(scene, fish, tackle) {
+  constructor(scene, fish, tackle, from = null) {
     this.scene = scene;
+    this.from = from; // where it was seen (its shadow or spot), if it was
     this.fish = fish;
     this.tackle = tackle;
     this.p = STRIKE[fish.id];
@@ -51,7 +52,7 @@ export class Striker {
     this.drift = 0;
     this.holding = false;
     this.half = Math.floor(ART.anchors.fish[fish.id].w / 2);
-    this.side = this.tackle.x > 120 || Math.random() < 0.5 ? -1 : 1; // which side of the bait it comes from
+    this.side = from ? (from.x < this.tackle.x ? -1 : 1) : this.tackle.x > 120 || Math.random() < 0.5 ? -1 : 1; // which side of the bait it comes from
     this.sprite = scene.add.sprite(-100, -100, `fish-${fish.id}`).setDepth(DEPTH.FISH).play(`swim-${fish.id}`);
     this.friends = [];
     this.approach();
@@ -90,6 +91,16 @@ export class Striker {
       this.face(this.tackle.x);
       this.pace(0.6);
     };
+    if (this.from) {
+      // seen at the surface: it turns down from its shadow or its spot and
+      // comes to the bait in its own manner, quick or slow
+      s.setPosition(this.from.x, this.from.y);
+      this.face(h.x);
+      const quick = ['dart', 'chase', 'snap', 'cruise', 'school'].includes(style);
+      this.pace(quick ? 1.8 : 0.8);
+      this.tween({ x: h.x, y: h.y, duration: quick ? 1600 : 2300, ease: 'Sine.easeInOut', onComplete: settle });
+      return;
+    }
     if (style === 'dart') {
       // short bursts with pauses between, like a sunfish nosing about
       s.setPosition(fromX, h.y + R(-12, 12));

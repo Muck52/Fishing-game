@@ -1,4 +1,4 @@
-import { W, SURFACE_Y, BED_Y, DECK_Y, ANGLER_X, HUT_X, DEPTH, STATE, INK, LOOK_UP, clamp, lerp, label, pinToScreen } from '../core/constants.js';
+import { W, SURFACE_Y, VIEW_BED as BED_Y, DECK_Y, ANGLER_X, HUT_X, DEPTH, STATE, INK, LOOK_UP, clamp, lerp, label, pinToScreen } from '../core/constants.js';
 import { ART } from '../core/Assets.js';
 import { World } from '../environment/World.js';
 import { depthTint } from '../environment/Lake.js';
@@ -10,9 +10,11 @@ import { Tackle } from '../fishing/Tackle.js';
 import { ReelFight } from '../fishing/ReelFight.js';
 import { RhythmFight } from '../fishing/RhythmFight.js';
 import { BarFight } from '../fishing/BarFight.js';
-import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
+import { rollWeight, catchValue } from '../fish/FishSpawner.js';
 import { Striker, strikeOf } from '../fish/Strike.js';
 import { FISH } from '../../data/fish/fish.js';
+import { Signs, COMMON } from '../fish/Signs.js';
+import { PowerMeter } from '../ui/PowerMeter.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
 import { pill } from '../ui/Panels.js';
 import { FishBar } from '../ui/FishBar.js';
@@ -22,7 +24,7 @@ import { Backpack } from '../ui/Backpack.js';
 import { Journal } from '../ui/Journal.js';
 import { SaveManager } from '../save/SaveManager.js';
 
-const MIN_SWIPE = 70; // px of upward drag needed to count as a cast
+const MIN_HOLD = 150; // ms: a quick tap isn't a cast
 const STEER = 24; // px of drag that counts as a steering swipe in a fight
 // Reeling is the Stardew-style catch bar; ?reel=rhythm (rhythm tugs) or
 // ?reel=hold (the old hold-to-reel) in the address bring back the others.
@@ -52,6 +54,8 @@ export class FishingScene extends Phaser.Scene {
     this.angler = new Angler(this);
     this.olive = new Olive(this, (text) => this.fieldNote(text));
     this.tackle = new Tackle(this);
+    this.signs = new Signs(this);
+    this.power = new PowerMeter(this);
     this.hud = new Hud(this);
     this.hud.update(this.save.data);
     this.meter = new TensionMeter(this);
@@ -105,7 +109,7 @@ export class FishingScene extends Phaser.Scene {
 
   // The fish comes to the bait in its own way (see fish/Strike.js).
   spawnFish() {
-    this.striker = new Striker(this, this.fish, this.tackle);
+    this.striker = new Striker(this, this.fish, this.tackle, this.from);
     this.fishSprite = this.striker.sprite;
   }
 
@@ -118,17 +122,10 @@ export class FishingScene extends Phaser.Scene {
 
   // ---- state changes -------------------------------------------------------
 
-  // A slow, steady pan of the camera: up to the sky while you're idle, down
-  // to the whole lake once the line is out.
-  pan(to, duration) {
-    const cam = this.cameras.main;
-    this.tweens.killTweensOf(cam);
-    this.tweens.add({ targets: cam, scrollY: to, duration, ease: 'Sine.easeInOut' });
-  }
-
   resetToIdle() {
-    this.pan(-LOOK_UP, 2400);
     this.state = STATE.IDLE;
+    this.charging = null;
+    this.power.show(false);
     this.fight = null;
     this.fish = null;
     this.striker?.destroy();
@@ -139,17 +136,29 @@ export class FishingScene extends Phaser.Scene {
     this.tackle.shake = 0;
     this.meter.show(false);
     this.angler.idle();
-    this.setHint('Swipe up to cast');
+    this.setHint('Hold to cast');
   }
 
+  // Holding: the rod goes back over his shoulder and the meter fills.
+  charge() {
+    this.charging = { from: this.time.now };
+    this.setHint('');
+    this.angler.setMode('cast');
+    this.angler.sprite.stop().setFrame(1);
+    this.power.show(true);
+    this.power.set(0);
+  }
+
+  // The line goes straight out over the water, as far as the meter was full.
   cast(power) {
-    this.pan(0, 2600);
+    this.charging = null;
+    this.power.show(false);
     this.state = STATE.CASTING;
     this.castPower = power;
     this.setHint('');
     const t = this.tackle;
     const from = this.angler.tip;
-    const landX = Math.round(lerp(from.x - 55, 25, power));
+    const landX = Math.round(lerp(from.x - 18, 16, power));
     this.angler.cast(() => {
       const start = this.angler.tip;
       t.show(true);
@@ -171,7 +180,7 @@ export class FishingScene extends Phaser.Scene {
           this.state = STATE.WAITING;
           // the bait sinks; a longer cast reaches deeper water
           t.hookY = SURFACE_Y + 10;
-          this.tweens.add({ targets: t, hookY: Math.round(lerp(SURFACE_Y + 85, Math.min(BED_Y - 35, SURFACE_Y + 280), power)), duration: 1400, ease: 'Sine.easeOut' });
+          this.tweens.add({ targets: t, hookY: Math.round(lerp(SURFACE_Y + 40, BED_Y - 30, power)), duration: 1400, ease: 'Sine.easeOut' });
           this.startWaiting();
         },
       });
@@ -181,9 +190,25 @@ export class FishingScene extends Phaser.Scene {
   startWaiting() {
     // ?fish=walleye in the address forces a species, for trying them out
     const forced = FISH.find((f) => f.id === new URLSearchParams(window.location.search).get('fish'));
-    this.fish = forced || pickFish(this.castPower);
     const now = this.time.now;
-    this.time.delayedCall(900, () => this.state === STATE.WAITING && this.spawnFish());
+    // whose shadow or spot did it land on? that fish comes to the bait
+    const sign = forced ? null : this.signs.near(this.tackle.x);
+    this.from = null;
+    if (sign) {
+      this.fish = sign.fish;
+      this.from = { x: sign.x, y: SURFACE_Y + 8 };
+      this.signs.take(sign);
+    } else if (forced || Math.random() < 0.3) {
+      // open water: now and then a passing sunfish or perch finds it anyway
+      this.fish = forced || COMMON[R(0, COMMON.length - 1)];
+    } else {
+      this.fish = null;
+      this.nibbleTimes = [];
+      this.biteAt = Infinity;
+      this.emptyAt = now + 7000;
+      return;
+    }
+    this.time.delayedCall(this.from ? 500 : 900, () => this.state === STATE.WAITING && this.spawnFish());
     // The fish takes about two and a half seconds to arrive. Then come the
     // fake-out nibbles that keep you guessing, as many as the species tends
     // to make (a pike never nibbles, a bluegill pecks and pecks), each a
@@ -237,6 +262,7 @@ export class FishingScene extends Phaser.Scene {
   }
 
   lose(message, snapped = false) {
+    if (this.fish) this.signs.scatter();
     this.state = STATE.RESULT;
     this.tackle.show(false);
     this.meter.show(false);
@@ -298,7 +324,7 @@ export class FishingScene extends Phaser.Scene {
 
   // ---- input ---------------------------------------------------------------
 
-  onDown(pointer) {
+  onDown(pointer, over = []) {
     if (this.bag.isOpen || this.journal.isOpen) {
       // a tap outside the open backpack or journal closes it
       this.bag.close();
@@ -317,6 +343,8 @@ export class FishingScene extends Phaser.Scene {
     } else if (this.state === STATE.RESULT && this.popup.canClose) {
       this.popup.hide();
       this.resetToIdle();
+    } else if (this.state === STATE.IDLE && !over.length) {
+      this.charge();
     }
   }
 
@@ -329,11 +357,17 @@ export class FishingScene extends Phaser.Scene {
       this.downAt = null;
       return;
     }
-    if (this.state !== STATE.IDLE || !this.downAt) return;
-    const dy = this.downAt.y - pointer.y;
-    if (dy > MIN_SWIPE) this.cast(clamp(dy / 650, 0.15, 1));
-    else this.setHint('Swipe UP to cast\nLonger swipe, farther cast');
     this.downAt = null;
+    if (this.state !== STATE.IDLE || !this.charging) return;
+    if (this.time.now - this.charging.from < MIN_HOLD) {
+      // a tap: show how it's done
+      this.charging = null;
+      this.power.show(false);
+      this.angler.idle();
+      this.setHint('Hold to fill the meter\nLet go to cast');
+      return;
+    }
+    this.cast(Math.max(0.03, this.power.level));
   }
 
   // ---- frame loop ----------------------------------------------------------
@@ -346,9 +380,12 @@ export class FishingScene extends Phaser.Scene {
     this.olive.update(time, dt);
     this.bag.update(dt);
     this.journal.update(dt);
+    this.signs.update(time, dt);
     const t = this.tackle;
+    if (this.charging) this.power.set(time - this.charging.from);
 
     if (this.state === STATE.WAITING) {
+      if (!this.fish && time > this.emptyAt) this.lose('Nothing biting here\nTry a shadow or a spot');
       if (this.nibbleTimes.length && time >= this.nibbleTimes[0]) {
         this.nibbleTimes.shift();
         const ms = this.striker?.nibble() ?? 300;
