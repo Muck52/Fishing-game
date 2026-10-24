@@ -192,8 +192,13 @@ export class FishingScene extends Phaser.Scene {
           // the bait sinks; a longer cast reaches deeper water. A lure
           // starts near the top, where it's reeled.
           t.hookY = SURFACE_Y + 10;
-          if (this.mech === 'reel') t.hookY = SURFACE_Y + 14;
-          else this.tweens.add({ targets: t, hookY: Math.round(lerp(SURFACE_Y + 40, BED_Y - 30, this.mech === 'jig' ? power * 0.8 : power)), duration: 1400, ease: 'Sine.easeOut' });
+          if (this.mech === 'reel') {
+            t.hookY = SURFACE_Y + 14;
+            t.restY = null; // a lure is always on the move
+          } else {
+            t.restY = Math.round(lerp(SURFACE_Y + 40, BED_Y - 30, this.mech === 'jig' ? power * 0.8 : power));
+            this.tweens.add({ targets: t, hookY: t.restY, duration: 1400, ease: 'Sine.easeOut' });
+          }
           this.startWaiting();
         },
       });
@@ -304,8 +309,11 @@ export class FishingScene extends Phaser.Scene {
         this.meet(null, sign, time);
         this.spawnFish();
         this.tweens.killTweensOf(this.striker.sprite);
-        // from open water it comes up from behind and below
+        // from open water it comes up from behind and below; from a sign it
+        // drops in behind the lure (the line runs up ahead of it, to the rod)
+        const back = t.x - this.striker.half - 8;
         if (!sign) this.striker.sprite.setPosition(t.x - 34, Math.min(BED_Y - 12, t.hookY + 24));
+        else this.striker.sprite.setPosition(Math.min(sign.x, back), Math.max(SURFACE_Y + 12, t.hookY + 4));
         this.chase = { until: time + R(700, 1300), lag: 0 };
       } else if (t.x >= dock) {
         this.resetToIdle();
@@ -315,9 +323,12 @@ export class FishingScene extends Phaser.Scene {
     }
     // the fish chases the lure, just behind it
     const s = this.fishSprite;
-    const b = t.bait; // its nose just behind the lure itself
-    s.x += (b.x - this.striker.half - 3 - s.x) * Math.min(1, dt * 4);
-    s.y += (b.y - 1 - s.y) * Math.min(1, dt * 4);
+    // its nose just behind the lure, closing on it for the hit
+    const b = t.bait;
+    const close = time > this.chase.until - 400;
+    const k = Math.min(1, dt * (close ? 10 : 4));
+    s.x += (b.x - this.striker.half - (close ? 0 : 3) - s.x) * k;
+    s.y += (b.y - 1 - s.y) * k;
     s.setFlipX(true);
     this.chase.lag = holding ? 0 : this.chase.lag + dt;
     if (this.chase.lag > 1.5 || t.x >= dock) this.lose('It turned away\nKeep reeling through');

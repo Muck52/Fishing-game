@@ -47,8 +47,10 @@ export class Tackle {
 
   // Where the bait itself is, as drawn: the middle of the worm, the minnow,
   // the dough ball... hanging below the hook's eye. A fish takes it here.
+  // While it sinks after the cast, or hops on a jig, this is where it comes
+  // to rest (restY), so a fish heads for where the bait will be.
   get bait() {
-    return { x: this.baitX || this.x, y: this.hookY + BAIT_MID };
+    return { x: this.baitX || this.x, y: (this.restY ?? this.hookY) + BAIT_MID };
   }
 
   get visible() {
@@ -58,6 +60,7 @@ export class Tackle {
   show(on) {
     this.shown = on;
     this.still = false;
+    this.restY = null;
     this.bobber.setVisible(on && this.float);
     this.hook.setVisible(on);
     if (!on) {

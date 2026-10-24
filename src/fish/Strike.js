@@ -59,6 +59,18 @@ export class Striker {
   }
 
   // Where it hangs while deciding: `gap` pixels in front of its mouth.
+  // Where it hangs is kept relative to the bait, so it stays with the bait
+  // as it settles or is jigged along (never left nosing the line above it).
+  get home() {
+    const b = this.tackle.bait;
+    return { x: b.x + this.off.x, y: b.y + this.off.y };
+  }
+
+  set home(h) {
+    const b = this.tackle.bait;
+    this.off = { x: h.x - b.x, y: h.y - b.y };
+  }
+
   // (its mouth, a pixel below its middle, level with the bait)
   hover(gap = this.p.gap) {
     const b = this.tackle.bait;
@@ -126,9 +138,10 @@ export class Striker {
       this.pace(fast ? 2.5 : 1.2);
       if (fast) {
         // the pack overshoots, wheels round and comes back to the bait
+        // (the turn is made below the bait: the line only runs above it)
         const past = h.x - this.side * 60;
         this.chain([
-          { x: past, y: h.y - 6, duration: 900, ease: 'Quad.easeIn', onComplete: () => this.face(h.x) },
+          { x: past, y: h.y + 14, duration: 900, ease: 'Quad.easeIn', onComplete: () => this.face(h.x) },
           { x: h.x, y: h.y, duration: 1100, ease: 'Sine.easeOut', onComplete: settle },
         ]);
       } else {
@@ -204,8 +217,17 @@ export class Striker {
     const f = this.scene.add.sprite(fromX, h.y + (i ? 10 : -10), `fish-${this.fish.id}`).setDepth(DEPTH.FISH - 0.1).play(`swim-${this.fish.id}`).setTint(depthTint(h.y));
     f.setFlipX(h.x > fromX);
     f.anims.timeScale = fast ? 2.5 : 1.2;
-    const to = { x: h.x + this.side * (24 + i * 16), y: h.y + (i ? 12 : -12) };
-    this.scene.tweens.add({ targets: f, x: fast ? h.x - this.side * 90 : to.x, y: to.y, duration: fast ? 1300 : 2400, delay: i * 200, ease: 'Sine.easeOut' });
+    // the others of its kind hang back on its own side of the bait and below
+    // it, clear of the line (which only runs above), and keep with it
+    const to = { x: h.x + this.side * (24 + i * 16), y: h.y + 8 + i * 6 };
+    this.scene.tweens.add({
+      targets: f, x: to.x, y: to.y, duration: fast ? 1300 : 2400, delay: i * 200, ease: 'Sine.easeOut',
+      onComplete: () => {
+        f.setFlipX(this.side < 0);
+        const bt = this.tackle.bait;
+        f.off = { x: f.x - bt.x, y: f.y - bt.y };
+      },
+    });
     return f;
   }
 
@@ -221,6 +243,12 @@ export class Striker {
   // ---- waiting at the bait: small living movements, per species
   update(time) {
     const s = this.sprite;
+    // the others of its kind keep with the bait too
+    const bt = this.tackle.bait;
+    for (const f of this.friends) {
+      if (!f.off || !f.active || this.scene.tweens.isTweening(f)) continue;
+      f.setPosition(Math.round(f.x + (bt.x + f.off.x - f.x) * 0.3), Math.round(f.y + (bt.y + f.off.y + Math.sin(time / 800) - f.y) * 0.3));
+    }
     if (!s.active || this.holding || this.scene.tweens.isTweening(s)) return;
     const h = this.home;
     const a = this.p.approach;
@@ -235,7 +263,8 @@ export class Striker {
       this.face(s.x + (Math.cos(time / 900) > 0 ? 1 : -1));
     }
     if (a === 'school' || a === 'chase') dx = Math.round(Math.sin(time / 600) * 3);
-    s.setPosition(h.x + dx, h.y + dy);
+    // it keeps with the bait as it settles or is jigged along
+    s.setPosition(Math.round(s.x + (h.x + dx - s.x) * 0.3), Math.round(s.y + (h.y + dy - s.y) * 0.3));
     if (this.p.feeds && Math.random() < 0.02) bubbles(this.scene, s.x, s.y - 2, 1);
   }
 
@@ -261,12 +290,12 @@ export class Striker {
       return 280;
     }
     if (kind === 'slash') {
-      // tears past the bait and away, turning for another go
-      const past = s.x + toBait * 2.5;
+      // slashes into the bait and wheels away, turning for another go
       this.pace(3);
       this.chain([
-        { x: past, duration: 260, ease: 'Quad.easeIn', onComplete: () => this.face(this.home.x) },
-        { x: this.home.x, duration: 600, ease: 'Sine.easeOut', onComplete: () => { this.face(this.tackle.x); this.pace(0.8); } },
+        { x: s.x + toBait, duration: 110, ease: 'Quad.easeIn', onComplete: () => this.face(s.x - toBait) },
+        { x: this.home.x - Math.sign(toBait) * 10, duration: 300, ease: 'Quad.easeOut' },
+        { x: this.home.x, duration: 400, ease: 'Sine.easeOut', onComplete: () => { this.face(this.tackle.bait.x); this.pace(0.8); } },
       ]);
       this.floatFor(3, 1, 300);
       return 320;
