@@ -1,50 +1,59 @@
-// The fight's gauges, standing beside the angler where the cast's power
-// meter was: carved from the same wood, so they read as part of the dock
-// rather than a panel over the game.
+// The fight's gauges, on a wooden plaque across the top like the counters:
 //
-//   the tall one   how tight the line is, filling up; the top fifth is the
-//                  red zone (hold it there for a bonus, at the risk of a
-//                  snap), notched where it starts
-//   the slim one   how much fight the fish has left, under a little fish;
-//                  blue, turning green as it tires
-//   above them     what to do right now (EASE, LET GO, >>), when it matters
-//   beside them    how much line is out, and the bonus won so far
-import { ANGLER_X, DECK_Y, DEPTH, INK, label } from '../core/constants.js';
+//   the hook's row   how tight the line is: an inset groove filling green,
+//                    gold, then red; its last fifth is the red zone (hold it
+//                    there for a bonus, at the risk of a snap), ticked where
+//                    it starts
+//   the fish's row   how much fight the fish has left: blue, turning green
+//                    as it tires
+//   on the right     how much line is out, and the bonus won so far
+//   under it         what to do right now (EASE, LET GO, >>), only when
+//                    there's something to do
+import { W, DEPTH, INK, label } from '../core/constants.js';
+import { pill } from './Panels.js';
 
-const X = ANGLER_X + 14; // as the power meter
-const TOP = DECK_Y - 54;
-const H = 34;
+const Y = 76; // under the counters and the weather
+const PW = 244; // the plaque
+const X0 = W / 2 - 94; // the grooves
+const LEN = 160;
+const TY = Y - 6; // tension groove top
+const TH = 7;
+const SY = Y + 5; // stamina groove top
+const SH = 4;
 const RED = 80; // where the red zone starts (TensionFight)
-const SX = X + 8; // the stamina gauge
 const ARROW = { left: '<<', right: '>>', up: '^^' };
-
-const INK_DARK = 0x25131a;
-const WOOD = 0x4a3426;
-const WOOD_LIT = 0x6b4a32;
+const DARK = 0x25131a;
 
 export class TensionMeter {
   constructor(scene) {
     this.scene = scene;
-    const at = (o) => o.setDepth(DEPTH.UI - 1).setVisible(false);
-    this.g = at(scene.add.graphics());
-    this.cue = at(label(scene, X + 5, TOP - 9, '', { font: 'head' }));
-    this.line = at(label(scene, SX + 7, TOP + H - 6, '').setOrigin(0, 0.5));
-    this.bonus = at(label(scene, SX + 7, TOP + H - 18, '', { color: INK.gold }).setOrigin(0, 0.5));
-    this.parts = [this.g, this.cue, this.line, this.bonus];
+    const ui = (o) => o.setDepth(DEPTH.UI).setVisible(false);
+    this.plaque = ui(pill(scene, W / 2, Y, PW, 30));
+    this.g = ui(scene.add.graphics()).setDepth(DEPTH.UI + 0.1);
+    this.hook = ui(scene.add.image(X0 - 12, TY + 3, 'hook')).setDepth(DEPTH.UI + 0.1);
+    this.line = ui(label(scene, X0 + LEN + 8, TY + 3, '').setOrigin(0, 0.5)).setDepth(DEPTH.UI + 0.1);
+    this.bonus = ui(label(scene, X0 + LEN + 8, SY + 2, '', { color: INK.gold }).setOrigin(0, 0.5)).setDepth(DEPTH.UI + 0.1);
+    this.cue = ui(label(scene, W / 2, Y + 25, '', { font: 'head' })).setDepth(DEPTH.UI + 0.1);
+    this.parts = [this.plaque, this.g, this.hook, this.line, this.bonus, this.cue];
   }
 
   show(on) {
     for (const o of this.parts) o.setVisible(on);
-    if (!on) this.g.clear();
+    this.on = on;
   }
 
-  // A carved frame: dark outline with its corners rounded off, wood inside
-  // with a lit left edge.
-  frame(x, w) {
+  // An inset groove with its ends rounded off, filled to `k` (0..1).
+  groove(y, h, k, color, under = null) {
     const g = this.g;
-    g.fillStyle(INK_DARK, 1).fillRect(x, TOP - 1, w, H + 2).fillRect(x - 1, TOP, w + 2, H);
-    g.fillStyle(WOOD, 1).fillRect(x, TOP, w, H);
-    g.fillStyle(WOOD_LIT, 1).fillRect(x, TOP, 1, H);
+    g.fillStyle(DARK, 1).fillRect(X0, y - 1, LEN, h + 2).fillRect(X0 - 1, y, LEN + 2, h);
+    g.fillStyle(0x3a2420, 1).fillRect(X0, y, LEN, h);
+    if (under) under();
+    const w = Math.round(LEN * k);
+    if (w > 0) {
+      g.fillStyle(color, 1).fillRect(X0, y, w, h);
+      g.fillStyle(0xffffff, 0.35).fillRect(X0, y, w, 1); // lit along the top
+      g.fillStyle(0x000000, 0.18).fillRect(X0, y + h - 1, w, 1); // shaded below
+    }
   }
 
   // phase: what the fish is doing (TensionFight, or the rhythm fight's
@@ -52,46 +61,37 @@ export class TensionMeter {
   update(tension, distance, phase = null, stamina = null, bonus = 0, need = null) {
     const g = this.g.clear();
     const t = this.scene.time.now;
-    // the line strains: past 85 the whole gauge trembles
-    const dx = tension > 85 ? Math.round(Math.sin(t / 30)) : 0;
-    const x = X + dx;
-
-    this.frame(x, 5);
-    const inner = H - 2;
-    const redY = TOP + 1 + Math.round(inner * (1 - RED / 100));
-    // the red zone, dim until the line reaches it
-    g.fillStyle(0x9a3c32, 1).fillRect(x + 1, TOP + 1, 3, redY - TOP - 1);
-    const fill = Math.round((inner * tension) / 100);
+    const rx = X0 + Math.round((LEN * RED) / 100);
     const c = tension >= RED ? 0xff7a5a : tension >= 60 ? 0xffd84a : 0x9cf07a;
-    g.fillStyle(c, 1).fillRect(x + 1, TOP + 1 + inner - fill, 3, fill);
-    g.fillStyle(0xfff4d6, 0.5).fillRect(x + 1, TOP + 1 + inner - fill, 1, fill); // a lit edge
-    // the notch where the red starts
-    g.fillStyle(INK_DARK, 1).fillRect(x - 1, redY, 9, 1);
-    g.fillStyle(0xfff4d6, 1).fillRect(x - 3, redY, 2, 1);
-    // in the red: a glint of gold at the top for the bonus building
-    if (tension >= RED && Math.floor(t / 120) % 2) g.fillStyle(0xffd84a, 1).fillRect(x + 2, TOP + 2, 1, 1);
+    this.groove(TY, TH, tension / 100, c, () => g.fillStyle(0x6a2a26, 1).fillRect(rx, TY, X0 + LEN - rx, TH));
+    // ticks above and below where the red begins
+    g.fillStyle(0xfff4d6, 1).fillRect(rx, TY - 3, 1, 2).fillRect(rx, TY + TH + 1, 1, 1);
+    // building the bonus: a glint running along the red
+    if (tension >= RED) g.fillStyle(0xffd84a, 1).fillRect(rx + ((Math.floor(t / 40) % (X0 + LEN - rx - 1)) || 0), TY, 1, 1);
 
     if (stamina !== null) {
-      this.frame(SX, 2);
-      const s = Math.round(inner * stamina);
-      g.fillStyle(stamina < 0.2 ? 0x9cf07a : 0x6ab0e0, 1).fillRect(SX, TOP + 1 + inner - s, 2, s);
-      // a little fish over it, whose fight it is
-      g.fillStyle(0xd8f0ff, 1).fillRect(SX - 2, TOP - 4, 4, 2).fillRect(SX + 2, TOP - 5, 1, 1).fillRect(SX + 2, TOP - 2, 1, 1).fillRect(SX + 2, TOP - 4, 1, 2);
-      g.fillStyle(INK_DARK, 1).fillRect(SX - 1, TOP - 4, 1, 1);
+      this.groove(SY, SH, stamina, stamina < 0.2 ? 0x9cf07a : 0x6ab0e0);
+      // a little fish for its row
+      const fx = X0 - 16;
+      const fy = SY;
+      g.fillStyle(DARK, 1).fillRect(fx + 1, fy, 6, 3).fillRect(fx, fy + 1, 1, 1).fillRect(fx + 7, fy - 1, 1, 5).fillRect(fx + 8, fy - 1, 1, 1).fillRect(fx + 8, fy + 3, 1, 1);
+      g.fillStyle(0xfff4d6, 1).fillRect(fx + 2, fy + 1, 1, 1); // its eye
     }
 
-    // the cue, only when there's something to do
+    this.line.setText(`${Math.max(0, Math.round(distance * 0.6))} ft`);
+    this.bonus.setText(bonus > 0.05 ? `+${Math.round(bonus * 50)}%` : '');
     const cue = {
-      tell: ['EASE', INK.red],
+      tell: ['EASE OFF', INK.red],
       run: ['LET GO', INK.red],
       pull: ['WAIT', INK.red],
       leap: ['LET GO', INK.red],
       window: ['REEL!', INK.green],
-      dash: [need ? ARROW[need] : 'STEER', INK.gold],
+      dash: [need ? `${ARROW[need]} SWIPE ${ARROW[need]}` : 'STEER', INK.gold],
     }[phase];
     this.cue.setText(cue ? cue[0] : '').setTint(cue ? cue[1] : INK.cream);
-    this.cue.y = TOP - 10 + (cue ? Math.round(Math.sin(t / 90)) : 0);
-    this.line.setText(`${Math.max(0, Math.round(distance * 0.6))} ft`);
-    this.bonus.setText(bonus > 0.05 ? `+${Math.round(bonus * 50)}%` : '');
+    // the line straining: the plaque trembles near a snap
+    const shake = tension > 85 ? Math.round(Math.sin(t / 30)) : 0;
+    for (const o of this.parts) if (o !== this.cue) o.x = (o.baseX ??= o.x) + shake;
+    this.cue.y = Y + 25 + (cue ? Math.round(Math.sin(t / 90)) : 0);
   }
 }

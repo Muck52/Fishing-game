@@ -793,6 +793,15 @@ fish's stamina under a little fish, the cue floating above them only when
 there's something to do (EASE, LET GO, >>), and the line out and the
 bonus beside them.
 
+**Round three** (your note: by the angler it was hard to see; back to the
+bar's place, but cleaner): one wooden plaque across the top like the
+counters, under the weather badge. Two inset grooves with rounded ends: the
+line's tension (a hook for its icon; the red zone darker, ticked where it
+starts, a glint running along it while the bonus builds) and the fish's
+stamina under it (a little fish). Line out and the bonus on the right; the
+cue centred just under the plaque, only when there's something to do. The
+plaque trembles near a snap.
+
 **Fixed on the way:** since Mechanics 3 the tension meter only showed on
 an ordinary hookset (a perfect or late one hid it).
 
