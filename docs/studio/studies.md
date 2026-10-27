@@ -802,6 +802,18 @@ stamina under it (a little fish). Line out and the bonus on the right; the
 cue centred just under the plaque, only when there's something to do. The
 plaque trembles near a snap.
 
+**Round four** (your note: hard to figure out by feel; add haptics, and
+the let-go warnings were distracting and misleading): no more EASE OFF,
+LET GO or "It jumped! Don't reel"; the swipe arrows for cover stay. In
+the hand instead (Android phones; iPhones don't let web pages vibrate):
+- each nibble a light tick (two for a double peck, a rattle for a drum's
+  crunch, the faintest for a fish only edging nearer);
+- the bite a firm double pull (110 ms, then 160 ms);
+- each run a short tug;
+- before a leap the fish now swims up toward the surface for about a
+  second while the buzzes come longer and closer together, then it
+  jumps.
+
 **Fixed on the way:** since Mechanics 3 the tension meter only showed on
 an ordinary hookset (a perfect or late one hid it).
 

@@ -7,8 +7,7 @@
 //   the fish's row   how much fight the fish has left: blue, turning green
 //                    as it tires
 //   on the right     how much line is out, and the bonus won so far
-//   under it         what to do right now (EASE, LET GO, >>), only when
-//                    there's something to do
+//   under it         which way to swipe when it bolts for cover
 import { W, DEPTH, INK, label } from '../core/constants.js';
 import { pill } from './Panels.js';
 
@@ -80,11 +79,9 @@ export class TensionMeter {
 
     this.line.setText(`${Math.max(0, Math.round(distance * 0.6))} ft`);
     this.bonus.setText(bonus > 0.05 ? `+${Math.round(bonus * 50)}%` : '');
+    // (no warnings to let go: those you feel, in the rod and the buzz)
     const cue = {
-      tell: ['EASE OFF', INK.red],
-      run: ['LET GO', INK.red],
       pull: ['WAIT', INK.red],
-      leap: ['LET GO', INK.red],
       window: ['REEL!', INK.green],
       dash: [need ? `${ARROW[need]} SWIPE ${ARROW[need]}` : 'STEER', INK.gold],
     }[phase];

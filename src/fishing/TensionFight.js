@@ -11,7 +11,8 @@ import { TUGS, AWAY } from './RhythmFight.js';
 //   tip quivers first (the tell), then it pulls hard. Ease off for those.
 //   Some bolt for cover (the weeds, the hut's posts, the bottom): swipe the
 //   other way to turn its head, or the line snags and it gets its wind back.
-//   Some leap: let go ("bow to the fish") or it throws the hook.
+//   Some leap: first they swim up toward the surface (felt as a growing
+//   buzz), then jump; let go ("bow to the fish") or it throws the hook.
 //   Hold the tension in the red without snapping and you build a bonus.
 //
 // Species keep their own rhythm from TUGS (RhythmFight.js): how often they
@@ -20,6 +21,7 @@ import { TUGS, AWAY } from './RhythmFight.js';
 // over; things worth showing are pushed onto `events`.
 const RED = 80; // tension past here builds the bonus, and risks a snap
 const TELL = 0.35; // s of warning before a run
+const RISE = 0.9; // s it swims up before a leap (felt as a growing buzz)
 const LEAP = 1.0; // s a leap lasts
 const THROW = 0.5; // s of reeling into a leap that throws the hook (time to react)
 const DASH = 1.6; // s to turn a fish bolting for cover
@@ -76,10 +78,9 @@ export class TensionFight {
       this.dash = { cover: this.p.cover, need: AWAY[this.p.cover] };
       this.emit('dash', { ...this.dash });
     } else if (this.p.leaps && Math.random() < this.p.leaps * fresh) {
-      this.phase = 'leap';
-      this.phaseAt = this.t + LEAP;
-      this.reelInLeap = 0;
-      this.emit('leap');
+      this.phase = 'rise';
+      this.phaseAt = this.t + RISE;
+      this.emit('rise', { ms: RISE * 1000 });
     } else {
       this.phase = 'tell';
       this.phaseAt = this.t + TELL;
@@ -105,7 +106,12 @@ export class TensionFight {
         if (holding) this.tension += (20 + this.strength * 25) * (0.5 + this.stamina * 0.5);
         this.emit('run');
       } else if (this.phase === 'run') this.rest();
-      else if (this.phase === 'leap') {
+      else if (this.phase === 'rise') {
+        this.phase = 'leap';
+        this.phaseAt = this.t + LEAP;
+        this.reelInLeap = 0;
+        this.emit('leap');
+      } else if (this.phase === 'leap') {
         // it fell back in, a little more tired for it
         this.stamina = Math.max(0, this.stamina - 0.08);
         this.emit('landed');

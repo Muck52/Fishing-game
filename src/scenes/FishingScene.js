@@ -129,6 +129,16 @@ export class FishingScene extends Phaser.Scene {
     };
   }
 
+  // A buzz in the hand, on phones that can (most Android browsers; iPhones
+  // don't let web pages vibrate). Patterns are ms on, off, on...
+  buzz(pattern) {
+    try {
+      navigator.vibrate?.(pattern);
+    } catch (e) {
+      // vibration not supported
+    }
+  }
+
   // ---- messages ------------------------------------------------------------
 
   setHint(text, fadeAfter = 0) {
@@ -340,6 +350,7 @@ export class FishingScene extends Phaser.Scene {
     if (this.striker && now > this.jig.arrive) {
       this.jig.count++;
       this.striker.nibble();
+      this.nibbleBuzz();
       if (this.jig.count >= this.jig.need && this.biteAt === Infinity) this.biteAt = now + R(200, 700);
     }
   }
@@ -418,6 +429,14 @@ export class FishingScene extends Phaser.Scene {
     this.nibbleUntil = 0;
   }
 
+  // A nibble, felt in the hand: a light tick (two for a double peck); the
+  // fish that only edge nearer or follow give the faintest.
+  nibbleBuzz() {
+    const kind = this.striker && strikeOf(this.fish.id).nibble;
+    if (!kind) return;
+    this.buzz(kind === 'peck' ? [14, 70, 14] : kind === 'crunch' ? [10, 40, 10, 40, 10] : kind === 'creep' || kind === 'follow' ? 6 : 16);
+  }
+
   bite() {
     this.state = STATE.BITE;
     const ms = WINDOW[this.fish.rarity] + (SUBTLE.includes(strikeOf(this.fish.id).strike) ? 250 : 0);
@@ -431,11 +450,8 @@ export class FishingScene extends Phaser.Scene {
     if (d >= 9) splash(this, this.tackle.x, 0.2 + d / 30);
     else ripple(this, this.tackle.x);
     this.setHint('TAP!');
-    try {
-      navigator.vibrate?.([70, 40, 70]);
-    } catch (e) {
-      // vibration not supported
-    }
+    // the take: a firm double pull, unlike the light ticks of the nibbles
+    this.buzz([110, 50, 160]);
   }
 
   // How well the hook went in: by when in the bite window you tapped.
@@ -466,7 +482,7 @@ export class FishingScene extends Phaser.Scene {
     this.striker.hooked();
     this.tackle.shake = 0;
     this.fishSprite.setFlipX(true);
-    this.setHint(TENSION ? 'Hold to reel\nLet go when it runs' : BAR ? 'Hold to raise the bar\nKeep the fish in it!' : HOLD_REEL ? 'Hold to reel!\nLet go when the line pulls tight' : 'Tap just after\neach tug!', 2400);
+    this.setHint(TENSION ? 'Hold to reel' : BAR ? 'Hold to raise the bar\nKeep the fish in it!' : HOLD_REEL ? 'Hold to reel!\nLet go when the line pulls tight' : 'Tap just after\neach tug!', 2400);
   }
 
   // The line comes in before anything has taken: the float skates back to
@@ -690,6 +706,7 @@ export class FishingScene extends Phaser.Scene {
       if (this.nibbleTimes.length && time >= this.nibbleTimes[0]) {
         this.nibbleTimes.shift();
         const ms = this.striker?.nibble() ?? 300;
+        this.nibbleBuzz();
         this.nibbleUntil = time + ms;
         if (this.striker?.dip) ripple(this, t.x);
       }
@@ -734,7 +751,7 @@ export class FishingScene extends Phaser.Scene {
         { x: 0, duration: 450, ease: 'Sine.easeInOut' },
       ] });
       bubbles(this, s.x, s.y, 1);
-      try { navigator.vibrate?.(25); } catch (err) { /* no vibration */ }
+      this.buzz(25);
     } else if (e.kind === 'window') {
       this.angler.shudder = 0;
     } else if (e.kind === 'perfect' || e.kind === 'good') {
@@ -747,12 +764,20 @@ export class FishingScene extends Phaser.Scene {
       this.cameras.main.shake(80, 0.004);
     } else if (e.kind === 'missed') {
       this.angler.shudder = 0;
+    } else if (e.kind === 'rise') {
+      // about to jump: it swims up toward the light, and the buzzes come
+      // longer and closer together until it breaks the surface
+      this.buzz([6, 200, 10, 160, 16, 120, 24, 90, 34, 60, 48]);
+      this.tweens.killTweensOf(this.off);
+      this.tweens.add({ targets: this.off, y: -Math.max(0, s.y - SURFACE_Y - 14), duration: e.ms, ease: 'Sine.easeIn' });
     } else if (e.kind === 'leap') {
+      this.tweens.killTweensOf(this.off);
+      this.tweens.add({ targets: this.off, y: 0, delay: 900, duration: 500, ease: 'Sine.easeOut' });
       // it clears the water, shaking its head, and drops back in
       const x0 = s.x;
       this.leaping = true;
       splash(this, x0, 0.6);
-      this.setHint('It jumped!\nDon\'t reel', 900);
+      this.setHint('');
       this.tweens.addCounter({ from: 0, to: 1, duration: 900, ease: 'Linear',
         onUpdate: (tw) => {
           const k = tw.getValue();
@@ -795,7 +820,7 @@ export class FishingScene extends Phaser.Scene {
       bubbles(this, s.x, s.y, 2);
     } else if (e.kind === 'escaping') {
       this.setHint('It\'s getting away!', 1000);
-      try { navigator.vibrate?.(40); } catch (err) { /* no vibration */ }
+      this.buzz(40);
     } else if (e.kind === 'saved') {
       this.setHint('');
     }
