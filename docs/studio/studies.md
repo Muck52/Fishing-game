@@ -713,6 +713,9 @@ the cast, and Olive barking at a good spot.
 - **Olive barks at a good spot:** a sparkle, or a "hot" shadow (a fish of
   its size that's on the feed right now). She trots to the front of the
   deck and barks, and the spot rings or glints.
+- **Reel in a float:** tap while waiting on a float and the line comes
+  back in, ready to cast again (a fish on its way turns away). A tap
+  during a nibble still spooks the fish.
 - **The journal** says when, in what weather and how deep each fish bites
   ("Bites" on pages not yet caught, with "Lives" on caught ones).
 

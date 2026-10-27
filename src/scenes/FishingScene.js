@@ -438,6 +438,26 @@ export class FishingScene extends Phaser.Scene {
     this.setHint(BAR ? 'Hold to raise the bar\nKeep the fish in it!' : HOLD_REEL ? 'Hold to reel!\nLet go when the line pulls tight' : 'Tap just after\neach tug!', 2400);
   }
 
+  // The line comes in before anything has taken: the float skates back to
+  // the dock, the reel turning, and you're ready to cast again. A fish on
+  // its way to the bait turns away.
+  reelBack() {
+    const t = this.tackle;
+    this.state = STATE.RESULT;
+    this.setHint('');
+    this.tweens.killTweensOf(t);
+    this.fleeFish();
+    this.fish = null;
+    t.restY = null;
+    t.dip = 0;
+    t.shake = 0;
+    ripple(this, t.x);
+    const dock = this.angler.tip.x - 22;
+    const ms = 300 + (dock - t.x) * 3;
+    this.tweens.add({ targets: this.angler, crank: this.angler.crank + ms / 60, duration: ms });
+    this.tweens.add({ targets: t, x: dock, hookY: SURFACE_Y + 8, duration: ms, ease: 'Sine.easeIn', onComplete: () => this.resetToIdle() });
+  }
+
   lose(message, snapped = false) {
     if (this.fish) this.signs.scatter();
     this.state = STATE.RESULT;
@@ -525,8 +545,10 @@ export class FishingScene extends Phaser.Scene {
     } else if (this.state === STATE.WAITING) {
       if (this.mech === 'jig') this.jigIt();
       else if (this.mech === 'float') {
+        // mid-nibble it spooks the fish; any other time it brings the
+        // line in, to cast again
         if (this.time.now < this.nibbleUntil) this.lose('Too early! You spooked it.');
-        else this.setHint('Wait for the float to go under', 1500);
+        else this.reelBack();
       }
     } else if (this.state === STATE.CASTING) {
       this.brake();
