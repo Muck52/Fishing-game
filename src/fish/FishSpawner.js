@@ -1,9 +1,12 @@
 import { FISH, RARITY } from '../../data/fish/fish.js';
+import { liking } from './Habits.js';
 
-// Longer casts reach deeper water, where rarer fish live.
-export function pickFish(castPower) {
+// Longer casts reach farther out, where rarer fish live; and the fish that
+// suit the hour, the weather, the bait and its depth (Habits.js) come more
+// often.
+export function pickFish(castPower, c) {
   const pool = FISH.map((fish) => {
-    let chance = RARITY[fish.rarity].weight;
+    let chance = RARITY[fish.rarity].weight * liking(fish.id, c);
     if (fish.rarity !== 'common') chance *= 1 + castPower * 1.5;
     return { fish, chance };
   });

@@ -683,6 +683,41 @@ the top of `FishingScene.js`):
 
 **Verdict:** waiting (play it).
 
+## Mechanics 2: conditions, depth, the brake and Olive (2026-10-27)
+
+**Why:** your call to add fish that prefer times of day and weather, with
+random weather (not your real weather), and the ideas left over from the
+first three stages of the research: bait mattering, depth control, braking
+the cast, and Olive barking at a good spot.
+
+**In the game:**
+- **Weather** (`src/environment/Weather.js`): clear, cloudy, rain or fog,
+  changing by itself every three to seven minutes to a likely next kind.
+  Cloud greys the light and stirs the breeze; rain slants down with the
+  wind and rings the surface; fog pales the air, lays mist on the water
+  and stills the breeze. Each fades in over half a minute. A badge under
+  the coins shows it (a moon on clear nights). `?weather=rain` holds it.
+- **Habits** (`src/fish/Habits.js`): every species has its times (dawn,
+  day, dusk, night), its weather and its depth, from how they're fished
+  in the north woods: sunfish by day in sunny shallows, walleye and
+  crappie at low light and under cloud, catfish and sturgeon at night in
+  the rain, down deep. None is ever ruled out; one that suits things
+  comes much more often (in its hours x2.5, out of them x0.5; its weather
+  x2; its depth x2, the far depth x0.4; its favourite bait x2.5). Open
+  water and shadows both lean this way; sparkles too.
+- **Depth dial** (`src/ui/DepthDial.js`), under the species counter: tap
+  for shallow, mid or deep. A float or jig sinks to that depth (no longer
+  set by how far you cast); a spinner runs where you reel it.
+- **Brake the cast:** tap while the line is in the air and it drops
+  straight down there, to land right on a sign.
+- **Olive barks at a good spot:** a sparkle, or a "hot" shadow (a fish of
+  its size that's on the feed right now). She trots to the front of the
+  deck and barks, and the spot rings or glints.
+- **The journal** says when, in what weather and how deep each fish bites
+  ("Bites" on pages not yet caught, with "Lives" on caught ones).
+
+**Verdict:** waiting (play it).
+
 <!--
 ## Study N: <subject> (<date>)
 

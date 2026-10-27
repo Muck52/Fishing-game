@@ -4,6 +4,7 @@ import { Backdrop } from './Backdrop.js';
 import { Lake } from './Lake.js';
 import { Pier } from './Pier.js';
 import { Daylight } from './Daylight.js';
+import { Weather } from './Weather.js';
 
 // Everything in the scene that isn't the angler or the game: the far bank,
 // the lake, the pier, the breeze that moves them all and the light of the
@@ -15,6 +16,7 @@ export class World {
     this.lake = new Lake(scene);
     this.pier = new Pier(scene);
     this.daylight = new Daylight(scene, this.pier, this.backdrop.unshaded);
+    this.weather = new Weather(scene);
 
     // seed fluff and pollen drifting over the water in the sun
     this.pollen = scene.add.particles(0, 0, 'mote', {
@@ -34,7 +36,11 @@ export class World {
     this.lake.update(time, dt, w);
     this.pier.update(time);
     this.daylight.update(time);
+    this.weather.update(time, dt, this.wind, this.daylight.night);
     this.pollen.accelerationX = w * 7;
-    this.pollen.setVisible(this.daylight.night < 0.5);
+    // no pollen or fireflies on the wing in the rain
+    const wet = this.weather.now.rain > 0.3;
+    this.pollen.setVisible(this.daylight.night < 0.5 && !wet && this.weather.now.mist < 0.5);
+    if (wet) this.daylight.flies.setVisible(false);
   }
 }

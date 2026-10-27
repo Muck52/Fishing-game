@@ -4,6 +4,7 @@ export class Wind {
   constructor() {
     this.t = 0;
     this.strength = 0.3;
+    this.extra = 0; // the weather's own breeze, or calm (Weather.js)
     this.gust = null;
     this.nextGust = 6;
     this.onGust = () => {};
@@ -27,7 +28,7 @@ export class Wind {
         this.nextGust = 8 + Math.random() * 10;
       }
     }
-    this.strength = base + gust;
+    this.strength = Math.max(0.05, base + gust + this.extra);
   }
 
   // How far something flexible leans right now, with its own flutter.

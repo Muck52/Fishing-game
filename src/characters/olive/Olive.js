@@ -2,12 +2,14 @@
 // about, wagging, wandering up and down the boards. Every so often she
 // gallops off the end of the walkway, leaps into the lake, paddles over to
 // the bank, climbs out and shakes herself dry, then trots off round the
-// shore and comes back along the dock from the hut.
+// shore and comes back along the dock from the hut. And when she spots a
+// good spot out on the water (a fish on the feed, or something glinting),
+// she trots to the front of the deck and barks at it.
 //
 // Her sheet faces left (see tools/characters/olive.py). She moves only when
 // her walk or run cycle advances a frame, by that frame's step, so her paws
 // don't slide on the boards.
-import { W, SURFACE_Y, DECK_Y, HUT_X, DEPTH, lerp } from '../../core/constants.js';
+import { W, SURFACE_Y, DECK_Y, HUT_X, DEPTH, INK, lerp, label } from '../../core/constants.js';
 import { ART } from '../../core/Assets.js';
 import { splash, tinyRipple } from '../../environment/Effects.js';
 
@@ -78,8 +80,43 @@ export class Olive {
     }
   }
 
+  // A good spot out there: to the front of the deck, and a bark or two at
+  // it; `onBark` happens with the first. Only while she's about on the deck.
+  bark(onBark) {
+    if (this.mode !== 'deck') return false;
+    this.mode = 'bark';
+    this.onBark = onBark;
+    if (this.s.x - DECK.min < 4) this.woof();
+    else this.walkTo(DECK.min);
+    return true;
+  }
+
+  woof() {
+    const sc = this.scene;
+    const s = this.s;
+    this.dir = 0;
+    this.face(-1);
+    s.play('olive-idle');
+    const head = s.y - s.displayHeight * this.FEET;
+    for (let i = 0; i < 2; i++) {
+      sc.time.delayedCall(150 + i * 420, () => {
+        // up on her toes with each bark
+        sc.tweens.add({ targets: s, y: DECK_Y - 2, duration: 70, yoyo: true });
+        const w = label(sc, s.x - 10, head - 4, 'Woof!', { font: 'head', color: INK.cream }).setDepth(DEPTH.UI - 1);
+        sc.tweens.add({ targets: w, y: w.y - 10, alpha: 0, duration: 650, ease: 'Quad.easeOut', onComplete: () => w.destroy() });
+        if (i === 0) this.onBark?.();
+      });
+    }
+    sc.time.delayedCall(1500, () => {
+      if (this.mode !== 'bark') return;
+      this.mode = 'deck';
+      this.stand();
+    });
+  }
+
   arrived() {
-    if (this.mode === 'deck') this.stand();
+    if (this.mode === 'bark') this.woof();
+    else if (this.mode === 'deck') this.stand();
     else if (this.mode === 'run') this.leap();
     else if (this.mode === 'away') this.goneAway();
     else if (this.mode === 'back') this.onDeck();

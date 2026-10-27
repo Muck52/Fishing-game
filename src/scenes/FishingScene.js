@@ -16,6 +16,8 @@ import { FISH } from '../../data/fish/fish.js';
 import { Signs } from '../fish/Signs.js';
 import { TackleBox } from '../ui/TackleBox.js';
 import { lureOf } from '../fish/Lures.js';
+import { timeOfDay, bandOf, restDepth, DEPTH_NAME } from '../fish/Habits.js';
+import { DepthDial } from '../ui/DepthDial.js';
 import { PowerMeter } from '../ui/PowerMeter.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
 import { pill } from '../ui/Panels.js';
@@ -70,8 +72,16 @@ export class FishingScene extends Phaser.Scene {
     this.angler = new Angler(this);
     this.olive = new Olive(this);
     this.tackle = new Tackle(this);
-    this.signs = new Signs(this);
-    this.tackleBox = new TackleBox(this, this.save, () => this.state === STATE.IDLE && !this.charging, (l) => this.setHint(`${l.name}\n${l.note}`, 1800));
+    this.signs = new Signs(this, () => this.conditions());
+    // Olive barks at a good spot when one shows (Signs.js)
+    this.signs.onHot = (g) => this.olive.bark(() => this.signs.list.includes(g) && this.signs.flash(g));
+    const idle = () => this.state === STATE.IDLE && !this.charging;
+    this.tackleBox = new TackleBox(this, this.save, idle, (l) => {
+      this.depthDial.setActive(l.mech !== 'reel');
+      this.setHint(`${l.name}\n${l.note}`, 1800);
+    });
+    this.depthDial = new DepthDial(this, this.save, idle, (d) => this.setHint(`Fishing ${DEPTH_NAME[d].toLowerCase()}`, 1200));
+    this.depthDial.setActive(lureOf(this.tackleBox.current).mech !== 'reel');
     this.power = new PowerMeter(this);
     this.hud = new Hud(this);
     this.hud.update(this.save.data);
@@ -90,6 +100,18 @@ export class FishingScene extends Phaser.Scene {
     pinToScreen(this);
     this.cameras.main.scrollY = -LOOK_UP;
     this.resetToIdle();
+  }
+
+  // What decides which fish comes (fish/Habits.js): the hour, the weather,
+  // the bait and how deep it is.
+  conditions() {
+    const t = this.tackle;
+    return {
+      time: timeOfDay(),
+      weather: this.world.weather.kind,
+      band: t?.visible ? bandOf(t.bait.y) : null,
+      lure: this.tackleBox?.current,
+    };
   }
 
   // ---- messages ------------------------------------------------------------
@@ -169,14 +191,15 @@ export class FishingScene extends Phaser.Scene {
     this.mech = lureOf(this.tackleBox.current).mech;
     t.float = this.mech === 'float';
     const from = this.angler.tip;
-    const landX = Math.round(lerp(from.x - 18, 16, power));
+    const near = from.x - 18;
+    const landX = Math.round(lerp(near, 16, power));
     this.angler.cast(() => {
       const start = this.angler.tip;
       t.show(true);
       t.x = start.x;
       t.y = start.y;
       const arc = 60 + power * 110;
-      this.tweens.addCounter({
+      this.flight = this.tweens.addCounter({
         from: 0,
         to: 1,
         duration: 500 + power * 450,
@@ -185,24 +208,45 @@ export class FishingScene extends Phaser.Scene {
           t.x = lerp(start.x, landX, k);
           t.y = lerp(start.y, SURFACE_Y, k) - Math.sin(Math.PI * k) * arc;
         },
-        onComplete: () => {
-          t.x = landX;
-          splash(this, landX, 0.6);
-          this.state = STATE.WAITING;
-          // the bait sinks; a longer cast reaches deeper water. A lure
-          // starts near the top, where it's reeled.
-          t.hookY = SURFACE_Y + 10;
-          if (this.mech === 'reel') {
-            t.hookY = SURFACE_Y + 14;
-            t.restY = null; // a lure is always on the move
-          } else {
-            t.restY = Math.round(lerp(SURFACE_Y + 40, BED_Y - 30, this.mech === 'jig' ? power * 0.8 : power));
-            this.tweens.add({ targets: t, hookY: t.restY, duration: 1400, ease: 'Sine.easeOut' });
-          }
-          this.startWaiting();
-        },
+        onComplete: () => this.splashDown(landX),
       });
+      // the first few times, how to stop it short
+      this.casts = (this.casts || 0) + 1;
+      if (this.casts <= 3) this.setHint('Tap to drop it here');
     });
+  }
+
+  // A tap while the line is in the air: thumb on the spool, and the bait
+  // drops straight down where it is (to land right on a sign).
+  brake() {
+    if (!this.flight || !this.flight.isPlaying()) return;
+    const t = this.tackle;
+    this.flight.stop();
+    this.flight = null;
+    const x = Math.round(clamp(t.x, 16, this.angler.tip.x - 18));
+    // how far out it went, for the rarer fish farther out
+    this.castPower = clamp((this.angler.tip.x - 18 - x) / (this.angler.tip.x - 34), 0.03, 1);
+    this.tweens.add({ targets: t, x, y: SURFACE_Y, duration: 220, ease: 'Quad.easeIn', onComplete: () => this.splashDown(x) });
+  }
+
+  splashDown(x) {
+    const t = this.tackle;
+    this.flight = null;
+    t.x = x;
+    this.setHint('');
+    splash(this, x, 0.6);
+    this.state = STATE.WAITING;
+    // the bait sinks to the depth on the dial; a lure starts near the top,
+    // where it's reeled
+    t.hookY = SURFACE_Y + 10;
+    if (this.mech === 'reel') {
+      t.hookY = SURFACE_Y + 14;
+      t.restY = null; // a lure is always on the move
+    } else {
+      t.restY = restDepth(this.depthDial.current);
+      this.tweens.add({ targets: t, hookY: t.restY, duration: 600 + (t.restY - SURFACE_Y) * 6, ease: 'Sine.easeOut' });
+    }
+    this.startWaiting();
   }
 
   startWaiting() {
@@ -248,7 +292,7 @@ export class FishingScene extends Phaser.Scene {
       this.treasure = got.treasure;
       this.from = { x: sign.x, y: SURFACE_Y + 12 };
     } else {
-      this.fish = pickFish(this.castPower);
+      this.fish = pickFish(this.castPower, this.conditions());
     }
     this.emptyAt = Infinity;
     if (this.mech === 'float') {
@@ -484,6 +528,8 @@ export class FishingScene extends Phaser.Scene {
         if (this.time.now < this.nibbleUntil) this.lose('Too early! You spooked it.');
         else this.setHint('Wait for the float to go under', 1500);
       }
+    } else if (this.state === STATE.CASTING) {
+      this.brake();
     } else if (this.state === STATE.RESULT && this.popup.canClose) {
       this.popup.hide();
       this.resetToIdle();
@@ -525,6 +571,8 @@ export class FishingScene extends Phaser.Scene {
     this.bag.update(dt);
     this.journal.update(dt);
     this.signs.update(time, dt);
+    const sky = this.world.weather;
+    this.hud.weather(sky.kind, sky.icon(this.world.daylight.night));
     const t = this.tackle;
     if (this.charging) this.power.set(time - this.charging.from);
 

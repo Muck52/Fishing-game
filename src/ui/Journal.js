@@ -6,6 +6,7 @@ import { JOURNAL } from '../../data/fish/journal.js';
 import { Swimmer } from '../fish/Swim.js';
 import { Flopper } from '../fish/Flop.js';
 import { BEST, lureOf, makeLureArt } from '../fish/Lures.js';
+import { habitText } from '../fish/Habits.js';
 
 // The book as you hold it to read (journal-held.png): the left half lifted
 // toward you on its spine, the right-hand page flat and facing you, with
@@ -244,7 +245,8 @@ export class Journal {
     if (known) {
       this.fit(t(CX, y, `Caught ${rec.count}   Best ${rec.best.toFixed(1)} lb`, { color: PENCIL }), TW, [16]);
       y += 21;
-      y = this.note(pg.c, y, 'Lives', facts.habitat);
+      // where it lives and when it bites, in one note to fit the page
+      y = this.note(pg.c, y, 'Lives', `${facts.habitat} Bites ${habitText(fish.id).replace(/^./, (c) => c.toLowerCase())}`);
       y = this.note(pg.c, y, 'Eats', facts.eats);
       // the size is short: heading and figure on one line
       const head = t(X0, y, 'Size', { font: 'ink-bold', color: RED }).setOrigin(0, 0.5);
@@ -252,6 +254,7 @@ export class Journal {
       this.note(pg.c, y + 20, 'Did you know?', facts.fact);
     } else {
       y = this.note(pg.c, y, 'Not caught yet', 'Catch one to fill in this page.');
+      y = this.note(pg.c, y, 'Bites', habitText(fish.id));
       this.note(pg.c, y, 'A clue', facts.habitat);
     }
   }

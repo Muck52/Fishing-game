@@ -8,10 +8,14 @@
 //   sparkles  something glinting on the water. Always a fish, of any kind,
 //             and a treasure with it.
 //
-// Fish it and that fish comes to the bait, whatever is on the hook.
+// Fish it and that fish comes to the bait, whatever is on the hook. Which
+// fish it turns out to be leans toward the ones that suit the hour, the
+// weather, the bait and its depth (Habits.js). Now and then a sign is
+// "hot": a fish on the feed right now, which Olive barks at.
 import { SURFACE_Y, DEPTH, clamp } from '../core/constants.js';
 import { FISH, RARITY } from '../../data/fish/fish.js';
-import { tinyRipple } from '../environment/Effects.js';
+import { tinyRipple, ripple } from '../environment/Effects.js';
+import { liking, onTheFeed } from './Habits.js';
 
 const R = (a, b) => Phaser.Math.Between(a, b);
 
@@ -40,9 +44,11 @@ const TREASURES = [
   { name: 'a pearl button', value: 20 },
 ];
 
-// One fish from a list, by how common each is.
-function roll(ids) {
-  const pool = ids.map((id) => FISH.find((f) => f.id === id)).map((f) => ({ f, w: RARITY[f.rarity].weight }));
+const HOT = 0.3; // how often a sign is a fish on the feed
+
+// One fish from a list, by how common each is and how well things suit it.
+function roll(ids, c) {
+  const pool = ids.map((id) => FISH.find((f) => f.id === id)).map((f) => ({ f, w: RARITY[f.rarity].weight * liking(f.id, c) }));
   let r = Math.random() * pool.reduce((a, p) => a + p.w, 0);
   for (const p of pool) if ((r -= p.w) <= 0) return p.f;
   return pool[0].f;
@@ -71,8 +77,11 @@ function shadowTexture(scene, size) {
 }
 
 export class Signs {
-  constructor(scene) {
+  // conditions() gives { time, weather, band, lure } as they are now
+  constructor(scene, conditions) {
     this.scene = scene;
+    this.conditions = conditions;
+    this.onHot = () => {};
     this.list = [];
     this.nextAt = scene.time.now + 600;
     for (let i = 0; i < 2; i++) this.spawn();
@@ -83,18 +92,34 @@ export class Signs {
     const x = R(WATER.from + 14, WATER.to - 10);
     if (this.list.some((g) => Math.abs(g.x - x) < 28)) return;
     if (!kind) kind = !this.list.some((g) => g.kind === 'sparkle') && Math.random() < 0.2 ? 'sparkle' : 'shadow';
-    const sign = { kind, x, until: s.time.now + R(20000, 35000), next: 0, dir: Math.random() < 0.5 ? -1 : 1 };
+    const sign = { kind, x, until: s.time.now + R(20000, 35000), next: 0, dir: Math.random() < 0.5 ? -1 : 1, hot: Math.random() < HOT };
     if (kind === 'shadow') {
       const sizes = Object.keys(ODDS);
       let r = Math.random() * sizes.reduce((a, k) => a + ODDS[k], 0);
       sign.size = sizes.find((k) => (r -= ODDS[k]) <= 0) || 'small';
       sign.w = SIZE[sign.size][0];
+      // hot only if one of the fish of its size is on the feed just now
+      if (sign.hot) sign.hot = CLASS[sign.size].some((id) => onTheFeed(id, this.conditions()));
       sign.sprite = s.add.image(x, SURFACE_Y + 12, shadowTexture(s, sign.size)).setDepth(DEPTH.SURFACE + 0.07).setAlpha(0).setFlipX(sign.dir > 0);
       s.tweens.add({ targets: sign.sprite, alpha: 0.7, duration: 1500 });
     } else {
       sign.w = 12;
     }
     this.list.push(sign);
+    if (sign.hot || kind === 'sparkle') this.scene.time.delayedCall(1600, () => this.list.includes(sign) && this.onHot(sign));
+  }
+
+  // Olive's bark draws your eye to it: a ring, or a burst of glints.
+  flash(g) {
+    if (g.kind === 'shadow') {
+      ripple(this.scene, Math.round(g.x));
+      this.scene.tweens.add({ targets: g.sprite, alpha: 1, duration: 200, yoyo: true, repeat: 1 });
+    } else {
+      for (let i = 0; i < 8; i++) {
+        const sp = this.scene.add.image(g.x + R(-8, 8), SURFACE_Y + R(0, 6), 'spark').setDepth(DEPTH.GLOW).setBlendMode('ADD').setTint(0xffe9a0).setAlpha(0);
+        this.scene.tweens.add({ targets: sp, alpha: 1, delay: i * 60, duration: 120, yoyo: true, hold: 120, onComplete: () => sp.destroy() });
+      }
+    }
   }
 
   update(time, dt) {
@@ -142,10 +167,15 @@ export class Signs {
   take(g) {
     this.list = this.list.filter((o) => o !== g);
     if (g.sprite) this.scene.tweens.add({ targets: g.sprite, alpha: 0, duration: 500, onComplete: () => g.sprite.destroy() });
+    const c = this.conditions();
     if (g.kind === 'sparkle') {
-      return { fish: roll(FISH.map((f) => f.id)), treasure: TREASURES[R(0, TREASURES.length - 1)] };
+      return { fish: roll(FISH.map((f) => f.id), c), treasure: TREASURES[R(0, TREASURES.length - 1)] };
     }
-    return { fish: roll(CLASS[g.size]), treasure: null };
+    // a hot sign is one of the fish of its size that's on the feed now
+    let ids = CLASS[g.size];
+    const feeding = ids.filter((id) => onTheFeed(id, c));
+    if (g.hot && feeding.length) ids = feeding;
+    return { fish: roll(ids, c), treasure: null };
   }
 
   remove(g) {
