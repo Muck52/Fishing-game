@@ -16,8 +16,7 @@ import { FISH } from '../../data/fish/fish.js';
 import { Signs } from '../fish/Signs.js';
 import { TackleBox } from '../ui/TackleBox.js';
 import { lureOf } from '../fish/Lures.js';
-import { timeOfDay, bandOf, restDepth, DEPTH_NAME } from '../fish/Habits.js';
-import { DepthDial } from '../ui/DepthDial.js';
+import { timeOfDay, bandOf, restDepth } from '../fish/Habits.js';
 import { PowerMeter } from '../ui/PowerMeter.js';
 import { TensionMeter } from '../ui/TensionMeter.js';
 import { pill } from '../ui/Panels.js';
@@ -76,12 +75,7 @@ export class FishingScene extends Phaser.Scene {
     // Olive barks at a good spot when one shows (Signs.js)
     this.signs.onHot = (g) => this.olive.bark(() => this.signs.list.includes(g) && this.signs.flash(g));
     const idle = () => this.state === STATE.IDLE && !this.charging;
-    this.tackleBox = new TackleBox(this, this.save, idle, (l) => {
-      this.depthDial.setActive(l.mech !== 'reel');
-      this.setHint(`${l.name}\n${l.note}`, 1800);
-    });
-    this.depthDial = new DepthDial(this, this.save, idle, (d) => this.setHint(`Fishing ${DEPTH_NAME[d].toLowerCase()}`, 1200));
-    this.depthDial.setActive(lureOf(this.tackleBox.current).mech !== 'reel');
+    this.tackleBox = new TackleBox(this, this.save, idle, (l) => this.setHint(`${l.name}\n${l.note}`, 1800));
     this.power = new PowerMeter(this);
     this.hud = new Hud(this);
     this.hud.update(this.save.data);
@@ -109,7 +103,7 @@ export class FishingScene extends Phaser.Scene {
     return {
       time: timeOfDay(),
       weather: this.world.weather.kind,
-      band: t?.visible ? bandOf(t.bait.y) : null,
+      band: t?.visible ? bandOf(t.restY ?? t.hookY) : null, // where it comes to rest
       lure: this.tackleBox?.current,
     };
   }
@@ -236,14 +230,14 @@ export class FishingScene extends Phaser.Scene {
     this.setHint('');
     splash(this, x, 0.6);
     this.state = STATE.WAITING;
-    // the bait sinks to the depth on the dial; a lure starts near the top,
-    // where it's reeled
+    // the bait sinks as deep as the meter was full (fish/Habits.js); a lure
+    // starts near the top, where it's reeled
     t.hookY = SURFACE_Y + 10;
     if (this.mech === 'reel') {
       t.hookY = SURFACE_Y + 14;
       t.restY = null; // a lure is always on the move
     } else {
-      t.restY = restDepth(this.depthDial.current);
+      t.restY = restDepth(this.castPower);
       this.tweens.add({ targets: t, hookY: t.restY, duration: 600 + (t.restY - SURFACE_Y) * 6, ease: 'Sine.easeOut' });
     }
     this.startWaiting();

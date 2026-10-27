@@ -705,9 +705,11 @@ the cast, and Olive barking at a good spot.
   comes much more often (in its hours x2.5, out of them x0.5; its weather
   x2; its depth x2, the far depth x0.4; its favourite bait x2.5). Open
   water and shadows both lean this way; sparkles too.
-- **Depth dial** (`src/ui/DepthDial.js`), under the species counter: tap
-  for shallow, mid or deep. A float or jig sinks to that depth (no longer
-  set by how far you cast); a spinner runs where you reel it.
+- **Depth by the meter:** a float or jig sinks as deep as the cast's meter
+  was full, in thirds that are the same on any screen: shallow 0-30%,
+  mid 30-70%, deep 70-100%, notched on the meter. (A depth dial came
+  first; you chose the meter instead, for simplicity.) A spinner runs
+  where you reel it.
 - **Brake the cast:** tap while the line is in the air and it drops
   straight down there, to land right on a sign.
 - **Olive barks at a good spot:** a sparkle, or a "hot" shadow (a fish of
@@ -716,8 +718,9 @@ the cast, and Olive barking at a good spot.
 - **Reel in a float:** tap while waiting on a float and the line comes
   back in, ready to cast again (a fish on its way turns away). A tap
   during a nibble still spooks the fish.
-- **The journal** says when, in what weather and how deep each fish bites
-  ("Bites" on pages not yet caught, with "Lives" on caught ones).
+- **The journal** says when and in what weather each fish bites, and the
+  meter it takes to reach its depth ("Deep: meter 70-100%"), on every
+  page, caught or not.
 
 **Verdict:** waiting (play it).
 

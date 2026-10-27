@@ -7,7 +7,8 @@
 //   when     dawn (5 to 8), day (8 to 17), dusk (17 to 21), night (21 to 5)
 //   weather  clear, cloudy, rain, fog (Weather.js)
 //   depth    shallow, mid, deep: the top, middle and bottom third of the
-//            water, wherever the bait is when the fish finds it
+//            water, wherever the bait is when the fish finds it. A float
+//            or jig sinks as deep as the cast's meter was full (METER).
 import { SURFACE_Y, VIEW_BED } from '../core/constants.js';
 import { hourNow } from '../environment/Daylight.js';
 import { BEST } from './Lures.js';
@@ -59,12 +60,15 @@ export function bandOf(y) {
   return k < 1 / 3 ? 'shallow' : k < 2 / 3 ? 'mid' : 'deep';
 }
 
-// Where a float or jig comes to rest at each depth.
-export function restDepth(band) {
-  const top = SURFACE_Y + 30;
-  const bottom = VIEW_BED - 22;
-  return Math.round(top + (bottom - top) * { shallow: 0, mid: 0.5, deep: 1 }[band]);
+// Where a float or jig comes to rest, by how full the meter was (0..1):
+// from just under the surface to just off the bottom. The thirds of the
+// water fall at 30% and 70% of the meter, the same on any screen.
+const SPAN = [0.08, 0.92];
+export function restDepth(power) {
+  return Math.round(SURFACE_Y + (VIEW_BED - SURFACE_Y) * (SPAN[0] + (SPAN[1] - SPAN[0]) * power));
 }
+const cut = (k) => Math.round(((k - SPAN[0]) / (SPAN[1] - SPAN[0])) * 100);
+export const METER = { shallow: [0, cut(1 / 3)], mid: [cut(1 / 3), cut(2 / 3)], deep: [cut(2 / 3), 100] };
 
 // Is the fish on the feed at this hour and in this weather?
 export function onTheFeed(id, c) {
@@ -86,12 +90,13 @@ export function liking(id, c) {
   return m;
 }
 
-// For the journal: "Dusk and night, in rainy weather, down deep."
+// For the journal: "At dusk and night, in rainy weather. Deep: meter 70-100%."
 const SKY_WORD = { clear: 'sunny', cloudy: 'cloudy', rain: 'rainy', fog: 'foggy' };
-const DEEP_WORD = { shallow: 'in the shallows', mid: 'in mid water', deep: 'down deep' };
 const and = (a) => (a.length > 1 ? `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}` : a[0]);
 export function habitText(id) {
   const h = HABITS[id];
-  const when = and(h.when.map((w) => (w === 'day' ? 'by day' : w === 'night' ? 'at night' : `at ${w}`)));
-  return `${when[0].toUpperCase()}${when.slice(1)}, in ${h.weather.map((w) => SKY_WORD[w]).join(' or ')} weather, ${DEEP_WORD[h.depth]}.`;
+  // "At dusk, night and dawn", "By day", "At dawn and by day"
+  const when = and(h.when.map((w, i) => (w === 'day' ? 'by day' : i === 0 ? `at ${w}` : w)));
+  const [lo, hi] = METER[h.depth];
+  return `${when[0].toUpperCase()}${when.slice(1)}, in ${h.weather.map((w) => SKY_WORD[w]).join(' or ')} weather. ${DEPTH_NAME[h.depth]}: meter ${lo}-${hi}%.`;
 }

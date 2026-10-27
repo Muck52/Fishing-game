@@ -2,6 +2,7 @@
 // fills while you hold, then falls back if you hold too long, and rises
 // again. Let go and the line goes out as far as it was full.
 import { ANGLER_X, DECK_Y, DEPTH } from '../core/constants.js';
+import { METER } from '../fish/Habits.js';
 
 const X = ANGLER_X + 14;
 const TOP = DECK_Y - 52;
@@ -38,6 +39,11 @@ export class PowerMeter {
     const c = this.level > 0.85 ? 0xff7a5a : this.level > 0.5 ? 0xffd84a : 0x9cf07a;
     g.fillStyle(c, 1).fillRect(X + 1, TOP + H - 1 - fill, 3, fill);
     g.fillStyle(0xfff4d6, 0.5).fillRect(X + 1, TOP + H - 1 - fill, 1, fill); // a lit edge
-    for (let i = 1; i < 4; i++) g.fillStyle(0x25131a, 0.5).fillRect(X, TOP + Math.round((H * i) / 4), 5, 1); // marks
+    // marks where shallow turns to mid, and mid to deep (as in the journal)
+    for (const pc of [METER.mid[0], METER.deep[0]]) {
+      const y = TOP + H - 1 - Math.round((pc / 100) * (H - 2));
+      g.fillStyle(0x25131a, 1).fillRect(X - 1, y, 9, 1); // notched past the frame
+      g.fillStyle(0xfff4d6, 1).fillRect(X + 6, y, 2, 1);
+    }
   }
 }
