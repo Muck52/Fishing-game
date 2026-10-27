@@ -681,7 +681,7 @@ the top of `FishingScene.js`):
   seconds (the float's nibbles packed closer; a jigged fish arrives
   sooner; reeling through a sign brings a chase at once).
 
-**Verdict:** waiting (play it).
+**Verdict:** passed the play test (2026-10-27).
 
 ## Mechanics 2: conditions, depth, the brake and Olive (2026-10-27)
 
@@ -721,6 +721,32 @@ the cast, and Olive barking at a good spot.
 - **The journal** says when and in what weather each fish bites, and the
   meter it takes to reach its depth ("Deep: meter 70-100%"), on every
   page, caught or not.
+
+**Verdict:** passed the play test (2026-10-27).
+
+## Mechanics 3: the bite and the hook (2026-10-27)
+
+**Why:** stage 4 of the research: the moment of truth. Players like a
+sharp strike on the plunge with shorter windows for rarer fish, and hate
+missed bites with no clear cue or fake nibbles that punish without a tell.
+
+**In the game** (constants at the top of `FishingScene.js`):
+- **Hookset timing:** on the real bite a ring closes round the float over
+  the bite window: gold, then cream, then red. Tap while it's gold (the
+  first 40%) for a **perfect hookset**: the catch bar starts 45% full.
+  Tap in the middle: hooked, 30%. Tap in the last 20%: **late**, 18%.
+  Miss it and the fish gets away.
+- **Window by rarity:** common 1.2 s, uncommon 1.0 s, rare 0.8 s,
+  legendary 0.65 s; a quarter second more for the takes that barely move
+  the float (walleye, crappie, carp, catfish, sturgeon).
+- **Only shy fish spook:** tapping on a nibble spooks the wary ones (both
+  trout, walleye, crappie, carp, burbot, muskie, sturgeon). Bold biters
+  (sunfish, perch, white bass, both bass, catfish, drum, pike) shrug it
+  off: "Not yet...".
+- **The cue:** the "!" over the float and "TAP!" as before, the ring, and
+  a double buzz on phones that vibrate. (No sound yet: the game has none.)
+- The jig's strike works the same way; a spinner still hooks the fish
+  itself.
 
 **Verdict:** waiting (play it).
 

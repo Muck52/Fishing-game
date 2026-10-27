@@ -59,6 +59,20 @@ const JIG_STEP = 6; // px a jig comes in each hop
 const PER_SECOND = 1 - (1 - CAP) ** (1 / (WAIT / 1000)); // about 3%
 const chanceOver = (n) => 1 - (1 - CAP) ** (1 / Math.max(1, n)); // per step, CAP after n
 
+// The bite: how long you have to set the hook, by how rare the fish is (a
+// wary old fish lets go sooner), with a little longer for the ones whose
+// take barely moves the float. Tap in the first part of it (the ring round
+// the float still gold) for a perfect hookset; in the last part, late.
+const WINDOW = { common: 1200, uncommon: 1000, rare: 800, legendary: 650 };
+const SUBTLE = ['soft', 'lift', 'slowtake'];
+const PERFECT = 0.4;
+const LATE = 0.8;
+// how full the catch bar starts, by how well the hook was set
+const SET = { perfect: 0.45, good: 0.3, late: 0.18 };
+// wary fish that drop the bait if you strike at a nibble; the rest are
+// bold and keep at it
+const SHY = ['trout', 'rainbow', 'walleye', 'carp', 'muskie', 'golden', 'catfish', 'crappie'];
+
 export class FishingScene extends Phaser.Scene {
   constructor() {
     super('Fishing');
@@ -88,6 +102,7 @@ export class FishingScene extends Phaser.Scene {
     this.plaque = pill(this, W / 2, 165, 40, 20).setDepth(DEPTH.UI).setVisible(false);
     this.hint = label(this, W / 2, 165, '', { font: 'head', size: 2 }).setDepth(DEPTH.UI);
     this.fishSprite = null;
+    this.ring = this.add.graphics().setDepth(DEPTH.SPLASH + 0.5);
 
     this.input.on('pointerdown', this.onDown, this);
     this.input.on('pointerup', this.onUp, this);
@@ -399,7 +414,9 @@ export class FishingScene extends Phaser.Scene {
 
   bite() {
     this.state = STATE.BITE;
-    this.biteUntil = this.time.now + 1100 - this.fish.strength * 350;
+    const ms = WINDOW[this.fish.rarity] + (SUBTLE.includes(strikeOf(this.fish.id).strike) ? 250 : 0);
+    this.biteFrom = this.time.now;
+    this.biteUntil = this.biteFrom + ms;
     this.striker.strike();
     this.angler.bite();
     this.tackle.shout(true);
@@ -409,21 +426,33 @@ export class FishingScene extends Phaser.Scene {
     else ripple(this, this.tackle.x);
     this.setHint('TAP!');
     try {
-      navigator.vibrate?.(80);
+      navigator.vibrate?.([70, 40, 70]);
     } catch (e) {
       // vibration not supported
     }
   }
 
-  hook() {
+  // How well the hook went in: by when in the bite window you tapped.
+  hookset() {
+    const k = (this.time.now - this.biteFrom) / (this.biteUntil - this.biteFrom);
+    return k < PERFECT ? 'perfect' : k < LATE ? 'good' : 'late';
+  }
+
+  hook(set = 'good') {
     this.state = STATE.REELING;
+    this.ring.clear();
     this.tackle.shout(false);
     this.weight = rollWeight(this.fish);
     const start = 40 + this.castPower * 60;
     this.fight = BAR ? new BarFight(this.fish, start) : HOLD_REEL ? new ReelFight(this.fish, start) : new RhythmFight(this.fish, start);
     this.far = { x: this.tackle.x, y: this.tackle.hookY };
     this.off = { x: 0, y: 0 }; // where the fight throws the fish, off its line toward the pier
-    if (BAR) this.bar.show(true, this.fishSprite);
+    if (BAR) {
+      this.fight.progress = SET[set];
+      this.bar.show(true, this.fishSprite);
+    }
+    if (set === 'perfect') this.pop('Perfect hookset!', INK.gold);
+    else if (set === 'late') this.pop('Late!', INK.red);
     else this.meter.show(true);
     this.angler.fight();
     this.striker.hooked();
@@ -452,7 +481,24 @@ export class FishingScene extends Phaser.Scene {
     this.tweens.add({ targets: t, x: dock, hookY: SURFACE_Y + 8, duration: ms, ease: 'Sine.easeIn', onComplete: () => this.resetToIdle() });
   }
 
+  // The ring round the float that closes over the bite window: gold while
+  // a tap would be a perfect hookset, cream, then red when it's nearly gone.
+  drawRing(time) {
+    const g = this.ring.clear();
+    const k = clamp((time - this.biteFrom) / (this.biteUntil - this.biteFrom), 0, 1);
+    const r = Math.round(lerp(15, 4, k));
+    const col = k < PERFECT ? INK.gold : k < LATE ? INK.cream : INK.red;
+    const cx = Math.round(this.tackle.x);
+    const cy = SURFACE_Y - 1;
+    // a pixel ellipse, flattened like a ring on the water
+    for (let a = 0; a < 64; a++) {
+      const t = (a / 64) * Math.PI * 2;
+      g.fillStyle(col, 1).fillRect(cx + Math.round(Math.cos(t) * r), cy + Math.round(Math.sin(t) * r * 0.45), 1, 1);
+    }
+  }
+
   lose(message, snapped = false) {
+    this.ring.clear();
     if (this.fish) this.signs.scatter();
     this.state = STATE.RESULT;
     this.tackle.show(false);
@@ -535,14 +581,16 @@ export class FishingScene extends Phaser.Scene {
     if (this.state === STATE.REELING) {
       if (RHYTHM) this.fight.tap();
     } else if (this.state === STATE.BITE) {
-      this.hook();
+      this.hook(this.hookset());
     } else if (this.state === STATE.WAITING) {
       if (this.mech === 'jig') this.jigIt();
       else if (this.mech === 'float') {
         // mid-nibble it spooks the fish; any other time it brings the
         // line in, to cast again
-        if (this.time.now < this.nibbleUntil) this.lose('Too early! You spooked it.');
-        else this.reelBack();
+        if (this.time.now < this.nibbleUntil) {
+          if (SHY.includes(this.fish?.id)) this.lose('Too early! You spooked it.');
+          else this.pop('Not yet...');
+        } else this.reelBack();
       }
     } else if (this.state === STATE.CASTING) {
       this.brake();
@@ -622,6 +670,7 @@ export class FishingScene extends Phaser.Scene {
       this.striker.hold(dt);
       t.dip = this.striker.dip;
       t.shake = this.striker.shake;
+      this.drawRing(time);
       if (time > this.biteUntil) this.lose('It got away...');
     } else if (this.state === STATE.REELING) {
       this.updateFight(time, dt);
