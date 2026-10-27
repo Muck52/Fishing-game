@@ -986,17 +986,21 @@ export class FishingScene extends Phaser.Scene {
       this.tweens.killTweensOf(this.off);
       this.tweens.add({ targets: this.off, y: 0, delay: 900, duration: 500, ease: 'Sine.easeOut' });
       // it clears the water, shaking its head, and drops back in
-      const x0 = s.x;
+      // (the tween only says how far through the jump it is; the height is
+      // worked out each frame from where the fish is, in updateFight)
       this.leaping = true;
-      splash(this, x0, 0.6);
+      this.leapK = 0;
+      splash(this, s.x, 0.6);
       this.setHint('');
       this.tweens.addCounter({ from: 0, to: 1, duration: 900, ease: 'Linear',
         onUpdate: (tw) => {
-          const k = tw.getValue();
-          this.leapY = -(s.y - SURFACE_Y + 6) * Math.min(1, k * 3) - Math.sin(Math.PI * k) * 30;
-          s.setFrame(Math.floor(k * 18) % 6);
+          this.leapK = tw.getValue();
+          if (s.active) s.setFrame(Math.floor(this.leapK * 18) % 6);
         },
-        onComplete: () => { this.leaping = false; this.leapY = 0; splash(this, s.x, 0.8); } });
+        onComplete: () => {
+          this.leaping = false;
+          if (s.active) splash(this, s.x, 0.8);
+        } });
     } else if (e.kind === 'dash') {
       // it bolts for cover: swipe the other way to turn its head
       this.cover = COVER[e.cover](s);
@@ -1077,7 +1081,12 @@ export class FishingScene extends Phaser.Scene {
     const wob = Math.sin(time / 230) * 5 * f.strength;
     s.x = Math.round(clamp(base.x + this.off.x + wob, 20, W - 30));
     s.y = Math.round(clamp(base.y + this.off.y + Math.cos(time / 310) * 4 * f.strength, SURFACE_Y + 20, BED_Y - 12));
-    if (this.leaping) s.y = Math.round(s.y + this.leapY);
+    if (this.leaping) {
+      // up out of the water (its middle clear of the surface) on an arc,
+      // and back down
+      const k = this.leapK;
+      s.y = Math.round(s.y - (s.y - SURFACE_Y + 6) * Math.min(1, k * 3, (1 - k) * 3) - Math.sin(Math.PI * k) * 30);
+    }
     else s.anims.timeScale = 1 + f.pull * 2.5;
     s.setTint(this.leaping ? 0xffffff : depthTint(s.y));
 
