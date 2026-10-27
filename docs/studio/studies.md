@@ -785,6 +785,14 @@ from sunfish to pike, the muskie about 93% and the sturgeon about 60%;
 holding until the red and ignoring runs snaps the line most of the time;
 mashing loses nearly everything but perch and bluegill.
 
+**Round two** (your note: the bar across the top looked blocky and didn't
+blend in): the gauges now stand on the dock beside the angler, where the
+cast's power meter is, carved from the same wood: a tall one for the
+line's tension (the red zone at the top, notched), a slim one for the
+fish's stamina under a little fish, the cue floating above them only when
+there's something to do (EASE, LET GO, >>), and the line out and the
+bonus beside them.
+
 **Fixed on the way:** since Mechanics 3 the tension meter only showed on
 an ordinary hookset (a perfect or late one hid it).
 
