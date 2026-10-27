@@ -817,6 +817,35 @@ the hand instead (Android phones; iPhones don't let web pages vibrate):
 **Fixed on the way:** since Mechanics 3 the tension meter only showed on
 an ordinary hookset (a perfect or late one hid it).
 
+**Verdict:** fine for now (2026-10-27); may revisit later.
+
+## Mechanics 5: landing it (2026-10-27)
+
+**Why:** stage 6 of the research. Your picks: all four of a lighter catch
+card, keep or release, netting big fish at the dock and a weigh-in.
+
+**In the game** (`FishingScene.js` landing section, `src/ui/CatchToast.js`):
+- **Net it at the dock:** the large and huge fish (carp, rainbow, both
+  catfish, drum, walleye, burbot, pike, muskie, sturgeon), played out to
+  the dock, aren't landed yet: the net goes down on its pole from his
+  hands, and the fish rolls up to the surface and back every 1.5 s (a
+  swirl and a small buzz as it comes up). Tap while it's up to scoop it.
+  Tap while it's down, or wait 6 s, and it makes one last run: back into
+  the fight with some strength back.
+- **Held up:** every catch comes up into his hands, still kicking.
+- **Weigh-in:** for a new species or a new best, a brass spring scale
+  hangs over it and the reading swings up to its weight, then "A new
+  species!" or "A new best!".
+- **Lighter card:** only those special catches get the full journal card.
+  A catch you've made before gets a small plaque under the counters: the
+  fish, its name and weight.
+- **Keep or release:** both have Keep (+coins) and Release; a tap anywhere
+  else keeps it. Kept: into the barrel, coins, the backpack. Released:
+  back over the rail and away; no coins and not in the backpack, but it
+  still counts in the journal, and it leaves you luck: the next fish is
+  2.5 times likelier to be uncommon or rarer (a four-leaf clover by the
+  weather until then). Treasure from a sparkle is yours either way.
+
 **Verdict:** waiting (play it).
 
 <!--

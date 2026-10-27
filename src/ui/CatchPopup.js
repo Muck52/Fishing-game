@@ -1,13 +1,16 @@
 import { W, H, DEPTH, INK, label } from '../core/constants.js';
 import { board } from './Panels.js';
 import { RARITY } from '../../data/fish/fish.js';
+import { button } from './CatchToast.js';
 
 const BW = 300; // board size in pixels
 const BH = 336;
 
-// The angler's field journal entry for each catch, on a wooden board.
+// The angler's field journal entry for a catch worth stopping for (a new
+// species or a new best), on a wooden board, with Keep and Release; a tap
+// anywhere else keeps it.
 export class CatchPopup {
-  constructor(scene) {
+  constructor(scene, onChoose) {
     this.scene = scene;
     this.canClose = false;
     const top = -BH / 2;
@@ -24,11 +27,13 @@ export class CatchPopup {
     this.weight = label(scene, -58, top + 210, '', { font: 'head' });
     this.coins = label(scene, 58, top + 210, '', { font: 'head', color: INK.gold });
     this.note = label(scene, 0, top + 252, '', { width: BW - 60 });
-    this.badge = label(scene, 0, top + 296, '', { color: INK.green });
-    this.prompt = label(scene, 0, top + 316, 'Tap to keep fishing', { color: INK.soft });
+    this.badge = label(scene, 0, top + 290, '', { color: INK.green });
+    this.keep = button(scene, -54, top + 314, 84, 'Keep', INK.gold, () => onChoose(true));
+    this.release = button(scene, 54, top + 314, 84, 'Release', INK.cream, () => onChoose(false));
+    this.buttons = [this.keep.pill, this.release.pill];
     this.headline = label(scene, 0, top - 14, '', { font: 'head', size: 2, color: INK.gold });
     this.card = scene.add.container(W / 2, H / 2 + 14, [
-      panel, inlay, this.header, this.fish, this.rarity, this.name, this.latin, this.weight, this.coins, this.note, this.badge, this.prompt, this.headline,
+      panel, inlay, this.header, this.fish, this.rarity, this.name, this.latin, this.weight, this.coins, this.note, this.badge, ...this.keep.parts, ...this.release.parts, this.headline,
     ]);
     this.root = scene.add.container(0, 0, [dim, this.card]).setDepth(DEPTH.POPUP).setVisible(false);
   }
@@ -42,6 +47,7 @@ export class CatchPopup {
     this.latin.setText(fish.latin);
     this.weight.setText(`${weight.toFixed(1)} lb`);
     this.coins.setText(`+${value}`);
+    this.keep.text.setText(`Keep +${value}`);
     this.note.setText(fish.note);
     this.badge.setText(isNew ? 'New species for your journal!' : isRecord ? 'New personal best!' : '');
     this.fish.setTexture(`card-${fish.id}`);

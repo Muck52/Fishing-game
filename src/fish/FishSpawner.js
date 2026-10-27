@@ -7,6 +7,8 @@ import { liking } from './Habits.js';
 export function pickFish(castPower, c) {
   const pool = FISH.map((fish) => {
     let chance = RARITY[fish.rarity].weight * liking(fish.id, c);
+    // luck from a fish let go: the uncommon and rarer ones come more often
+    if (c.luck && fish.rarity !== 'common') chance *= 2.5;
     if (fish.rarity !== 'common') chance *= 1 + castPower * 1.5;
     return { fish, chance };
   });

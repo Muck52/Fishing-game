@@ -20,6 +20,22 @@ export class Hud {
     this.sky = ui(pill(scene, 50, TOP + 26, 76, 20));
     this.skyIcon = ui(scene.add.image(23, TOP + 26, 'weather-clear')).setDepth(DEPTH.UI + 0.1);
     this.skyWord = ui(label(scene, 33, TOP + 26, '', { font: 'head' }).setOrigin(0, 0.5)).setDepth(DEPTH.UI + 0.1);
+    // a four-leaf clover beside the weather while you have a released
+    // fish's luck
+    if (!scene.textures.exists('clover')) {
+      const g = scene.make.graphics({ add: false });
+      const rows = ['.gg.gg.', 'gGggGgg', 'ggg.ggg', '...k...', 'ggg.ggg', 'gGggGgg', '.gg.gg.', '...k...', '....k..'];
+      const col = { g: 0x4f9a3c, G: 0x9cf07a, k: 0x2f5a24 };
+      rows.forEach((r, y) => [...r].forEach((ch, x) => ch !== '.' && g.fillStyle(col[ch], 1).fillRect(x, y, 1, 1)));
+      g.generateTexture('clover', 7, 9);
+      g.destroy();
+    }
+    this.clover = ui(scene.add.image(98, TOP + 26, 'clover')).setVisible(false);
+  }
+
+  luck(on) {
+    this.clover.setVisible(on);
+    if (on) this.scene.tweens.add({ targets: this.clover, y: this.clover.y - 3, duration: 140, yoyo: true, repeat: 2 });
   }
 
   // The weather badge; when the weather turns, it gives a little hop.

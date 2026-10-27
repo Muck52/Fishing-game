@@ -14,7 +14,7 @@ import { TensionFight } from '../fishing/TensionFight.js';
 import { pickFish, rollWeight, catchValue } from '../fish/FishSpawner.js';
 import { Striker, strikeOf } from '../fish/Strike.js';
 import { FISH } from '../../data/fish/fish.js';
-import { Signs } from '../fish/Signs.js';
+import { Signs, CLASS } from '../fish/Signs.js';
 import { TackleBox } from '../ui/TackleBox.js';
 import { lureOf } from '../fish/Lures.js';
 import { timeOfDay, bandOf, restDepth } from '../fish/Habits.js';
@@ -24,6 +24,7 @@ import { pill } from '../ui/Panels.js';
 import { FishBar } from '../ui/FishBar.js';
 import { Hud } from '../ui/Hud.js';
 import { CatchPopup } from '../ui/CatchPopup.js';
+import { CatchToast } from '../ui/CatchToast.js';
 import { Backpack } from '../ui/Backpack.js';
 import { Journal } from '../ui/Journal.js';
 import { SaveManager } from '../save/SaveManager.js';
@@ -71,6 +72,15 @@ const chanceOver = (n) => 1 - (1 - CAP) ** (1 / Math.max(1, n)); // per step, CA
 const WINDOW = { common: 1200, uncommon: 1000, rare: 800, legendary: 650 };
 const SUBTLE = ['soft', 'lift', 'slowtake'];
 const PERFECT = 0.4;
+// Netting a big fish at the dock (the large and huge ones): it rolls up to
+// the surface every NET_ROLL ms; tap while it's up (past NET_SURFACE of
+// the roll). NET_WAIT ms without a try and it runs again.
+const NET_ROLL = 1500;
+const NET_SURFACE = 0.8;
+const NET_WAIT = 6000;
+const NET_X = ANGLER_X - 52;
+const BIG = [...CLASS.large, ...CLASS.huge];
+const HOLD = { x: ANGLER_X - 14, y: DECK_Y - 26 }; // a fish held up in his hands
 const LATE = 0.8;
 // how full the catch bar starts, by how well the hook was set
 const SET = { perfect: 0.45, good: 0.3, late: 0.18 };
@@ -100,7 +110,9 @@ export class FishingScene extends Phaser.Scene {
     this.hud.update(this.save.data);
     this.meter = new TensionMeter(this);
     this.bar = new FishBar(this);
-    this.popup = new CatchPopup(this);
+    this.popup = new CatchPopup(this, (keep) => this.choose(keep));
+    this.toast = new CatchToast(this, (keep) => this.choose(keep));
+    this.netG = this.add.graphics().setDepth(DEPTH.ANGLER + 0.5);
     this.bag = new Backpack(this, this.save, () => this.state === STATE.IDLE && !this.journal.isOpen);
     this.journal = new Journal(this, this.save, () => this.state === STATE.IDLE && !this.bag.isOpen);
     // hints sit on a little wooden plaque, like the counters
@@ -126,6 +138,7 @@ export class FishingScene extends Phaser.Scene {
       weather: this.world.weather.kind,
       band: t?.visible ? bandOf(t.restY ?? t.hookY) : null, // where it comes to rest
       lure: this.tackleBox?.current,
+      luck: !!this.luck,
     };
   }
 
@@ -189,6 +202,11 @@ export class FishingScene extends Phaser.Scene {
     this.tackle.dip = 0;
     this.tackle.shake = 0;
     this.meter.show(false);
+    this.net = null;
+    this.netG.clear();
+    this.choosing = null;
+    this.toast.hide();
+    this.popup.hide();
     this.angler.idle();
     this.setHint('Hold to cast');
   }
@@ -318,6 +336,11 @@ export class FishingScene extends Phaser.Scene {
       this.from = { x: sign.x, y: SURFACE_Y + 12 };
     } else {
       this.fish = pickFish(this.castPower, this.conditions());
+    }
+    // a released fish's luck goes to whichever fish comes next
+    if (this.luck) {
+      this.luck = false;
+      this.hud.luck(false);
     }
     this.emptyAt = Infinity;
     if (this.mech === 'float') {
@@ -535,35 +558,131 @@ export class FishingScene extends Phaser.Scene {
     this.time.delayedCall(1700, () => this.resetToIdle());
   }
 
+  // ---- netting a big fish at the dock ---------------------------------------
+
+  // A big one played out to the dock: the net goes down, and it rolls up to
+  // the surface and back. Tap as it surfaces to scoop it; miss (or wait too
+  // long) and it finds the strength for one last run.
+  startNet(time) {
+    this.state = STATE.NETTING;
+    this.meter.show(false);
+    this.net = { from: time, until: time + NET_WAIT, up: false };
+    this.setHint('Net it as it surfaces!', 1600);
+  }
+
+  // Where it is in its roll: 0 deep, 1 at the surface.
+  netRoll(time) {
+    const k = ((time - this.net.from) % NET_ROLL) / NET_ROLL;
+    return 0.5 - 0.5 * Math.cos(Math.PI * 2 * k);
+  }
+
+  updateNet(time) {
+    const s = this.fishSprite;
+    const roll = this.netRoll(time);
+    const up = roll > NET_SURFACE;
+    s.x = Math.round(NET_X + Math.sin(time / 400) * 2);
+    s.y = Math.round(SURFACE_Y + 4 + (1 - roll) * 16);
+    s.setFlipX(true).setTint(depthTint(s.y));
+    s.anims.timeScale = 1.5;
+    if (up && !this.net.up) {
+      // it rolls at the top: a swirl you can see and a bump you can feel
+      ripple(this, s.x);
+      this.buzz(20);
+    }
+    this.net.up = up;
+    this.drawNet(time);
+    this.tackle.x = this.mouth().x + 15;
+    this.angler.toward = this.mouth();
+    this.angler.bend = 0.3;
+    if (time > this.net.until) this.netMiss('It found its second wind!');
+  }
+
+  // The landing net: a pole from his hands to a hoop on the water.
+  drawNet() {
+    const g = this.netG.clear();
+    const hx = ANGLER_X - 6;
+    const hy = DECK_Y - 22;
+    const cx = NET_X;
+    const cy = SURFACE_Y + 3;
+    // (two pixels thick, pale ash with a dark edge, to read over the cliff)
+    for (let i = 0; i <= 48; i++) {
+      const k = i / 48;
+      const x = Math.round(lerp(hx, cx + 9, k));
+      const y = Math.round(lerp(hy, cy - 4, k));
+      g.fillStyle(0x25131a, 1).fillRect(x + 1, y, 1, 1);
+      g.fillStyle(0xd8b878, 1).fillRect(x, y, 1, 1);
+    }
+    // the hoop, and the mesh hanging under it
+    for (let a = 0; a < 40; a++) {
+      const t = (a / 40) * Math.PI * 2;
+      g.fillStyle(0x3c3c46, 1).fillRect(cx + Math.round(Math.cos(t) * 9), cy + Math.round(Math.sin(t) * 2), 1, 1);
+    }
+    for (let y = 1; y < 9; y++) for (let x = -8 + y / 2; x <= 8 - y / 2; x += 2) g.fillStyle(0xd8dce4, 0.35).fillRect(Math.round(cx + x + (y % 2)), cy + y, 1, 1);
+  }
+
+  tryNet(time) {
+    if (this.netRoll(time) > NET_SURFACE - 0.1) {
+      // scooped: up it comes in the net
+      this.pop('Netted!', INK.gold);
+      this.netG.clear();
+      this.net = null;
+      this.land();
+    } else {
+      this.netMiss('Missed! One last run...');
+    }
+  }
+
+  // It wasn't ready: back to the fight, with a last burst of strength.
+  netMiss(text) {
+    this.netG.clear();
+    this.net = null;
+    splash(this, this.fishSprite.x, 0.5);
+    this.setHint(text, 1200);
+    const f = this.fight;
+    f.distance += 18 + f.strength * 12;
+    f.stamina = Math.max(f.stamina, 0.3);
+    f.phase = 'rest';
+    f.phaseAt = f.t + 0.3;
+    this.state = STATE.REELING;
+    this.meter.show(true);
+  }
+
+  // ---- landing it: held up, weighed if it's special, kept or let go ---------
+
   land() {
     this.state = STATE.RESULT;
     this.meter.show(false);
     this.bar.show(false);
     this.tackle.show(false);
+    this.netG.clear();
     this.setHint('');
     const f = this.fishSprite;
     this.fishSprite = null;
+    // the fish is his now, not the striker's to tidy away
+    this.striker.scatter();
+    this.striker = null;
+    this.held = f;
     splash(this, f.x, 1.3);
     this.angler.land();
-    // hauled up out of the water and into the barrel behind him
+    // up out of the water and into his hands, still kicking
     const x0 = f.x;
     const y0 = f.y;
+    f.clearTint().setFlipX(false);
+    f.anims.timeScale = 2.5;
     this.tweens.addCounter({
       from: 0,
       to: 1,
-      duration: 700,
-      ease: 'Sine.easeIn',
+      duration: 650,
+      ease: 'Sine.easeOut',
       onUpdate: (tw) => {
         const k = tw.getValue();
-        f.x = lerp(x0, ANGLER_X + 15, k);
-        f.y = lerp(y0, DECK_Y - 20, k) - Math.sin(Math.PI * k) * 110;
+        f.x = Math.round(lerp(x0, HOLD.x, k));
+        f.y = Math.round(lerp(y0, HOLD.y, k) - Math.sin(Math.PI * k) * 40);
       },
-      onComplete: () => f.destroy(),
     });
-    f.clearTint();
 
+    // what it's worth: the fish (with the fight's bonuses) and any treasure
     let value = catchValue(this.fish, this.weight);
-    // Stardew's bonuses: a perfect catch is worth more, and a chest holds coins
     const bonus = [];
     if (BAR && this.fight.perfect) {
       value = Math.round(value * 1.25);
@@ -582,21 +701,109 @@ export class FishingScene extends Phaser.Scene {
         bonus.push(`Strong arm +${extra}`);
       }
     }
+    let found = 0;
     if (this.treasure) {
-      // the sparkle was something lost in the lake, caught up with the fish
+      // the sparkle was something lost in the lake, caught up with the fish:
+      // yours whether you keep the fish or not
       const t = this.treasure;
-      value += t.value;
+      found = t.value;
       bonus.push(`Found ${t.name}! +${t.value}`);
       this.save.data.treasures = [...(this.save.data.treasures || []), t.name];
       this.treasure = null;
     }
     if (bonus.length) this.pop(bonus.join('  '), INK.gold);
-    const { isNew, isRecord } = this.save.recordCatch(this.fish, this.weight, value);
-    this.time.delayedCall(750, () => {
-      this.hud.coinBurst(ANGLER_X, DECK_Y - 30, value);
-      this.hud.update(this.save.data);
-      this.popup.show({ fish: this.fish, weight: this.weight, value, isNew, isRecord, entry: this.save.data.totalCatches });
+    const { isNew, isRecord } = this.save.peek(this.fish, this.weight);
+    this.caught = { fish: this.fish, weight: this.weight, value, found, isNew, isRecord };
+    this.time.delayedCall(700, () => {
+      if (isNew || isRecord) this.weighIn(() => this.offer(true));
+      else this.offer(false);
     });
+  }
+
+  // A new species or a new best: hung on the spring scale, the needle
+  // swinging up to its weight.
+  weighIn(onDone) {
+    const f = this.held;
+    const c = this.caught;
+    const g = this.netG.clear();
+    const top = f.y - f.height / 2 - 16;
+    // the scale: a little brass body on a hook, its string down to the fish
+    g.fillStyle(0x3c3c46, 1).fillRect(f.x, top + 10, 1, f.y - f.height / 2 - top - 10);
+    g.fillStyle(0x25131a, 1).fillRect(f.x - 4, top - 1, 9, 12);
+    g.fillStyle(0xc8962a, 1).fillRect(f.x - 3, top, 7, 10);
+    g.fillStyle(0xfff4d6, 1).fillRect(f.x - 2, top + 1, 5, 4);
+    const read = label(this, f.x + 8, top + 4, '0.0 lb', { font: 'head', color: c.isRecord ? INK.gold : INK.cream }).setOrigin(0, 0.5).setDepth(DEPTH.UI - 1);
+    const needle = { w: 0 };
+    this.tweens.add({
+      targets: needle,
+      w: c.weight,
+      duration: 900,
+      ease: 'Back.easeOut',
+      onUpdate: () => read.setText(`${Math.max(0, needle.w).toFixed(1)} lb`),
+      onComplete: () => {
+        this.pop(c.isNew ? 'A new species!' : 'A new best!', INK.gold);
+        this.buzz([30, 60, 30]);
+        this.time.delayedCall(900, () => {
+          read.destroy();
+          g.clear();
+          onDone();
+        });
+      },
+    });
+  }
+
+  // Keep it or let it go: the full card for a special one, a plaque for the
+  // rest. A tap anywhere but Release keeps it.
+  offer(special) {
+    const c = this.caught;
+    this.choosing = special ? this.popup : this.toast;
+    if (special) this.popup.show({ ...c, entry: this.save.data.totalCatches + 1 });
+    else this.toast.show(c);
+  }
+
+  choose(keep) {
+    if (!this.choosing) return;
+    const ui = this.choosing;
+    this.choosing = null;
+    ui.hide();
+    const c = this.caught;
+    const f = this.held;
+    this.held = null;
+    const coins = (keep ? c.value : 0) + c.found;
+    this.save.recordCatch(c.fish, c.weight, coins, keep);
+    if (coins) this.hud.coinBurst(ANGLER_X, DECK_Y - 30, coins);
+    this.hud.update(this.save.data);
+    this.tweens.killTweensOf(f);
+    const x0 = f.x;
+    const y0 = f.y;
+    if (keep) {
+      // over his shoulder into the barrel
+      this.tweens.addCounter({ from: 0, to: 1, duration: 500, ease: 'Sine.easeIn',
+        onUpdate: (tw) => {
+          const k = tw.getValue();
+          f.x = lerp(x0, ANGLER_X + 15, k);
+          f.y = lerp(y0, DECK_Y - 20, k) - Math.sin(Math.PI * k) * 30;
+        },
+        onComplete: () => f.destroy() });
+    } else {
+      // back over the rail into the lake, and away it goes
+      this.tweens.addCounter({ from: 0, to: 1, duration: 550, ease: 'Sine.easeIn',
+        onUpdate: (tw) => {
+          const k = tw.getValue();
+          f.x = lerp(x0, x0 - 30, k);
+          f.y = lerp(y0, SURFACE_Y + 6, k) - Math.sin(Math.PI * k) * 14;
+        },
+        onComplete: () => {
+          splash(this, f.x, 0.6);
+          f.setFlipX(false).setTint(depthTint(SURFACE_Y + 20)).anims.timeScale = 2;
+          this.tweens.add({ targets: f, x: f.x - 160, y: SURFACE_Y + 40, alpha: 0, duration: 1600, ease: 'Quad.easeIn', onComplete: () => f.destroy() });
+        } });
+      // a fish let go leaves you a little luck: the next one likelier rare
+      this.luck = true;
+      this.hud.luck(true);
+      this.pop('Released! Luck on your next cast', INK.green);
+    }
+    this.time.delayedCall(300, () => this.state === STATE.RESULT && this.resetToIdle());
   }
 
   // ---- input ---------------------------------------------------------------
@@ -626,9 +833,12 @@ export class FishingScene extends Phaser.Scene {
       }
     } else if (this.state === STATE.CASTING) {
       this.brake();
-    } else if (this.state === STATE.RESULT && this.popup.canClose) {
-      this.popup.hide();
-      this.resetToIdle();
+    } else if (this.state === STATE.NETTING) {
+      this.tryNet(this.time.now);
+    } else if (this.state === STATE.RESULT && this.choosing) {
+      // a tap anywhere but the buttons keeps it
+      // (not in the first moment, so a tap already on its way doesn't count)
+      if (!over.some((o) => this.choosing.buttons.includes(o)) && this.choosing.canClose) this.choose(true);
     } else if (this.state === STATE.IDLE && !over.length) {
       this.charge();
     }
@@ -722,10 +932,12 @@ export class FishingScene extends Phaser.Scene {
       if (time > this.biteUntil) this.lose('It got away...');
     } else if (this.state === STATE.REELING) {
       this.updateFight(time, dt);
+    } else if (this.state === STATE.NETTING) {
+      this.updateNet(time);
     }
 
     if (t.visible) {
-      const fight = this.state === STATE.REELING;
+      const fight = this.state === STATE.REELING || this.state === STATE.NETTING;
       t.draw(this.angler.tip, time, { tension: this.fight ? this.fight.tension / 100 : 0, flying: this.state === STATE.CASTING, end: fight ? this.mouth() : null });
     }
   }
@@ -879,7 +1091,10 @@ export class FishingScene extends Phaser.Scene {
 
     if (TENSION) this.meter.update(f.tension, f.distance, f.phase, f.stamina, f.bonus, f.dash?.need);
     else if (!BAR) this.meter.update(f.tension, f.distance, HOLD_REEL ? null : f.phase);
-    if (result === 'caught') this.land();
+    if (result === 'caught') {
+      if (TENSION && BIG.includes(this.fish.id)) this.startNet(time);
+      else this.land();
+    }
     else if (result === 'snapped') {
       this.cameras.main.shake(250, 0.01);
       this.lose('SNAP! The line broke.', true);

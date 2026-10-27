@@ -83,6 +83,7 @@ export const STATE = {
   WAITING: 'waiting',
   BITE: 'bite',
   REELING: 'reeling',
+  NETTING: 'netting',
   RESULT: 'result',
 };
 

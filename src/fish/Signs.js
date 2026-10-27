@@ -48,7 +48,7 @@ const HOT = 0.3; // how often a sign is a fish on the feed
 
 // One fish from a list, by how common each is and how well things suit it.
 function roll(ids, c) {
-  const pool = ids.map((id) => FISH.find((f) => f.id === id)).map((f) => ({ f, w: RARITY[f.rarity].weight * liking(f.id, c) }));
+  const pool = ids.map((id) => FISH.find((f) => f.id === id)).map((f) => ({ f, w: RARITY[f.rarity].weight * liking(f.id, c) * (c.luck && f.rarity !== 'common' ? 2.5 : 1) }));
   let r = Math.random() * pool.reduce((a, p) => a + p.w, 0);
   for (const p of pool) if ((r -= p.w) <= 0) return p.f;
   return pool[0].f;
