@@ -748,6 +748,46 @@ missed bites with no clear cue or fake nibbles that punish without a tell.
 - The jig's strike works the same way; a spinner still hooks the fish
   itself.
 
+**Verdict:** passed the play test (2026-10-27).
+
+## Mechanics 4: the fight (2026-10-27)
+
+**Why:** stage 5 of the research. Your pick: the tension and run hybrid,
+one fight for everyone (no easy mode). It replaces the Stardew-style
+catch bar (still there as ?reel=bar).
+
+**In the game** (`src/fishing/TensionFight.js`, the meter in
+`src/ui/TensionMeter.js`):
+- **Hold to reel, let go to give line.** The line tightens with how hard
+  the fish pulls; at 100 it snaps. Let the fish take too much line and
+  it's gone (a big fish has more room to run).
+- **Stamina:** the fish tires while you keep it under pressure (faster on
+  a tight line) and gets its breath back when you give it slack. The more
+  tired, the easier it comes in and the weaker its runs. Big strong fish
+  tire slowest. "It's tiring!" when it's nearly spent.
+- **Runs:** the rod tip quivers (EASE), then it runs (LET GO). Reel into a
+  run and the line jolts tight: from the red, that's a snap.
+- **Bolts for cover:** fish that live by the weeds, the hut's posts or the
+  bottom bolt for them: drag the other way (SWIPE >>) while reeling to
+  turn its head. Too slow and the line snags: tension jumps, it takes
+  line and gets some wind back.
+- **Leaps:** let go while it's in the air (half a second's grace) or it
+  throws the hook.
+- **Strong arm:** time spent with the tension in the red (past 80)
+  without snapping adds up to half again on the catch's value.
+- **The hookset feeds in:** a perfect one takes a quarter of the fish's
+  stamina at once; a late one lets it start with a run.
+- Each species keeps its own rhythm (how often it runs and for how long,
+  whether it jumps, where it heads for cover).
+
+**Balance (simulated, 300 fights each):** careful play lands everything
+from sunfish to pike, the muskie about 93% and the sturgeon about 60%;
+holding until the red and ignoring runs snaps the line most of the time;
+mashing loses nearly everything but perch and bluegill.
+
+**Fixed on the way:** since Mechanics 3 the tension meter only showed on
+an ordinary hookset (a perfect or late one hid it).
+
 **Verdict:** waiting (play it).
 
 <!--
